@@ -1,0 +1,12 @@
+# Build outputs
+/dist
+/.vite
+/node_modules
+/.cache
+coverage
+
+# Public assets
+public/*
+
+# Server artifacts (if ever referenced)
+../server/target

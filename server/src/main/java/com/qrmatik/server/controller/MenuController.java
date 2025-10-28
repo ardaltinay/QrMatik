@@ -5,16 +5,15 @@ import com.qrmatik.server.dto.MenuItemDto;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.service.MenuService;
 import com.qrmatik.server.service.TenantContext;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/menu")
@@ -45,17 +44,17 @@ public class MenuController {
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemDto> update(@PathVariable UUID id, @RequestBody MenuItemEntity patch) {
         String tenant = TenantContext.getTenant();
-        return menuService.update(id, patch, tenant)
-                .map(e -> ResponseEntity.ok(converter.toDto(e)))
+        return menuService.update(id, patch, tenant).map(e -> ResponseEntity.ok(converter.toDto(e)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "/{id}/image", consumes = { "multipart/form-data" })
+    @PostMapping(path = "/{id}/image", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
             String tenant = TenantContext.getTenant();
             Map<String, Object> result = menuService.uploadImage(id, file, tenant);
-            if (result == null) return ResponseEntity.notFound().build();
+            if (result == null)
+                return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             // Kök nedeni çıkar ve logla

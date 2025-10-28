@@ -9,7 +9,7 @@ How to run
 2. Configure MySQL and update `src/main/resources/application.properties` with your DB credentials.
 3. From the `server/` directory run:
 
-   mvn spring-boot:run
+    mvn spring-boot:run
 
 Endpoints
 

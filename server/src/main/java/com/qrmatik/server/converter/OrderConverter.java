@@ -4,11 +4,10 @@ import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.OrderLineDto;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.model.OrderItemEntity;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OrderConverter {
@@ -34,15 +33,20 @@ public class OrderConverter {
         // Read table code from relation only
         String code = null;
         if (e.getTable() != null) {
-            try { code = e.getTable().getCode(); } catch (Exception ignore) { /* lazy load issues */ }
+            try {
+                code = e.getTable().getCode();
+            } catch (Exception ignore) {
+                /* lazy load issues */ }
         }
         dto.setTableCode(code);
         dto.setSessionId(e.getSessionId());
         try {
             dto.setTenantCode(e.getTenant() != null ? e.getTenant().getCode() : null);
-        } catch (Exception ignore) { dto.setTenantCode(null); }
+        } catch (Exception ignore) {
+            dto.setTenantCode(null);
+        }
         dto.setCustomerName(e.getCustomerName());
-    dto.setStatus(e.getStatus() != null ? e.getStatus().name() : null);
+        dto.setStatus(e.getStatus() != null ? e.getStatus().name() : null);
         dto.setTotal(e.getTotal());
         dto.setCreatedTime(e.getCreatedTime());
         dto.setSessionExpiresAt(e.getSessionExpiresAt());

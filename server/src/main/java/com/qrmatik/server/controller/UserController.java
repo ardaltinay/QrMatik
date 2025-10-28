@@ -6,12 +6,11 @@ import com.qrmatik.server.dto.UserUpsertRequest;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.service.TenantContext;
 import com.qrmatik.server.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,7 +41,8 @@ public class UserController {
     public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserUpsertRequest req) {
         String tenant = TenantContext.getTenant();
         Optional<UserEntity> updated = userService.update(id, req, tenant);
-        return updated.map(u -> ResponseEntity.ok(converter.toDto(u))).orElseGet(() -> ResponseEntity.notFound().build());
+        return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

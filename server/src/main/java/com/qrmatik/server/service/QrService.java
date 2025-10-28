@@ -1,13 +1,20 @@
 package com.qrmatik.server.service;
 
-import com.qrmatik.server.model.TableEntity;
-import com.qrmatik.server.repository.TableRepository;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.qrmatik.server.model.TableEntity;
+import com.qrmatik.server.repository.TableRepository;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -16,14 +23,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class QrService {
@@ -41,7 +40,8 @@ public class QrService {
         List<TableEntity> tables = tableRepository.findAll();
         // filter by tenantCode if provided
         if (tenantCode != null && !tenantCode.isBlank()) {
-            tables.removeIf(t -> t.getTenant() == null || t.getTenant().getCode() == null || !tenantCode.equals(t.getTenant().getCode()));
+            tables.removeIf(t -> t.getTenant() == null || t.getTenant().getCode() == null
+                    || !tenantCode.equals(t.getTenant().getCode()));
         }
 
         try (PDDocument doc = new PDDocument()) {

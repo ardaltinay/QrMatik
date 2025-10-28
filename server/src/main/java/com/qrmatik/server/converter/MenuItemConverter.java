@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 public class MenuItemConverter {
 
     public MenuItemDto toDto(MenuItemEntity e) {
-        if (e == null) return null;
+        if (e == null)
+            return null;
         MenuItemDto d = new MenuItemDto();
         d.setId(e.getId());
         d.setName(e.getName());

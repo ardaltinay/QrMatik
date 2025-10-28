@@ -21,42 +21,45 @@
 </template>
 
 <script>
-import { computed } from 'vue'
-import { useOrderStore } from '@/stores/orderStore'
+  import { computed } from "vue";
+  import { useOrderStore } from "@/stores/orderStore";
 
-export default {
-  setup() {
-    const store = useOrderStore()
-    const orders = computed(() => store.orders)
+  export default {
+    setup() {
+      const store = useOrderStore();
+      const orders = computed(() => store.orders);
 
-    const revenue = computed(() => {
-      // prefer server-provided order totals; fallback to summing snapshot lines
-      let sum = 0
-      for (const o of orders.value) {
-        if (typeof o.total === 'number' && !isNaN(o.total)) {
-          sum += o.total
-        } else {
-          for (const it of o.items) {
-            const price = typeof it.price === 'number' ? it.price : Number(it.price || 0)
-            sum += (price || 0) * (it.qty || 1)
+      const revenue = computed(() => {
+        // prefer server-provided order totals; fallback to summing snapshot lines
+        let sum = 0;
+        for (const o of orders.value) {
+          if (typeof o.total === "number" && !isNaN(o.total)) {
+            sum += o.total;
+          } else {
+            for (const it of o.items) {
+              const price = typeof it.price === "number" ? it.price : Number(it.price || 0);
+              sum += (price || 0) * (it.qty || 1);
+            }
           }
         }
-      }
-      return sum
-    })
+        return sum;
+      });
 
-    const popular = computed(() => {
-      const map = new Map()
-      for (const o of orders.value) {
-        for (const it of o.items) {
-          const name = it.name || (store.menu.find(m => m.id === it.itemId)?.name) || 'Unknown'
-          map.set(name, (map.get(name) || 0) + it.qty)
+      const popular = computed(() => {
+        const map = new Map();
+        for (const o of orders.value) {
+          for (const it of o.items) {
+            const name = it.name || store.menu.find((m) => m.id === it.itemId)?.name || "Unknown";
+            map.set(name, (map.get(name) || 0) + it.qty);
+          }
         }
-      }
-      return Array.from(map.entries()).map(([name, count]) => ({ name, count })).sort((a,b)=>b.count-a.count).slice(0,5)
-    })
+        return Array.from(map.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5);
+      });
 
-    return { orders, revenue, popular }
-  }
-}
+      return { orders, revenue, popular };
+    },
+  };
 </script>

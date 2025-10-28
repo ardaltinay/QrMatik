@@ -5,12 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
@@ -30,20 +29,11 @@ public class JwtUtil {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
         Date expiry = new Date(now + expMinutes * 60_000);
-        return Jwts.builder()
-                .setSubject(username)
-                .addClaims(Map.of("role", role, "tenant", tenant))
-                .setIssuedAt(issuedAt)
-                .setExpiration(expiry)
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setSubject(username).addClaims(Map.of("role", role, "tenant", tenant))
+                .setIssuedAt(issuedAt).setExpiration(expiry).signWith(getKey(), SignatureAlgorithm.HS256).compact();
     }
 
     public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody();
     }
 }

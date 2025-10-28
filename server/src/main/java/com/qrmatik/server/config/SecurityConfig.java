@@ -29,24 +29,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/files/**", "/api/auth/**", "/api/tenant/**")
+                .permitAll().requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
                 // admin-only endpoints
                 .requestMatchers("/api/users/**", "/api/qr/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/menu/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-        );
+                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN").anyRequest().authenticated());
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
