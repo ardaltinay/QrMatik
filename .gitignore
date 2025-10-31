@@ -35,9 +35,15 @@ server/hs_err_pid*.log
 # Logs at repo root
 *.log
 
-# Uploads (keep structure but ignore contents)
-uploads/tenants/**
-!uploads/tenants/.gitkeep
+# Uploads (runtime) - ignore everything under uploads/ but keep .gitkeep placeholders
+uploads/**
+!uploads/.gitkeep
+!uploads/**/.gitkeep
+
+# Server-side uploads (if used by the backend)
+server/uploads/**
+!server/uploads/.gitkeep
+!server/uploads/**/.gitkeep
 
 # Misc
 Thumbs.db
