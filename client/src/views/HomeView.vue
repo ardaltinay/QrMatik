@@ -4,13 +4,20 @@
     <div class="container mx-auto px-6 py-20">
   <div :class="['grid gap-12 items-center', hasTenant ? 'md:grid-cols-2' : 'md:grid-cols-1']">
         <div>
-          <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            QrMatik — Mobil Sipariş ve Yönetim
-          </h1>
-          <p class="text-gray-600 mb-6">
-            QR ile menüye hızlı eriş, mobilden sipariş ver; mutfak ve bar ekibi anında bildirim
-            alır. Hızlı, güvenilir ve mobil öncelikli.
+          <div class="flex items-center gap-3 mb-2" v-if="tenantLogo && hasTenant">
+            <img :src="tenantLogo" alt="Logo" class="h-10 w-10 rounded" />
+            <div class="text-sm text-gray-600">Restoran</div>
+          </div>
+          <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">{{ heroTitle }}</h1>
+          <p class="text-gray-600 mb-4">
+            QR ile menüye hızlı eriş, mobilden sipariş ver; mutfak ve bar ekibi anında bildirim alır.
+            Basit, hızlı ve güvenilir.
           </p>
+          <ul class="text-sm text-gray-600 mb-6 space-y-1">
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Temassız, hızlı sipariş akışı</li>
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Mutfak & Bar için anlık iş listeleri</li>
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Masaya özel QR ile yönlendirme</li>
+          </ul>
           <div class="flex gap-3">
             <!-- Menüyü Görüntüle: tek ise tam genişlik, ikili ise yarım genişlik -->
             <router-link
@@ -89,6 +96,8 @@
   components: { FeatureGrid, HowItWorks, ScreenshotsGrid, FAQAccordion, PricingPlans, DemoContact },
     setup() {
   const orderSession = ref(null);
+  const tenantLogo = ref(null);
+  const heroTitle = ref("QrMatik — Mobil Sipariş ve Yönetim");
   const showMyOrders = ref(false);
   const sessionCheckDone = ref(false);
   let evalInFlight = false;
@@ -116,7 +125,7 @@
         } catch { /* ignore */ }
         return null;
       }
-      const hasTenant = computed(() => !!detectTenantFromLocation());
+  const hasTenant = computed(() => !!detectTenantFromLocation());
   const popular = ref([]);
 
       function getCookie(name) {
@@ -266,6 +275,17 @@
       }
 
       onMounted(() => {
+  // tenant gösterimi için yerel yapılandırmayı oku
+  try {
+    const raw = localStorage.getItem("qm_tenant_cfg");
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      const name = cfg?.displayName || cfg?.name || cfg?.title;
+      if (name && hasTenant.value) heroTitle.value = name + " — Mobil Sipariş";
+      const logo = cfg?.logoUrl || cfg?.logo;
+      if (logo) tenantLogo.value = logo;
+    }
+  } catch { /* ignore */ }
   readOrderSession();
   readLastOrder();
   // Sunucu doğrulaması tamamlanana kadar butonu gizli tut
@@ -309,7 +329,7 @@
         }
       });
 
-  return { orderSession, isAdmin, isSuperAdmin, hasTenant, orderDetailLink, showMyOrders, sessionCheckDone, showOrdersButton, popular, formatMoney, categoryLabel };
+  return { orderSession, tenantLogo, heroTitle, isAdmin, isSuperAdmin, hasTenant, orderDetailLink, showMyOrders, sessionCheckDone, showOrdersButton, popular, formatMoney, categoryLabel };
     },
   };
 </script>

@@ -9,7 +9,7 @@
           <ul class="text-sm text-gray-600 leading-6 mb-4 list-disc pl-5">
             <li v-for="f in p.features" :key="f">{{ f }}</li>
           </ul>
-          <a :href="mailto" class="mt-auto inline-flex justify-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">İletişime Geçin</a>
+          <!-- intentionally no CTA button; section kept simple as requested -->
         </div>
       </div>
     </div>
