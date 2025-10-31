@@ -19,4 +19,5 @@ public class OrderLineDto {
     private String image;
     private String category;
     private String subcategory;
+    private String note;
 }

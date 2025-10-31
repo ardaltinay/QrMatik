@@ -32,12 +32,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtUtil.parseToken(token);
                 String username = claims.getSubject();
-                String role = String.valueOf(claims.get("role"));
-                String tenant = String.valueOf(claims.get("tenant"));
-                if (tenant != null && !tenant.isBlank()) {
-                    // set tenant if not already set by filter (no override)
-                    if (TenantContext.getTenant() == null)
-                        TenantContext.setTenant(tenant);
+                Object roleObj = claims.get("role");
+                String role = roleObj instanceof String ? (String) roleObj : String.valueOf(roleObj);
+                Object tenantObj = claims.get("tenant");
+                String tenant = tenantObj instanceof String ? (String) tenantObj : null;
+                if (tenant != null && !tenant.trim().isEmpty()) {
+                    // JWT'deki tenant her zaman öncelikli olmalı (override)
+                    TenantContext.setTenant(tenant.trim());
                 }
                 var authToken = new UsernamePasswordAuthenticationToken(username, null,
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));

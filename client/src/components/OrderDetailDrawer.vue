@@ -34,22 +34,23 @@
                 { value: 'ready', label: 'Hazır' },
                 { value: 'served', label: 'Servis Edildi' },
                 { value: 'payment_completed', label: 'Ödeme Tamamlandı' },
+                { value: 'canceled', label: 'İptal Edildi' },
               ]"
             />
           </div>
         </div>
 
-        <div class="flex gap-2 mt-4">
+        <div class="flex flex-wrap gap-2 mt-4">
           <button @click="applyStatus" class="px-3 py-2 bg-brand-500 text-white rounded-lg shadow">
             Durum Güncelle
           </button>
           <button @click="$emit('print', order)" class="px-3 py-2 border rounded-lg">Yazdır</button>
           <button
-            v-if="order && order.table"
-            @click="closeTableForOrder"
-            class="px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg"
+            v-if="canCancel"
+            @click="cancelOrder"
+            class="px-3 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700"
           >
-            Masa Kapat
+            İptal Et
           </button>
         </div>
       </div>
@@ -58,12 +59,11 @@
 </template>
 
 <script>
-  import { ref } from "vue";
+  import { ref, computed } from "vue";
   import { useOrderStore } from "@/stores/orderStore";
   import BaseSelect from "@/components/BaseSelect.vue";
   import { formatMoney } from "@/utils/format";
   import { useUiStore } from "@/stores/uiStore";
-  import { fetchJson } from "@/utils/api";
 
   export default {
     name: "OrderDetailDrawer",
@@ -73,6 +73,10 @@
       const store = useOrderStore();
       const ui = useUiStore();
       const localStatus = ref(props.order ? props.order.status : "new");
+      const canCancel = computed(() => {
+        const s = String((props.order && props.order.status) || "").toLowerCase();
+        return s === "new" || s === "preparing" || s === "ready";
+      });
 
       function menuName(id) {
         const m = store.menu.find((x) => x.id === id);
@@ -99,20 +103,20 @@
         }
       }
 
-      async function closeTableForOrder() {
-        if (!props.order || !props.order.table) return;
+      async function cancelOrder() {
+        if (!props.order) return;
         try {
-          await fetchJson("/api/orders/close-table/" + encodeURIComponent(props.order.table), {
-            method: "POST",
-          });
-          ui.toastSuccess("Masa kapatıldı");
+          await store.updateOrderStatus(props.order.id, "canceled");
+          ui.toastSuccess("Sipariş iptal edildi");
+          try { await store.loadOrders(); } catch (e) { /* ignore */ }
+          emit("updated", props.order.id);
           emit("close");
         } catch {
-          // error toast already shown
+          // error toast already shown in fetchJson
         }
       }
 
-      return { menuName, localStatus, applyStatus, formatMoney, sumItems, closeTableForOrder };
+      return { menuName, localStatus, applyStatus, formatMoney, sumItems, canCancel, cancelOrder };
     },
   };
 </script>

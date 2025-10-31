@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TenantRepository extends JpaRepository<TenantEntity, UUID> {
     Optional<TenantEntity> findByCode(String code);
+    Optional<TenantEntity> findByCodeIgnoreCase(String code);
 }

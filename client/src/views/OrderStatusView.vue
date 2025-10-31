@@ -89,6 +89,12 @@
       >
         Ödeme tamamlandı. Afiyet olsun!
       </div>
+      <div
+        v-else-if="order && order.status === 'canceled'"
+        class="mt-4 p-3 rounded border bg-red-50 text-red-800"
+      >
+        Siparişiniz iptal edilmiştir!
+      </div>
 
       <div
         class="bg-white p-4 rounded-lg shadow flex gap-4 flex-col md:flex-row items-start md:items-center"
@@ -165,6 +171,7 @@
         if (idx >= 0) return idx;
         // payment_completed gibi adımlar stepper dışında; hepsini tamamlanmış göster
         if (st === "payment_completed") return steps.length - 1;
+        if (st === "canceled") return -1; // iptal için hiçbir adım tamamlanmış görünmesin
         return 0;
       });
 
@@ -177,14 +184,14 @@
         if (status === "preparing")
           return `${Math.max(1, baseMinutes - 2)} - ${baseMinutes + 2} dk içinde`;
         if (status === "ready") return "Çok yakında (paspas hazır)";
-        if (status === "payment_completed") return "";
+        if (status === "payment_completed" || status === "canceled") return "";
         return "";
       });
 
       const showEta = computed(() => {
         if (!order.value) return false;
         const s = order.value.status;
-        return s !== "served" && s !== "payment_completed";
+        return s !== "served" && s !== "payment_completed" && s !== "canceled";
       });
 
       const isExpired = computed(() => {
@@ -207,9 +214,23 @@
       // formatDate utils'ten kullanılır
 
       // share / QR
-      const shareLink = window.location.origin + "/order/" + id;
-      // simple QR using quickchart's QR API (no server key)
-      const qrUrl = "https://quickchart.io/qr?text=" + encodeURIComponent(shareLink) + "&size=300";
+      // Include session id for privacy-aware deep link
+      let sid = null;
+      try {
+        sid = localStorage.getItem("qm_order_session") || null;
+        if (!sid && typeof document !== "undefined") {
+          const n = encodeURIComponent("qm_order_session") + "=";
+          const parts = (document.cookie || "").split("; ");
+          for (const p of parts) {
+            if (p.startsWith(n)) { sid = decodeURIComponent(p.substring(n.length)); break; }
+          }
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      const shareLink = window.location.origin + "/order/" + id + (sid ? ("?sid=" + encodeURIComponent(sid)) : "");
+      // Generate QR via backend endpoint (proxied by Vite)
+      const qrUrl = "/api/qr/image?text=" + encodeURIComponent(shareLink) + "&size=300";
 
       const copied = ref(false);
       function copyLink() {
@@ -254,7 +275,16 @@
       async function loadOrderIfMissing() {
         if (orderFromStore.value) return;
         try {
-          const o = await fetchJson("/api/orders/" + encodeURIComponent(id));
+          // Append sid if available to satisfy backend guard for unauthenticated access
+          let q = "";
+          try {
+            const urlSid = new URLSearchParams(window.location.search).get("sid");
+            sid = urlSid || sid;
+          } catch (e) {
+            /* ignore */
+          }
+          if (sid) q = "?sid=" + encodeURIComponent(sid);
+          const o = await fetchJson("/api/orders/" + encodeURIComponent(id) + q);
           loadedOrder.value = {
             id: o.id,
             table: o.tableCode || o.table || "guest",
@@ -290,7 +320,7 @@
         // Menü yüklemesini istemli olarak kaldırdık; öğe adları artık API'nin lines snapshot'ından gelir.
         // Eski siparişlerde name yoksa ve menü gerekirse, aşağıdaki satırı açabilirsin:
         // if (!store.menuLoaded) { void store.loadMenu() }
-        void loadOrderIfMissing();
+  void loadOrderIfMissing();
         try {
           window.addEventListener("qm:orderSessionExpired", () => {
             // localStorage expiry kontrolü ile birlikte banner tetiklenecek

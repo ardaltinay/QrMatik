@@ -17,7 +17,7 @@ public class JwtUtil {
     @Value("${app.jwt.secret:ZmFrZVNlY3JldEtleU1hZGUyNXdvcmRzZm9yZGVtby0=}")
     private String secret;
 
-    @Value("${app.jwt.expMinutes:120}")
+    @Value("${app.jwt.expMinutes:60}")
     private long expMinutes;
 
     private Key getKey() {

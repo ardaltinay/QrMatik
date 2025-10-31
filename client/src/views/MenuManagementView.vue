@@ -330,6 +330,16 @@
           const data = await res.json();
           const it = store.menu.find((x) => x.id === id);
           if (it && data.image) it.image = data.image;
+          // persist updated menu cache per tenant so refresh shows the new image
+          try {
+            const tenant = localStorage.getItem("qm_tenant");
+            if (tenant) {
+              const payload = { ts: Date.now(), menu: store.menu };
+              localStorage.setItem("qm_menu_cache_" + tenant, JSON.stringify(payload));
+            }
+          } catch {
+            /* ignore */
+          }
           statuses[id] = "Yüklendi";
           delete pendingFiles[id];
         } catch (e) {

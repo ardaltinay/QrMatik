@@ -25,6 +25,7 @@ public class OrderConverter {
                 d.setImage(li.getImageSnapshot());
                 d.setCategory(li.getCategorySnapshot());
                 d.setSubcategory(li.getSubcategorySnapshot());
+                d.setNote(li.getNote());
                 lines.add(d);
             }
         }

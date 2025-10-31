@@ -4,11 +4,16 @@ import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.TenantRepository;
+import com.qrmatik.server.repository.OrderItemRepository;
+import org.springframework.data.domain.PageRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,21 +22,22 @@ public class MenuService {
     private final MenuItemRepository repository;
     private final ImageService imageService;
     private final TenantRepository tenantRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public MenuService(MenuItemRepository repository, ImageService imageService, TenantRepository tenantRepository) {
+    public MenuService(MenuItemRepository repository, ImageService imageService, TenantRepository tenantRepository,
+            OrderItemRepository orderItemRepository) {
         this.repository = repository;
         this.imageService = imageService;
         this.tenantRepository = tenantRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     public List<MenuItemEntity> listForTenant(String tenant) {
-        if (tenant == null)
-            return repository.findAll();
-        try {
-            return repository.findByTenant_Code(tenant);
-        } catch (NoSuchMethodError | Exception e) {
-            return repository.findAll();
+        if (tenant == null) {
+            // No tenant resolved: do not leak global menu, return empty list
+            return java.util.Collections.emptyList();
         }
+        return repository.findByTenant_Code(tenant);
     }
 
     public MenuItemEntity create(MenuItemEntity m, String tenant) {
@@ -97,4 +103,31 @@ public class MenuService {
         repository.deleteById(id);
         return true;
     }
+
+    public List<MenuItemEntity> popular(String tenant, int limit) {
+        int lim = (limit <= 0 ? 4 : Math.min(limit, 50));
+        List<Object[]> rows = orderItemRepository.topMenuItemCounts(tenant, PageRequest.of(0, lim));
+        if (rows == null || rows.isEmpty()) return Collections.emptyList();
+        List<UUID> ids = new ArrayList<>();
+        for (Object[] r : rows) {
+            if (r != null && r.length >= 1 && r[0] != null) {
+                try {
+                    ids.add((UUID) r[0]);
+                } catch (ClassCastException cce) {
+                    if (r[0] instanceof String s) {
+                        try { ids.add(UUID.fromString(s)); } catch (Exception ignore) {}
+                    }
+                }
+            }
+        }
+        List<MenuItemEntity> list = repository.findAllById(ids);
+        Map<UUID, MenuItemEntity> map = new HashMap<>();
+        for (MenuItemEntity m : list) { if (m != null && m.getId() != null) map.put(m.getId(), m); }
+        List<MenuItemEntity> out = new ArrayList<>();
+        for (UUID id : ids) { MenuItemEntity x = map.get(id); if (x != null) out.add(x); }
+        return out;
+    }
+
 }
+
+

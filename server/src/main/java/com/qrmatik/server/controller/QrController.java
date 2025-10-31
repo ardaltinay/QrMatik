@@ -32,4 +32,18 @@ public class QrController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    @GetMapping(value = "/image", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getQrImage(@RequestParam("text") String text,
+            @RequestParam(name = "size", required = false, defaultValue = "300") int size) {
+        try {
+            byte[] png = qrService.generateQrPng(text, size);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            headers.setCacheControl("no-cache, no-store, must-revalidate");
+            return ResponseEntity.ok().headers(headers).body(png);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 }

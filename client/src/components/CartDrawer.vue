@@ -6,12 +6,13 @@
       <div class="bg-white border rounded-lg shadow-lg p-4 transform transition hover:shadow-2xl">
         <h3 class="font-semibold mb-2">Sepet</h3>
         <ul class="space-y-2 max-h-56 overflow-auto">
-          <li v-for="it in store.cart" :key="it.itemId" class="flex justify-between items-center">
+          <li v-for="it in store.cart" :key="keyFor(it)" class="flex justify-between items-center">
             <div>
               <div class="font-medium">{{ menuName(it.itemId) }}</div>
+              <div v-if="it.note" class="text-xs text-gray-600 mt-0.5">Not: {{ it.note }}</div>
               <div class="text-sm text-gray-500">x{{ it.qty }}</div>
             </div>
-            <button @click="store.removeFromCart(it.itemId)" class="text-red-500">✕</button>
+            <button @click="store.removeFromCart(it.itemId, it.note || '')" class="text-red-500">✕</button>
           </li>
         </ul>
         <div class="mt-4">
@@ -28,7 +29,7 @@
     </div>
 
     <!-- mobile bottom sheet (controlled by parent via v-model:mobileOpen) -->
-    <div class="md:hidden fixed left-0 right-0 bottom-0 z-50">
+    <div class="md:hidden fixed left-0 right-0 bottom-0 z-60">
       <transition name="slide-up" appear>
         <div
           v-if="mobileOpen"
@@ -42,12 +43,13 @@
             </div>
           </div>
           <ul class="mt-3 space-y-2 max-h-56 overflow-auto">
-            <li v-for="it in store.cart" :key="it.itemId" class="flex justify-between items-center">
+            <li v-for="it in store.cart" :key="keyFor(it)" class="flex justify-between items-center">
               <div>
                 <div class="font-medium">{{ menuName(it.itemId) }}</div>
+                <div v-if="it.note" class="text-xs text-gray-600 mt-0.5">Not: {{ it.note }}</div>
                 <div class="text-sm text-gray-500">x{{ it.qty }}</div>
               </div>
-              <button @click="store.removeFromCart(it.itemId)" class="text-red-500">✕</button>
+              <button @click="store.removeFromCart(it.itemId, it.note || '')" class="text-red-500">✕</button>
             </li>
           </ul>
           <div class="mt-3">
@@ -84,6 +86,10 @@
         return m ? m.name : "Bilinmiyor";
       }
 
+      function keyFor(it) {
+        return String(it.itemId) + "::" + String(it.note || "");
+      }
+
       function submitOrder() {
         const tableCode = (() => {
           try {
@@ -92,47 +98,18 @@
             return null;
           }
         })();
-        const order = store.createOrder(tableCode || null);
+  // tableCode bulunamazsa 'guest' ile devam et (sunucuya masa kodu gönderilmez)
+  const order = store.createOrder(tableCode || "guest");
         if (!order) return;
-        // close sheet immediately
+        // sheet'i hemen kapat ve "Siparişlerim" sayfasına yönlendir
         emit("update:mobileOpen", false);
-        // Navigate to order-status once server confirms and returns real orderId
-        let navigated = false;
-        const onCreated = (ev) => {
-          try {
-            const realId = ev && ev.detail && ev.detail.orderId;
-            if (realId && !navigated) {
-              navigated = true;
-              window.removeEventListener("qm:orderSession", onCreated);
-              router.push({ name: "order-status", params: { id: String(realId) } });
-            }
-          } catch {
-            /* ignore */
-          }
-        };
         try {
-          window.addEventListener("qm:orderSession", onCreated);
+          const sess = localStorage.getItem("qm_order_session");
+          if (sess) router.push({ name: "my-orders", params: { sessionId: sess } });
+          else router.push({ name: "my-orders" });
         } catch {
-          /* ignore */
+          router.push({ name: "my-orders" });
         }
-        // Fallback: if not received within 2s, go to session list
-        setTimeout(() => {
-          if (!navigated) {
-            try {
-              window.removeEventListener("qm:orderSession", onCreated);
-            } catch {
-              /* ignore */
-            }
-            const sess = (() => {
-              try {
-                return localStorage.getItem("qm_order_session");
-              } catch {
-                return null;
-              }
-            })();
-            if (sess) router.push({ name: "my-orders", params: { sessionId: sess } });
-          }
-        }, 2000);
       }
       function clearCart() {
         store.clearCart();
@@ -142,7 +119,7 @@
         emit("update:mobileOpen", false);
       }
 
-      return { store, menuName, submitOrder, closeMobile, clearCart };
+      return { store, menuName, submitOrder, closeMobile, clearCart, keyFor };
     },
   };
 </script>

@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
     List<OrderEntity> findByTable_Code(String tableCode);
     List<OrderEntity> findBySessionId(String sessionId);
-    java.util.List<OrderEntity> findByTenant_Code(String tenantCode);
-    java.util.List<OrderEntity> findByTable_CodeAndTenant_Code(String tableCode, String tenantCode);
-    java.util.List<OrderEntity> findBySessionIdAndTenant_Code(String sessionId, String tenantCode);
+    List<OrderEntity> findByTenant_Code(String tenantCode);
+    List<OrderEntity> findByTable_CodeAndTenant_Code(String tableCode, String tenantCode);
+    List<OrderEntity> findBySessionIdAndTenant_Code(String sessionId, String tenantCode);
+    List<OrderEntity> findByTable_IdAndTenant_Code(UUID tableId, String tenantCode);
+    List<OrderEntity> findByTable_Id(UUID tableId);
 }

@@ -15,10 +15,20 @@ public class TenantFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String tenant = resolveTenant(request);
-            if (tenant == null || tenant.isBlank())
-                tenant = "default";
-            TenantContext.setTenant(tenant);
+            // Eğer Authorization: Bearer ... varsa, tenant'ı JWT filtresi belirlesin (override etme)
+            String auth = request.getHeader("Authorization");
+            boolean hasJwt = auth != null && auth.startsWith("Bearer ");
+
+            if (!hasJwt) {
+                // Yalnızca JWT yoksa header/path/host'tan tenant çöz ve henüz set edilmemişse ata
+                if (TenantContext.getTenant() == null) {
+                    String tenant = resolveTenant(request);
+                    // Default 'default' tenant fallback removed to enforce explicit tenant resolution
+                    if (tenant != null && !tenant.isBlank()) {
+                        TenantContext.setTenant(tenant);
+                    }
+                }
+            }
             filterChain.doFilter(request, response);
         } finally {
             TenantContext.clear();

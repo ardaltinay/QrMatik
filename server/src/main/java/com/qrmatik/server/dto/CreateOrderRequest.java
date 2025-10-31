@@ -21,5 +21,6 @@ public class CreateOrderRequest {
         private Integer quantity; // defaults to 1
         private BigDecimal price; // optional, fallback to MenuItem.price
         private String name; // optional, fallback to MenuItem.name
+        private String note; // optional, customer note per line
     }
 }

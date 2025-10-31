@@ -37,7 +37,10 @@
         if (s === "new") return "bg-yellow-100 text-yellow-800";
         if (s === "preparing") return "bg-indigo-100 text-indigo-800";
         if (s === "ready") return "bg-green-100 text-green-800";
+        if (s === "served") return "bg-gray-200 text-gray-800";
         if (s === "payment_completed") return "bg-blue-100 text-blue-800";
+        if (s === "canceled") return "bg-red-100 text-red-700";
+        if (s === "expired") return "bg-amber-100 text-amber-800";
         return "bg-gray-100 text-gray-700";
       });
 

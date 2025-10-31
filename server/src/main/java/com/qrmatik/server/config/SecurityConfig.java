@@ -29,12 +29,21 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/files/**", "/api/auth/**", "/api/tenant/**")
-                .permitAll().requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
-                // admin-only endpoints
+    http.authorizeHttpRequests(auth -> auth.requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config")
+        .permitAll().requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
+    .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
+    // Müşteri iptali için özel uç nokta: sessionId doğrulaması ile
+    .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()
+    // QR image endpoint publicly accessible for customer tracking
+    .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
+    // Sipariş durum güncellemeleri sadece yetkili personel: admin/kitchen/bar
+    .requestMatchers(HttpMethod.PUT, "/api/orders/*/status").hasAnyRole("ADMIN", "KITCHEN", "BAR")
+                // superadmin-only endpoints
+                .requestMatchers("/api/tenants/**").hasRole("SUPERADMIN")
                 .requestMatchers("/api/users/**", "/api/qr/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/tables/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/tables/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/menu/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN").anyRequest().authenticated());

@@ -89,6 +89,8 @@ export function statusLabel(s) {
       ready: "Hazır",
       served: "Servis Edildi",
       payment_completed: "Ödeme Tamamlandı",
+      canceled: "İptal Edildi",
+      expired: "Süresi Doldu",
     };
     return map[key] || s || "-";
   } catch {

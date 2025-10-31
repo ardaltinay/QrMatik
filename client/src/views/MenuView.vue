@@ -1,6 +1,16 @@
 <template>
   <div class="menu">
-    <h1 class="text-2xl font-semibold mb-4">Menü</h1>
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-semibold">Menü</h1>
+      <button
+        @click="onRefresh"
+        :disabled="isRefreshing"
+        class="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50 disabled:opacity-60"
+        title="Menüyü sunucudan yeniden yükle"
+      >
+        {{ isRefreshing ? "Yükleniyor..." : "Yenile" }}
+      </button>
+    </div>
 
     <!-- filtreler (üstte ve sağa hizalı) -->
     <div class="flex gap-2 mb-3 justify-start flex-wrap">
@@ -45,13 +55,13 @@
         v-for="item in filtered"
         :key="item.id"
         :item="item"
-        @add="store.addToCart(item.id)"
+        @add="openAddNote"
       />
     </div>
-    <CartDrawer :mobileOpen="mobileOpen" @update:mobileOpen="(v) => (mobileOpen = v)" />
+  <CartDrawer :mobileOpen="mobileOpen" @update:mobileOpen="(v) => (mobileOpen = v)" />
 
     <!-- mobile sticky mini cart bar -->
-    <div v-if="store.cart.length" class="md:hidden fixed left-4 right-4 bottom-4 z-40">
+  <div v-if="store.cart.length && !mobileOpen" class="md:hidden fixed left-4 right-4 bottom-4 z-50">
       <button
         @click="mobileOpen = true"
         class="w-full bg-indigo-600 text-white rounded-full px-4 py-3 flex items-center justify-between shadow-lg"
@@ -59,6 +69,21 @@
         <div class="font-medium">Sepet ({{ store.cart.length }})</div>
         <div class="text-sm">Öğe: {{ totalItems }}</div>
       </button>
+    </div>
+    <!-- Add-to-cart note modal -->
+    <div v-if="noteModal.open" class="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+      <div class="absolute inset-0 bg-black/40" @click="closeNoteModal"></div>
+      <div class="relative bg-white w-full md:max-w-md md:rounded-xl p-4 md:p-6 shadow-xl md:mx-auto rounded-t-xl">
+        <div class="text-lg font-semibold">Not ekle</div>
+        <div class="text-sm text-gray-500 mt-1">İsteğe bağlı: bu ürün için mutfak/bar'a not bırakabilirsiniz.</div>
+        <div class="mt-3">
+          <textarea v-model="noteModal.note" rows="3" class="w-full border rounded-md p-2 focus:outline-none focus:ring focus:ring-indigo-200" placeholder="Örn. soğansız, acılı olsun..."></textarea>
+        </div>
+        <div class="mt-4 flex gap-2 justify-end">
+          <button @click="closeNoteModal" class="px-3 py-1.5 rounded-md border">Vazgeç</button>
+          <button @click="confirmAddWithNote" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white">Sepete ekle</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -74,10 +99,19 @@
     name: "MenuView",
     components: { MenuItemCard, CartDrawer },
     setup() {
-      const store = useOrderStore();
+  const store = useOrderStore();
       const mobileOpen = ref(false);
       if (!store.menuLoaded) {
         void store.loadMenu();
+      }
+      const isRefreshing = ref(false);
+      async function onRefresh() {
+        try {
+          isRefreshing.value = true;
+          await store.refreshMenu();
+        } finally {
+          isRefreshing.value = false;
+        }
       }
 
       const totalItems = computed(() => store.cart.reduce((s, i) => s + i.qty, 0));
@@ -101,6 +135,25 @@
         ),
       );
 
+      // simple modal state for add-to-cart note
+      const noteModal = ref({ open: false, item: null, note: "" });
+
+      function openAddNote(item) {
+        noteModal.value = { open: true, item, note: "" };
+      }
+      function closeNoteModal() {
+        noteModal.value.open = false;
+        noteModal.value.item = null;
+        noteModal.value.note = "";
+      }
+      function confirmAddWithNote() {
+        const it = noteModal.value.item;
+        if (it && it.id) {
+          store.addToCart(it.id, noteModal.value.note || "");
+        }
+        closeNoteModal();
+      }
+
       // read optional table code from URL (e.g. ?table=Table-01 or ?t=Table-01) and persist
       onMounted(() => {
         try {
@@ -109,6 +162,8 @@
           if (table) {
             try {
               localStorage.setItem("qm_table_code", table);
+              const tenant = localStorage.getItem("qm_tenant");
+              if (tenant) localStorage.setItem("qm_table_tenant", tenant);
             } catch (e) {
               /* ignore */
             }
@@ -140,6 +195,7 @@
       return {
         store,
         mobileOpen,
+        isRefreshing,
         totalItems,
         primaries,
         primary,
@@ -148,6 +204,11 @@
         filtered,
         tPrimary,
         tSub,
+        noteModal,
+        openAddNote,
+        closeNoteModal,
+        confirmAddWithNote,
+        onRefresh,
       };
     },
   };

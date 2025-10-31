@@ -16,3 +16,30 @@ body {
   @apply bg-gray-50 text-gray-800;
 }
 /* stylelint-enable at-rule-no-unknown */
+
+/* Dynamic tenant theming via CSS variables */
+:root {
+  --brand-primary: #6366f1; /* fallback to Tailwind brand-500 */
+  --brand-accent: #4f46e5; /* fallback close to brand-700 */
+}
+
+/* Map commonly used Tailwind brand classes to CSS variables so we can swap at runtime */
+@layer utilities {
+  .bg-brand-500 { background-color: var(--brand-primary) !important; }
+  .text-brand-700 { color: var(--brand-primary) !important; }
+  .border-brand-500 { border-color: var(--brand-primary) !important; }
+
+  /* Map common indigo utilities to brand variables without touching components */
+  .bg-indigo-600 { background-color: var(--brand-primary) !important; }
+  .hover\:bg-indigo-700:hover { background-color: var(--brand-accent) !important; }
+  .text-indigo-700 { color: var(--brand-primary) !important; }
+  .hover\:text-indigo-600:hover { color: var(--brand-primary) !important; }
+  .border-indigo-600 { border-color: var(--brand-primary) !important; }
+  .border-indigo-500 { border-color: var(--brand-primary) !important; }
+  .focus\:ring-indigo-200:focus { --tw-ring-color: var(--brand-accent) !important; }
+  .focus\:ring-indigo-500:focus { --tw-ring-color: var(--brand-primary) !important; }
+  .text-indigo-800 { color: var(--brand-primary) !important; }
+  .border-indigo-200 { border-color: var(--brand-accent) !important; }
+  .hover\:bg-indigo-100:hover { background-color: color-mix(in srgb, var(--brand-primary) 18%, white) !important; }
+  .bg-indigo-50 { background-color: color-mix(in srgb, var(--brand-primary) 12%, white) !important; }
+}

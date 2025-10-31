@@ -19,6 +19,9 @@ export async function apiFetch(path, opts = {}) {
   return res;
 }
 
+// opts can include:
+// - silentError: boolean -> suppress generic error toast messages
+// - suppressAuth: boolean -> suppress 401/403 session-expired handling (useful for login endpoints)
 export async function fetchJson(path, opts = {}) {
   const res = await apiFetch(
     path,
@@ -27,6 +30,28 @@ export async function fetchJson(path, opts = {}) {
     }),
   );
   if (!res.ok) {
+    const silent = !!opts.silentError;
+    const suppressAuth = !!opts.suppressAuth;
+    // Handle unauthorized: clear session and redirect to admin login (unless silent)
+    if ((res.status === 401 || res.status === 403) && !silent && !suppressAuth) {
+      try {
+        const { useAuthStore } = await import("@/stores/authStore");
+        const auth = useAuthStore();
+        auth.logout();
+      } catch { /* ignore */ }
+      try {
+        const { default: router } = await import("@/router");
+        if (typeof window !== "undefined") {
+          const isAdminPath = window.location && String(window.location.pathname || "").startsWith("/admin");
+          if (isAdminPath) router.push({ name: "admin" });
+        }
+      } catch { /* ignore */ }
+      try {
+        const { useUiStore } = await import("@/stores/uiStore");
+        const ui = useUiStore();
+        ui.toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+      } catch { /* ignore */ }
+    }
     let msg = "İstek başarısız: " + res.status;
     try {
       const text = await res.text();
@@ -38,17 +63,27 @@ export async function fetchJson(path, opts = {}) {
           msg = text;
         }
       }
-    } catch {
-      /* ignore */
-    }
-    try {
-      const { useUiStore } = await import("@/stores/uiStore");
-      const ui = useUiStore();
-      ui.toastError(msg);
-    } catch {
-      /* ignore */
+    } catch { /* ignore */ }
+    if (!silent) {
+      try {
+        const { useUiStore } = await import("@/stores/uiStore");
+        const ui = useUiStore();
+        ui.toastError(msg);
+      } catch { /* ignore */ }
     }
     throw new Error(msg);
   }
-  return res.json();
+  // Gracefully handle empty or non-JSON successful responses (e.g., 200 with no body, 204 No Content)
+  try {
+    const text = await res.text();
+    if (!text || !text.trim()) return {};
+    try {
+      return JSON.parse(text);
+    } catch {
+      // Not JSON, but success: return empty object to avoid runtime errors
+      return {};
+    }
+  } catch {
+    return {};
+  }
 }

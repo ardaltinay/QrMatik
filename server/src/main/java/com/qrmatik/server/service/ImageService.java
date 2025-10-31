@@ -1,11 +1,13 @@
 package com.qrmatik.server.service;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
+import java.util.UUID;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ public class ImageService {
         }
     }
 
-    public SavedImages saveMenuItemImage(String tenantCode, java.util.UUID menuItemId, MultipartFile file)
+    public SavedImages saveMenuItemImage(String tenantCode, UUID menuItemId, MultipartFile file)
             throws IOException {
         if (file == null || file.isEmpty())
             throw new IOException("Empty file");
@@ -44,9 +46,10 @@ public class ImageService {
         if (ext == null) {
             throw new IOException("Unsupported image type. Please upload JPG/PNG (WEBP supported if enabled).");
         }
-        Path dir = Paths.get(uploadDir).resolve("tenants").resolve(safe(tenantCode)).resolve("menu")
-                .resolve(String.valueOf(menuItemId));
-        log.info("Saving menu image. uploadDir={}, resolvedDir={}", uploadDir, dir.toAbsolutePath());
+    Path base = resolveUploadBase();
+    Path dir = base.resolve("tenants").resolve(safe(tenantCode)).resolve("menu").resolve(String.valueOf(menuItemId));
+    log.info("Saving menu image. uploadDir={}, resolvedBase={}, resolvedDir={}", uploadDir, base.toAbsolutePath(),
+        dir.toAbsolutePath());
         Files.createDirectories(dir);
 
         // Save original as original.{ext} (use copy to avoid cross-FS move issues)
@@ -70,6 +73,25 @@ public class ImageService {
 
         String baseUrl = "/files/tenants/" + safe(tenantCode) + "/menu/" + String.valueOf(menuItemId) + "/";
         return new SavedImages(baseUrl + "original." + ext, baseUrl + "medium.jpg", baseUrl + "thumb.jpg");
+    }
+
+    private Path resolveUploadBase() {
+        try {
+            Path configured = Paths.get(uploadDir);
+            if (configured.isAbsolute()) return configured.normalize();
+            URI codeSrc = ImageService.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            Path loc = Paths.get(codeSrc);
+            if (loc.getFileName() != null && loc.getFileName().toString().equals("classes")) {
+                loc = loc.getParent();
+            }
+            if (loc.getFileName() != null && loc.getFileName().toString().equals("target")) {
+                loc = loc.getParent();
+            }
+            Path moduleRoot = loc;
+            return moduleRoot.resolve(uploadDir).toAbsolutePath().normalize();
+        } catch (Exception e) {
+            return Paths.get(uploadDir).toAbsolutePath().normalize();
+        }
     }
 
     private String safe(String s) {

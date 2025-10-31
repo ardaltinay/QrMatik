@@ -2,10 +2,10 @@
   <div>
     <div class="mb-6 flex items-center justify-between">
       <h1 class="text-2xl font-semibold">Admin Paneli</h1>
-      <div>
+      <div v-if="isAdmin">
         <template v-if="auth.user">
           <span class="text-sm text-gray-600 mr-4">Merhaba, {{ auth.user.username }}</span>
-          <button @click="auth.logout" class="px-3 py-1 border rounded">Çıkış</button>
+          <button @click="onLogout" class="px-3 py-1 border rounded">Çıkış</button>
         </template>
       </div>
     </div>
@@ -53,6 +53,17 @@
             v-if="isAdmin"
             type="button"
             :class="
+              navItemClass('/admin/tables') +
+              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+            "
+            @click="navigateOrLogin('/admin/tables', 'admin')"
+          >
+            Masalar
+          </button>
+          <button
+            v-if="isAdmin"
+            type="button"
+            :class="
               navItemClass('/admin/reports') +
               ' shadow-sm hover:shadow-lg transition-shadow block w-full'
             "
@@ -80,7 +91,7 @@
           ' p-4 bg-white rounded-lg shadow-md relative z-20'
         "
       >
-        <template v-if="isAdmin">
+        <template v-if="auth.user">
           <router-view />
         </template>
         <template v-else>
@@ -146,6 +157,22 @@
           console.debug("Login failed", e);
         }
       }
+      async function onLogout() {
+        try {
+          // Clear admin-related state
+          const { useOrderStore } = await import("@/stores/orderStore");
+          const store = useOrderStore();
+          store.resetAfterLogout();
+        } catch {
+          /* ignore */
+        }
+        try {
+          auth.logout();
+        } finally {
+          // Force unmount of child routes and show login panel immediately
+          router.push({ name: "admin" });
+        }
+      }
 
       const router = useRouter();
       const route = useRoute();
@@ -179,9 +206,14 @@
             showLogin.value = false;
             return;
           }
-          // default: if at /admin root, go to orders
+          // default redirect by role when at /admin root
           if (route.path === "/admin") {
-            router.push("/admin/orders");
+            const role = u.role;
+            if (role === "superadmin") router.push({ name: "super-tenants" });
+            else if (role === "admin") router.push("/admin/orders");
+            else if (role === "kitchen") router.push({ name: "kitchen" });
+            else if (role === "bar") router.push({ name: "bar" });
+            else router.push("/admin/orders");
             showLogin.value = false;
           }
         },
@@ -190,7 +222,12 @@
       // if already logged in and at /admin, redirect immediately
       onMounted(() => {
         if (auth.user && route.path === "/admin") {
-          router.push("/admin/orders");
+          const role = auth.user.role;
+          if (role === "superadmin") router.push({ name: "super-tenants" });
+          else if (role === "admin") router.push("/admin/orders");
+          else if (role === "kitchen") router.push({ name: "kitchen" });
+          else if (role === "bar") router.push({ name: "bar" });
+          else router.push("/admin/orders");
         }
       });
 
@@ -200,7 +237,7 @@
         return base + (active ? " bg-brand-500 text-white" : " hover:bg-gray-100");
       }
 
-      return { auth, showLogin, username, password, login, navigateOrLogin, navItemClass, isAdmin };
+      return { auth, showLogin, username, password, login, navigateOrLogin, navItemClass, isAdmin, onLogout };
     },
   };
 </script>

@@ -38,5 +38,9 @@ public class OrderItemEntity extends AbstractEntity {
     private String categorySnapshot;
     private String subcategorySnapshot;
 
+    // Optional customer note per line
+    @Column(name = "note", length = 1000)
+    private String note;
+
     // tenant info derived via order.tenant; no separate tenantCode field
 }

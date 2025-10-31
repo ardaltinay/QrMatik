@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="min-h-screen flex flex-col">
     <header class="bg-white shadow relative">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
         <router-link to="/" class="flex items-center gap-3">
@@ -8,10 +8,13 @@
         </router-link>
         <nav class="hidden md:flex gap-4 items-center">
           <router-link to="/" class="text-gray-700 hover:text-indigo-600">Anasayfa</router-link>
-          <router-link to="/menu" class="text-gray-700 hover:text-indigo-600">Menü</router-link>
-          <router-link v-if="isAdmin" to="/admin" class="text-gray-700 hover:text-indigo-600"
+          <router-link v-if="hasTenant" to="/menu" class="text-gray-700 hover:text-indigo-600">Menü</router-link>
+          <router-link to="/about" class="text-gray-700 hover:text-indigo-600">Hakkında</router-link>
+          <router-link v-if="isAdmin && hasTenant" to="/admin" class="text-gray-700 hover:text-indigo-600"
             >Admin</router-link
           >
+          <router-link v-else-if="isSuperAdmin" to="/super/tenants" class="text-gray-700 hover:text-indigo-600"
+            >Admin</router-link>
         </nav>
         <div class="md:hidden">
           <button ref="menuButton" @click="open = !open" class="p-2 rounded bg-gray-100">
@@ -72,14 +75,28 @@
                 >
                 <router-link
                   @click="open = false"
+                  v-if="hasTenant"
                   to="/menu"
                   class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
                   >Menü</router-link
                 >
                 <router-link
-                  v-if="isAdmin"
+                  @click="open = false"
+                  to="/about"
+                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  >Hakkında</router-link
+                >
+                <router-link
+                  v-if="isAdmin && hasTenant"
                   @click="open = false"
                   to="/admin"
+                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  >Admin</router-link
+                >
+                <router-link
+                  v-else-if="isSuperAdmin"
+                  @click="open = false"
+                  to="/super/tenants"
                   class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
                   >Admin</router-link
                 >
@@ -90,9 +107,10 @@
       </transition>
     </header>
 
-    <main class="container mx-auto px-6 py-8">
+    <main class="container mx-auto px-6 py-8 flex-1">
       <router-view />
     </main>
+    <SiteFooter />
     <ToastHub />
   </div>
 </template>
@@ -101,12 +119,33 @@
   import { ref, onMounted, onBeforeUnmount, computed } from "vue";
   import { useAuthStore } from "@/stores/authStore";
   import ToastHub from "@/components/ToastHub.vue";
+  import SiteFooter from "@/components/SiteFooter.vue";
   const open = ref(false);
   const mobileMenu = ref(null);
   const menuButton = ref(null);
   const auth = useAuthStore();
 
-  const isAdmin = computed(() => auth.user && auth.user.role === "admin");
+  const isAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "admin");
+  const isSuperAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "superadmin");
+  const hasTenant = computed(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("tenant") || params.get("t") || params.get("code")) return true;
+      const path = window.location.pathname || "";
+      const parts = path.split("/");
+      const idx = parts.indexOf("r");
+      if (idx >= 0 && parts.length > idx + 1) return true;
+      const host = window.location.hostname || "";
+      if (host.endsWith(".localhost")) {
+        const dot = host.indexOf(".");
+        if (dot > 0) return true;
+      } else {
+        const hostParts = host.split(".");
+        if (hostParts.length > 2) return true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  });
 
   function onDocClick(e) {
     if (!open.value) return;

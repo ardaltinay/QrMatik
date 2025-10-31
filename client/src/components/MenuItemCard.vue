@@ -6,11 +6,12 @@
     <div class="p-4 flex flex-col gap-2">
       <div>
         <div class="text-sm text-gray-500">{{ catLabel }} · {{ subLabel }}</div>
+        <div class="mt-1 text-base font-semibold text-gray-900 truncate">{{ item.name }}</div>
       </div>
       <div class="flex items-center justify-between">
         <div class="text-indigo-600 font-semibold">{{ item.price }}₺</div>
         <button
-          @click="$emit('add')"
+          @click="$emit('add', item)"
           class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
         >
           Sepete Ekle

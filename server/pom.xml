@@ -152,6 +152,16 @@
                         <importOrder/>
                     </java>
                 </configuration>
+                <executions>
+                    <!-- Build sırasında format kontrolü; uygunsuzlukta verify aşaması fail olur -->
+                    <execution>
+                        <id>spotless-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

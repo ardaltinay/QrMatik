@@ -34,6 +34,13 @@ public class MenuController {
         return menuService.listForTenant(tenant).stream().map(converter::toDto).toList();
     }
 
+    @GetMapping("/popular")
+    public List<MenuItemDto> popular(@RequestParam(name = "limit", defaultValue = "4") int limit) {
+        String tenant = TenantContext.getTenant();
+        return menuService.popular(tenant, limit).stream().map(converter::toDto).toList();
+    }
+
+
     @PostMapping
     public ResponseEntity<MenuItemDto> create(@RequestBody MenuItemEntity m) {
         String tenant = TenantContext.getTenant();
@@ -64,7 +71,7 @@ public class MenuController {
             }
             log.error("Image upload failed for menu item {}: {}", id, e.getMessage(), e);
             String msg = root.getMessage() != null ? root.getMessage() : e.getClass().getSimpleName();
-            return ResponseEntity.badRequest().body(java.util.Map.of("error", msg));
+            return ResponseEntity.badRequest().body(Map.of("error", msg));
         }
     }
 

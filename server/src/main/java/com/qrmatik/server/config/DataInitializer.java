@@ -4,6 +4,8 @@ import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
+import com.qrmatik.server.repository.TableRepository;
+import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
 import java.math.BigDecimal;
 import org.springframework.boot.CommandLineRunner;
@@ -16,13 +18,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final MenuItemRepository menuRepository;
-    private final com.qrmatik.server.repository.TableRepository tableRepository;
-    private final com.qrmatik.server.repository.TenantRepository tenantRepository;
+    private final TableRepository tableRepository;
+    private final TenantRepository tenantRepository;
     private final JdbcTemplate jdbcTemplate;
 
     public DataInitializer(UserRepository userRepository, MenuItemRepository menuRepository,
-            com.qrmatik.server.repository.TableRepository tableRepository,
-            com.qrmatik.server.repository.TenantRepository tenantRepository, JdbcTemplate jdbcTemplate) {
+            TableRepository tableRepository,
+            TenantRepository tenantRepository, JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
         this.menuRepository = menuRepository;
         this.tableRepository = tableRepository;
@@ -51,6 +53,10 @@ public class DataInitializer implements CommandLineRunner {
                     .passwordHash(pe.encode("kitchen123")).build());
             userRepository.save(UserEntity.builder().username("bar").role("bar").tenant(t)
                     .passwordHash(pe.encode("bar123")).build());
+            userRepository.save(UserEntity.builder().username("test").role("test").tenant(t)
+                .passwordHash(pe.encode("test123")).build());
+            userRepository.save(UserEntity.builder().username("super").role("superadmin").tenant(t)
+                .passwordHash(pe.encode("super123")).build());
         }
 
         if (menuRepository.count() == 0) {
@@ -86,7 +92,7 @@ public class DataInitializer implements CommandLineRunner {
                     .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
             tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("C2").description("Masa C2")
                     .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("quest").description("quest quest")
+            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("guest").description("Masa guest")
                     .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
         }
         // seed some tables
