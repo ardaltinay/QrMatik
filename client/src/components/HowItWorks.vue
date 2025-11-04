@@ -1,6 +1,7 @@
 <template>
   <section class="py-12">
     <div class="container mx-auto">
+      <div class="text-xs font-semibold tracking-wide text-indigo-600 uppercase mb-1">Adımlar</div>
       <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Nasıl Çalışır?</h2>
       <ol class="grid gap-6 md:grid-cols-3">
         <li class="p-5 rounded-xl border bg-white shadow-sm">

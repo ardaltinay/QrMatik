@@ -58,7 +58,7 @@
         <div class="mt-4 flex items-center justify-between border-t pt-3">
           <div class="text-sm text-gray-600">Toplam</div>
           <div class="text-lg font-semibold">
-            {{ formatMoney(order.total || sumItems(order.items)) }}
+            {{ formatMoney(order.total) }}
           </div>
         </div>
       </div>
@@ -264,13 +264,7 @@
       const mobileCircleStyle = { width: "36px", height: "36px", fontSize: "14px" };
       const mobileCircleFilledStyle = { width: "36px", height: "36px", fontSize: "14px" };
 
-      function sumItems(items) {
-        try {
-          return (items || []).reduce((s, it) => s + Number(it.price || 0) * (it.qty || 1), 0);
-        } catch {
-          return 0;
-        }
-      }
+      // Toplam tutarı yalnızca sunucu tarafından döndürülen order.total üzerinden gösteriyoruz
 
       async function loadOrderIfMissing() {
         if (orderFromStore.value) return;
@@ -341,7 +335,6 @@
         formatDate,
         orderCodeFromId,
         formatMoney,
-        sumItems,
         shareLink,
         qrUrl,
         copyLink,

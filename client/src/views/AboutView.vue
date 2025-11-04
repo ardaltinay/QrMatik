@@ -22,3 +22,17 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useHead } from "@unhead/vue";
+
+useHead({
+  title: "Hakkında — QrMatik",
+  meta: [
+    { name: "description", content: "QrMatik: QR tabanlı dijital menü, mobil sipariş ve işletme yönetimi platformu." },
+    { property: "og:title", content: "Hakkında — QrMatik" },
+    { property: "og:description", content: "QR ile menü, sipariş ve işletme yönetimi. QrMatik hakkında daha fazla bilgi." },
+    { property: "og:type", content: "website" },
+  ],
+});
+</script>

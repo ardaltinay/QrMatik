@@ -15,6 +15,9 @@
 body {
   @apply bg-gray-50 text-gray-800;
 }
+html {
+  scroll-behavior: smooth;
+}
 /* stylelint-enable at-rule-no-unknown */
 
 /* Dynamic tenant theming via CSS variables */
@@ -42,4 +45,7 @@ body {
   .border-indigo-200 { border-color: var(--brand-accent) !important; }
   .hover\:bg-indigo-100:hover { background-color: color-mix(in srgb, var(--brand-primary) 18%, white) !important; }
   .bg-indigo-50 { background-color: color-mix(in srgb, var(--brand-primary) 12%, white) !important; }
+
+  /* Primary CTA gradient using brand variables */
+  .bg-brand-gradient { background-image: linear-gradient(to right, var(--brand-primary), var(--brand-accent)); }
 }

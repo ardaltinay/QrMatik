@@ -19,7 +19,7 @@
         <div class="mt-2 flex items-center justify-between border-t pt-3">
           <div class="text-sm text-gray-600">Toplam</div>
           <div class="text-lg font-semibold">
-            {{ formatMoney(order.total || sumItems(order.items)) }}
+            {{ formatMoney(order.total) }}
           </div>
         </div>
 
@@ -83,13 +83,7 @@
         return m ? m.name : "Unknown";
       }
 
-      function sumItems(items) {
-        try {
-          return (items || []).reduce((s, it) => s + Number(it.price || 0) * (it.qty || 1), 0);
-        } catch {
-          return 0;
-        }
-      }
+      // Toplam tutarı yalnızca sunucudan gelen order.total üzerinden gösteriyoruz
 
       async function applyStatus() {
         if (!props.order) return;
@@ -116,7 +110,7 @@
         }
       }
 
-      return { menuName, localStatus, applyStatus, formatMoney, sumItems, canCancel, cancelOrder };
+  return { menuName, localStatus, applyStatus, formatMoney, canCancel, cancelOrder };
     },
   };
 </script>

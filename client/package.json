@@ -13,11 +13,13 @@
   "dependencies": {
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "pinia": "^2.0.0"
+    "pinia": "^2.0.0",
+    "@unhead/vue": "^1.8.8"
   },
   "devDependencies": {
     "vite": "^5.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
+  "vite-plugin-prerender": "^1.0.8",
     "eslint": "^8.0.0",
     "eslint-plugin-vue": "^9.0.0",
     "sass": "^1.32.7",

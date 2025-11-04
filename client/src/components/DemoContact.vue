@@ -1,5 +1,5 @@
 <template>
-  <section class="py-12">
+  <section id="demo" class="py-12">
     <div class="container mx-auto">
       <div class="rounded-2xl border bg-white shadow-sm p-6 md:p-8">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Demo Talep Edin</h2>

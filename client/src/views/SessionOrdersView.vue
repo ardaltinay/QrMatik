@@ -32,7 +32,7 @@
               </span>
             </div>
             <div class="text-sm text-gray-500 mt-3">Toplam</div>
-            <div class="font-medium">{{ formatMoney(o.total || sumItems(o.items)) }}</div>
+            <div class="font-medium">{{ formatMoney(o.total) }}</div>
           </div>
         </div>
 
@@ -121,13 +121,7 @@
     const i = store.menu.find((m) => m.id === id);
     return i ? i.name : "Unknown";
   }
-  function sumItems(items) {
-    try {
-      return (items || []).reduce((s, it) => s + Number(it.price || 0) * (it.qty || 1), 0);
-    } catch {
-      return 0;
-    }
-  }
+  // Toplam hesaplamasını yalnızca sunucu dönen toplam üzerinden gösteriyoruz
   function goDetail(o) {
     if (!o || !o.id) return;
     try {

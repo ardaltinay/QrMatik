@@ -1,9 +1,10 @@
 <template>
   <section class="py-12">
     <div class="container mx-auto">
+      <div class="text-xs font-semibold tracking-wide text-indigo-600 uppercase mb-1">Öne Çıkanlar</div>
       <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Neler Yapabilirsiniz?</h2>
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="f in features" :key="f.title" class="p-5 rounded-xl border bg-white shadow-sm">
+        <div v-for="f in features" :key="f.title" class="p-5 rounded-xl border bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <span v-html="f.iconSvg" aria-hidden="true"></span>

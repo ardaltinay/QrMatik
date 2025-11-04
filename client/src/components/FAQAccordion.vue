@@ -33,6 +33,14 @@ export default {
           q: "Mutfak ve bar için ayrı panolar var mı?",
           a: "Evet, sipariş akışını hızlandırmak için mutfak ve bar özel ekranları bulunur.",
         },
+        {
+          q: "Dijital menü ve QR sipariş bize ne kazandırır?",
+          a: "Kâğıt menü maliyetini ve servis bekleme süresini azaltır. Müşteri, dijital menüden kendi telefonundan sipariş verir; mutfak ve bar anında bilgilendirilir. Daha hızlı servis ve daha fazla masa dönüşü demektir.",
+        },
+        {
+          q: "Akıllı QR menü ile masaya özel yönlendirme mümkün mü?",
+          a: "Evet. Masaya özel QR (restoran karekod menü) ile doğru masaya sipariş ve oturum takibi sağlanır. Bu sayede yanlış masa karışıklıkları ve manuel notlar ortadan kalkar.",
+        },
       ],
     };
   },

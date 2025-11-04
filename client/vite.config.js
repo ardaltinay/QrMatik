@@ -1,9 +1,21 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
+import prerender from "vite-plugin-prerender";
 
-export default defineConfig({
-  plugins: [vue()],
+export default defineConfig(({ command }) => ({
+  plugins: [
+    vue(),
+    // Prerender apex marketing routes only during build for better SEO
+    ...(command === "build"
+      ? [
+          prerender({
+            staticDir: path.resolve(__dirname, "dist"),
+        routes: ["/", "/about", "/qr-menu"],
+          }),
+        ]
+      : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
@@ -30,4 +42,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

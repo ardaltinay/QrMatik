@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import { createHead } from "@unhead/vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
@@ -7,6 +8,7 @@ import { fetchJson } from "@/utils/api";
 import { useUiStore } from "@/stores/uiStore";
 
 const app = createApp(App);
+const head = createHead();
 const pinia = createPinia();
 
 // tenant detection: path /r/:tenant or subdomain or query param
@@ -77,6 +79,7 @@ async function loadTenantConfig() {
 
 app.use(pinia);
 app.use(router);
+app.use(head);
 
 // capture table code early so CartDrawer can include it in first order
 try {

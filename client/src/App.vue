@@ -9,12 +9,13 @@
         <nav class="hidden md:flex gap-4 items-center">
           <router-link to="/" class="text-gray-700 hover:text-indigo-600">Anasayfa</router-link>
           <router-link v-if="hasTenant" to="/menu" class="text-gray-700 hover:text-indigo-600">Menü</router-link>
-          <router-link to="/about" class="text-gray-700 hover:text-indigo-600">Hakkında</router-link>
+          <router-link v-if="!hasTenant" to="/about" class="text-gray-700 hover:text-indigo-600">Hakkında</router-link>
           <router-link v-if="isAdmin && hasTenant" to="/admin" class="text-gray-700 hover:text-indigo-600"
             >Admin</router-link
           >
           <router-link v-else-if="isSuperAdmin" to="/super/tenants" class="text-gray-700 hover:text-indigo-600"
             >Admin</router-link>
+          <a v-if="hasTenant" :href="apexHome" class="ml-2 text-gray-700 hover:text-indigo-600">QrMatik Anasayfa</a>
         </nav>
         <div class="md:hidden">
           <button ref="menuButton" @click="open = !open" class="p-2 rounded bg-gray-100">
@@ -81,6 +82,7 @@
                   >Menü</router-link
                 >
                 <router-link
+                  v-if="!hasTenant"
                   @click="open = false"
                   to="/about"
                   class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
@@ -100,6 +102,13 @@
                   class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
                   >Admin</router-link
                 >
+                <a
+                  v-if="hasTenant"
+                  :href="apexHome"
+                  @click="open = false"
+                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  >QrMatik Anasayfa</a
+                >
               </nav>
             </div>
           </div>
@@ -117,7 +126,9 @@
 
 <script setup>
   import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+  import { useHead } from "@unhead/vue";
   import { useAuthStore } from "@/stores/authStore";
+  import { useRoute } from "vue-router";
   import ToastHub from "@/components/ToastHub.vue";
   import SiteFooter from "@/components/SiteFooter.vue";
   const open = ref(false);
@@ -127,6 +138,7 @@
 
   const isAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "admin");
   const isSuperAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "superadmin");
+  const route = useRoute();
   const hasTenant = computed(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -145,6 +157,27 @@
       }
     } catch { /* ignore */ }
     return false;
+  });
+
+  const apexHome = computed(() => {
+    try {
+      const loc = window.location;
+      const hostname = loc.hostname || "";
+      const host = loc.host || hostname;
+      let apexHost = host;
+      if (hostname.endsWith(".localhost")) {
+        const dot = host.indexOf(".");
+        if (dot > 0) apexHost = host.slice(dot + 1);
+      } else {
+        const parts = hostname.split(".");
+        if (parts.length > 2) {
+          const apexHostname = parts.slice(-2).join(".");
+          const port = loc.port ? ":" + loc.port : "";
+          apexHost = apexHostname + port;
+        }
+      }
+      return (loc.protocol || "https:") + "//" + apexHost + "/";
+    } catch { return "/"; }
   });
 
   function onDocClick(e) {
@@ -178,6 +211,47 @@
     document.removeEventListener("focusin", onFocusIn, true);
     document.removeEventListener("keydown", onKeyDown);
   });
+
+  const canonical = computed(() => {
+    try {
+      return window.location.origin + window.location.pathname + window.location.search;
+    } catch { return "/"; }
+  });
+
+  const routeNoindex = computed(() => {
+    try {
+      const p = route.path || "";
+      return p.startsWith("/admin") || p.startsWith("/super") || p.startsWith("/my-orders") || p.startsWith("/order/");
+    } catch { return false; }
+  });
+
+  // Global head defaults + tenant/admin-specific robots
+  useHead(() => ({
+    title: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim",
+    meta: [
+      { name: "description", content: hasTenant.value ? "QR ile menü ve hızlı sipariş deneyimi" : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın." },
+      (hasTenant.value || routeNoindex.value) ? { name: "robots", content: "noindex,nofollow" } : { name: "robots", content: "index,follow" },
+      { property: "og:title", content: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim" },
+      { property: "og:description", content: hasTenant.value ? "QR ile menü ve hızlı sipariş deneyimi" : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: canonical.value },
+      { property: "og:site_name", content: "QrMatik" },
+      { name: "twitter:card", content: "summary_large_image" },
+      // Rich previews (apex only image)
+      ...(hasTenant.value ? [] : [
+        { property: "og:image", content: "/og-image.svg" },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { name: "twitter:image", content: "/og-image.svg" },
+      ]),
+    ],
+    link: [
+      { rel: "canonical", href: canonical.value },
+      // hreflang (tek dil tr); x-default da aynı sayfaya işaret etsin
+      { rel: "alternate", hreflang: "tr", href: canonical.value },
+      { rel: "alternate", hreflang: "x-default", href: canonical.value },
+    ],
+  }));
 </script>
 
 <style scoped>

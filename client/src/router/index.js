@@ -83,6 +83,11 @@ const routes = [
     },
   },
   {
+    path: "/qr-menu",
+    name: "qr-menu",
+    component: () => import(/* webpackChunkName: "qr-menu" */ "../views/QrMenuLanding.vue"),
+  },
+  {
     path: "/super/tenants",
     name: "super-tenants",
     component: () => import(/* webpackChunkName: "super-tenants" */ "../views/TenantsAdminView.vue"),

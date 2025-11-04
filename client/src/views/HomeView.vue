@@ -1,6 +1,6 @@
 <template>
   <div>
-  <section class="min-h-[60vh] flex items-center">
+  <section :class="['min-h-[60vh] flex items-center', !hasTenant ? 'bg-gradient-to-b from-indigo-50/40 to-white' : '']">
     <div class="container mx-auto px-6 py-20">
   <div :class="['grid gap-12 items-center', hasTenant ? 'md:grid-cols-2' : 'md:grid-cols-1']">
         <div>
@@ -10,14 +10,23 @@
           </div>
           <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">{{ heroTitle }}</h1>
           <p class="text-gray-600 mb-4">
-            QR ile menüye hızlı eriş, mobilden sipariş ver; mutfak ve bar ekibi anında bildirim alır.
-            Basit, hızlı ve güvenilir.
+            Müşteriniz menüyü telefonundan inceler, birkaç dokunuşla sipariş verir; mutfak ve bar anında haberdar olur.
+            Daha hızlı servis, daha az bekleme ve hatasız akış için tasarlandı.
           </p>
-          <ul class="text-sm text-gray-600 mb-6 space-y-1">
-            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Temassız, hızlı sipariş akışı</li>
-            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Mutfak & Bar için anlık iş listeleri</li>
-            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Masaya özel QR ile yönlendirme</li>
+          <ul class="text-sm text-gray-600 mb-4 space-y-1">
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Dijital menü ve QR sipariş ile bekleme süresini kısaltın</li>
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Mutfak & Bar panolarıyla iş akışını hızlandırın</li>
+            <li class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Masaya özel karekod ile siparişleri doğru masaya yönlendirin</li>
+            <li v-if="!hasTenant" class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Kolay menü yönetimi: Fiyat ve içerik değişiklikleri anında yayında</li>
+            <li v-if="!hasTenant" class="flex items-center gap-2"><span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Daha az hata: Elle aktarım yok; mutfak & bar panoları net</li>
           </ul>
+          <!-- Apex: küçük rozetler -->
+          <div v-if="!hasTenant" class="flex flex-wrap items-center gap-2 mb-6">
+            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Temassız</span>
+            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Hızlı Kurulum</span>
+            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Mutfak & Bar Panoları</span>
+            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Çok Kiracılı</span>
+          </div>
           <div class="flex gap-3">
             <!-- Menüyü Görüntüle: tek ise tam genişlik, ikili ise yarım genişlik -->
             <router-link
@@ -37,6 +46,13 @@
               >Siparişlerimi Gör</router-link
             >
           </div>
+          <!-- Apex için keşif CTA'sı -->
+          <div v-if="!hasTenant" class="mt-4">
+            <router-link
+              to="/qr-menu"
+              class="inline-flex items-center px-4 py-2 text-sm sm:text-base bg-brand-gradient text-white rounded-md shadow hover:opacity-95"
+            >Dijital QR menüyü keşfedin</router-link>
+          </div>
           <div v-if="isAdmin && hasTenant" class="mt-3">
             <router-link
               to="/admin"
@@ -51,6 +67,7 @@
               >Admin</router-link
             >
           </div>
+
         </div>
         <div v-if="hasTenant" class="bg-white rounded-xl shadow p-6">
           <h3 class="font-semibold mb-4">Popüler Ürünler</h3>
@@ -73,9 +90,22 @@
   <FeatureGrid v-if="!hasTenant" />
   <HowItWorks v-if="!hasTenant" />
   <ScreenshotsGrid v-if="!hasTenant" />
+
   <FAQAccordion v-if="!hasTenant" />
   <PricingPlans v-if="!hasTenant" />
   <DemoContact v-if="!hasTenant" />
+  <!-- Sticky CTA (mobile only, apex) -->
+  <div v-if="!hasTenant" class="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white/90 backdrop-blur border-t">
+    <div class="container mx-auto px-4 py-3 flex items-center gap-2">
+      <router-link
+        to="/qr-menu"
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm bg-brand-gradient text-white rounded-md shadow hover:opacity-95"
+      >Dijital QR menüyü keşfedin</router-link>
+      <a href="#demo" class="px-4 py-2 rounded-md border bg-white text-gray-800 hover:bg-gray-50">Demo</a>
+    </div>
+  </div>
+  <!-- Spacer to avoid overlap with sticky bar -->
+  <div v-if="!hasTenant" class="h-16 md:hidden"></div>
   </div>
 </template>
 
@@ -90,6 +120,7 @@
   import FAQAccordion from "@/components/FAQAccordion.vue";
   import PricingPlans from "@/components/PricingPlans.vue";
   import DemoContact from "@/components/DemoContact.vue";
+  import { useHead } from "@unhead/vue";
 
   export default {
     name: "HomeView",
@@ -275,6 +306,31 @@
       }
 
       onMounted(() => {
+        // Apex-only structured data and richer OG
+        if (!hasTenant.value) {
+          try {
+            const org = {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "QrMatik",
+              url: typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud",
+              logo: "/favicon.svg",
+              description:
+                "QR ile menüye hızlı eriş, mobilden sipariş ver; mutfak ve bar ekibi anında bildirim alır.",
+            };
+            useHead({
+              script: [
+                { type: "application/ld+json", children: JSON.stringify(org) },
+              ],
+              meta: [
+                { property: "og:image", content: "/og-image.svg" },
+                { property: "og:image:width", content: "1200" },
+                { property: "og:image:height", content: "630" },
+                { name: "twitter:image", content: "/og-image.svg" },
+              ],
+            });
+          } catch { /* ignore */ }
+        }
   // tenant gösterimi için yerel yapılandırmayı oku
   try {
     const raw = localStorage.getItem("qm_tenant_cfg");
@@ -291,19 +347,21 @@
   // Sunucu doğrulaması tamamlanana kadar butonu gizli tut
   showMyOrders.value = false;
   scheduleEvaluate();
-        // Load popular menu items (top by sales)
-        fetchJson("/api/menu/popular?limit=4")
-          .then((items) => {
-            try {
-              const arr = Array.isArray(items) ? items : [];
-              popular.value = arr.slice(0, 4);
-            } catch {
+        // Load popular menu items (only when a tenant is detected)
+        if (hasTenant.value) {
+          fetchJson("/api/menu/popular?limit=4")
+            .then((items) => {
+              try {
+                const arr = Array.isArray(items) ? items : [];
+                popular.value = arr.slice(0, 4);
+              } catch {
+                popular.value = [];
+              }
+            })
+            .catch(() => {
               popular.value = [];
-            }
-          })
-          .catch(() => {
-            popular.value = [];
-          });
+            });
+        }
         try {
           window.addEventListener("qm:orderSession", onOrderSession);
         } catch {
@@ -333,3 +391,6 @@
     },
   };
 </script>
+
+
+
