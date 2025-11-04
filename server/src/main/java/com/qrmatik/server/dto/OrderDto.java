@@ -2,6 +2,7 @@ package com.qrmatik.server.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,8 @@ public class OrderDto {
     private String status;
     private BigDecimal total;
     private LocalDateTime createdTime;
+    // Zone-aware timestamp for clients; prefer this over createdTime when available
+    private OffsetDateTime createdAt;
     private LocalDateTime sessionExpiresAt;
     private List<OrderLineDto> lines;
 }

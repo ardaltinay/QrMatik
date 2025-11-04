@@ -18,14 +18,31 @@ public class WebConfig {
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
 
+    @Value("${client.url:}")
+    private String clientUrl;
+
+    // Optional: allow wildcard subdomains in prod like https://*.example.com
+    // Comma-separated list supported. Leave empty to fall back to clientUrl only.
+    @Value("${client.allowed-origin-pattern:}")
+    private String clientAllowedOriginPattern;
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**").allowedOrigins("http://localhost:5173", "http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS").allowedHeaders("*")
+                var mapping = registry.addMapping("/api/**")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
+
+                // Prefer patterns when provided (supports wildcards with credentials)
+                if (clientAllowedOriginPattern != null && !clientAllowedOriginPattern.isBlank()) {
+                    String[] patterns = clientAllowedOriginPattern.split("\\s*,\\s*");
+                    mapping.allowedOriginPatterns(patterns);
+                } else if (clientUrl != null && !clientUrl.isBlank()) {
+                    mapping.allowedOrigins(clientUrl);
+                }
             }
         };
     }

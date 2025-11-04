@@ -4,6 +4,7 @@ import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.OrderLineDto;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.model.OrderItemEntity;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -48,8 +49,30 @@ public class OrderConverter {
         }
         dto.setCustomerName(e.getCustomerName());
         dto.setStatus(e.getStatus() != null ? e.getStatus().name() : null);
-        dto.setTotal(e.getTotal());
+        // Prefer persisted total; if missing, derive from lines as a safe fallback for legacy rows
+        try {
+            if (e.getTotal() != null) {
+                dto.setTotal(e.getTotal());
+            } else {
+                java.math.BigDecimal sum = java.math.BigDecimal.ZERO;
+                for (OrderLineDto d : lines) {
+                    if (d.getPrice() != null && d.getQuantity() != null) {
+                        sum = sum.add(d.getPrice().multiply(java.math.BigDecimal.valueOf(d.getQuantity())));
+                    }
+                }
+                dto.setTotal(sum);
+            }
+        } catch (Exception ignore) {
+            dto.setTotal(e.getTotal());
+        }
         dto.setCreatedTime(e.getCreatedTime());
+        try {
+            if (e.getCreatedTime() != null) {
+                dto.setCreatedAt(e.getCreatedTime().atOffset(ZoneOffset.UTC));
+            }
+        } catch (Exception ignore) {
+            // leave createdAt null if conversion fails
+        }
         dto.setSessionExpiresAt(e.getSessionExpiresAt());
         dto.setLines(lines);
         return dto;

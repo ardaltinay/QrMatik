@@ -382,9 +382,10 @@ public class OrderService {
             if (ln.getItemId() != null) {
                 menuItem = menuItemRepository.findById(ln.getItemId()).orElse(null);
             }
-            BigDecimal unitPrice = (ln.getPrice() != null)
-                    ? ln.getPrice()
-                    : (menuItem != null ? menuItem.getPrice() : BigDecimal.ZERO);
+        // Fiyat otoritesi sunucuda: menü kalemi varsa onun fiyatını kullan; yoksa istekten geleni düş
+        BigDecimal unitPrice = (menuItem != null && menuItem.getPrice() != null)
+            ? menuItem.getPrice()
+            : (ln.getPrice() != null ? ln.getPrice() : BigDecimal.ZERO);
             String nameSnapshot = (ln.getName() != null && !ln.getName().isBlank())
                     ? ln.getName()
                     : (menuItem != null ? menuItem.getName() : null);

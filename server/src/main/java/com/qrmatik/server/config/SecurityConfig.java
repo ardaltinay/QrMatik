@@ -28,8 +28,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+        // Enable Spring Security CORS support so preflight (OPTIONS) requests are processed correctly
+        http.cors(c -> {});
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    http.authorizeHttpRequests(auth -> auth.requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config")
+    http.authorizeHttpRequests(auth -> auth
+        // Allow CORS preflight requests universally
+        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config")
         .permitAll().requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
     .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
