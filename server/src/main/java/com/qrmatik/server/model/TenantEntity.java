@@ -23,6 +23,11 @@ public class TenantEntity extends AbstractEntity {
 
     private String name;
 
+    // Business owner contact
+    private String ownerName;
+
+    private String ownerEmail;
+
     private String logoUrl;
 
     private String primaryColor;

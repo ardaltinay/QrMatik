@@ -1,18 +1,18 @@
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">Raporlar</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="p-4 bg-white border rounded-lg shadow-sm">
-        <h3 class="font-semibold mb-2">Günlük Sipariş</h3>
+    <h2 class="mb-4 text-xl font-semibold">Raporlar</h2>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div class="rounded-lg border bg-white p-4 shadow-sm">
+        <h3 class="mb-2 font-semibold">Günlük Sipariş</h3>
         <div class="text-3xl font-bold">{{ orders.length }}</div>
       </div>
-      <div class="p-4 bg-white border rounded-lg shadow-sm">
-        <h3 class="font-semibold mb-2">Tahmini Ciro</h3>
+      <div class="rounded-lg border bg-white p-4 shadow-sm">
+        <h3 class="mb-2 font-semibold">Tahmini Ciro</h3>
         <div class="text-3xl font-bold">{{ revenue }}₺</div>
       </div>
-      <div class="p-4 bg-white border rounded-lg shadow-sm">
-        <h3 class="font-semibold mb-2">Popüler Ürünler</h3>
-        <ul class="list-disc list-inside">
+      <div class="rounded-lg border bg-white p-4 shadow-sm">
+        <h3 class="mb-2 font-semibold">Popüler Ürünler</h3>
+        <ul class="list-inside list-disc">
           <li v-for="p in popular" :key="p.name">{{ p.name }} ({{ p.count }})</li>
         </ul>
       </div>

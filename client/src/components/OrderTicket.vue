@@ -1,21 +1,25 @@
 <template>
   <div
-    class="p-4 border rounded-lg bg-white shadow-sm transform transition motion-safe:animate-fadeIn"
+    class="transform rounded-lg border bg-white p-4 shadow-sm transition motion-safe:animate-fadeIn"
   >
-    <div class="flex flex-col sm:flex-row sm:justify-between gap-3">
+    <div class="flex flex-col gap-3 sm:flex-row sm:justify-between">
       <div>
         <h4 class="font-semibold">Sipariş #{{ order.id }}</h4>
         <div class="text-sm text-gray-500">Table: {{ order.table }}</div>
       </div>
-      <div class="text-sm font-medium text-gray-700 self-start sm:self-center">
+      <div class="self-start text-sm font-medium text-gray-700 sm:self-center">
         {{ statusLabel(order.status) }}
       </div>
     </div>
     <ul class="mt-3 space-y-2">
-      <li v-for="it in visibleItems" :key="it.itemId + '::' + (it.note || '')" class="flex justify-between text-sm">
+      <li
+        v-for="it in visibleItems"
+        :key="it.itemId + '::' + (it.note || '')"
+        class="flex justify-between text-sm"
+      >
         <div class="flex flex-col">
           <span class="font-medium">{{ it.name || menuName(it.itemId) }}</span>
-          <span v-if="it.note" class="text-xs text-gray-600 mt-0.5">Not: {{ it.note }}</span>
+          <span v-if="it.note" class="mt-0.5 text-xs text-gray-600">Not: {{ it.note }}</span>
         </div>
         <span class="text-gray-600">x{{ it.qty }}</span>
       </li>
@@ -24,21 +28,21 @@
       <button
         v-if="canToPreparing(order.status)"
         @click="$emit('updateStatus', order.id, 'preparing')"
-        class="px-3 py-1 bg-yellow-400 text-white rounded-lg"
+        class="rounded-lg bg-yellow-400 px-3 py-1 text-white"
       >
         Hazırlanıyor
       </button>
       <button
         v-if="canToReady(order.status)"
         @click="$emit('updateStatus', order.id, 'ready')"
-        class="px-3 py-1 bg-green-500 text-white rounded-lg"
+        class="rounded-lg bg-green-500 px-3 py-1 text-white"
       >
         Hazır
       </button>
       <button
         v-if="canToServed(order.status)"
         @click="$emit('updateStatus', order.id, 'served')"
-        class="px-3 py-1 bg-gray-700 text-white rounded-lg"
+        class="rounded-lg bg-gray-700 px-3 py-1 text-white"
       >
         Servis
       </button>
@@ -53,7 +57,10 @@
 
   export default {
     name: "OrderTicket",
-    props: { order: { type: Object, required: true }, department: { type: String, default: "kitchen" } },
+    props: {
+      order: { type: Object, required: true },
+      department: { type: String, default: "kitchen" },
+    },
     setup(props) {
       const store = useOrderStore();
       function menuName(id) {

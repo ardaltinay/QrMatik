@@ -1,9 +1,9 @@
 <template>
-  <div class="max-w-3xl mx-auto p-4">
-    <h1 class="text-2xl font-semibold mb-4">Sipariş Takibi</h1>
+  <div class="mx-auto max-w-3xl p-4">
+    <h1 class="mb-4 text-2xl font-semibold">Sipariş Takibi</h1>
 
     <div v-if="order" class="space-y-4">
-      <div class="bg-white p-4 rounded-lg shadow">
+      <div class="rounded-lg bg-white p-4 shadow">
         <div class="flex items-start justify-between">
           <div>
             <div class="text-sm text-gray-500">Sipariş No</div>
@@ -17,13 +17,13 @@
         </div>
 
         <div class="mt-4" v-if="showEta">
-          <div class="text-sm text-gray-600 mb-2">Tahmini Süre</div>
+          <div class="mb-2 text-sm text-gray-600">Tahmini Süre</div>
           <div class="text-lg font-semibold">{{ etaText }}</div>
         </div>
 
         <!-- stepper: two-column grid on mobile, horizontal on md+ -->
         <div class="mt-4">
-          <ol class="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-3">
+          <ol class="grid grid-cols-2 gap-3 md:flex md:items-center md:space-x-4">
             <li v-for="(s, idx) in steps" :key="s.value" class="flex items-center gap-3">
               <div
                 :class="[
@@ -47,8 +47,8 @@
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h3 class="font-semibold mb-2">Sipariş İçeriği</h3>
+      <div class="rounded-lg bg-white p-4 shadow">
+        <h3 class="mb-2 font-semibold">Sipariş İçeriği</h3>
         <ul class="space-y-2">
           <li v-for="it in order.items" :key="it.itemId" class="flex justify-between">
             <div>{{ it.name || menuItemName(it.itemId) }}</div>
@@ -64,68 +64,68 @@
       </div>
 
       <!-- Expired banner -->
-      <div v-if="isExpired" class="mt-4 p-3 rounded border bg-yellow-50 text-yellow-900">
+      <div v-if="isExpired" class="mt-4 rounded border bg-yellow-50 p-3 text-yellow-900">
         Oturum süreniz doldu. Siparişi görüntüleyebilirsiniz ancak işlem yapamazsınız.
       </div>
 
       <!-- Payment action appears after served, hidden if already paid or expired -->
       <div
         v-if="order && order.status === 'served' && !isExpired"
-        class="mt-4 p-3 rounded border bg-blue-50 text-blue-900"
+        class="mt-4 rounded border bg-blue-50 p-3 text-blue-900"
       >
         <div class="mb-2">
           Siparişiniz servis edildi. İsterseniz ödemenizi burdan yapabilirsiniz.
         </div>
         <button
           @click="completePayment"
-          class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          class="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
         >
           Ödemeyi Yap
         </button>
       </div>
       <div
         v-else-if="order && order.status === 'payment_completed'"
-        class="mt-4 p-3 rounded border bg-green-50 text-green-800"
+        class="mt-4 rounded border bg-green-50 p-3 text-green-800"
       >
         Ödeme tamamlandı. Afiyet olsun!
       </div>
       <div
         v-else-if="order && order.status === 'canceled'"
-        class="mt-4 p-3 rounded border bg-red-50 text-red-800"
+        class="mt-4 rounded border bg-red-50 p-3 text-red-800"
       >
         Siparişiniz iptal edilmiştir!
       </div>
 
       <div
-        class="bg-white p-4 rounded-lg shadow flex gap-4 flex-col md:flex-row items-start md:items-center"
+        class="flex flex-col items-start gap-4 rounded-lg bg-white p-4 shadow md:flex-row md:items-center"
       >
         <div class="md:w-48">
-          <img :src="qrUrl" alt="QR" class="w-40 h-40 bg-gray-50 rounded" />
+          <img :src="qrUrl" alt="QR" class="h-40 w-40 rounded bg-gray-50" />
         </div>
         <div class="flex-1">
           <div class="mb-2">
             <div class="text-sm text-gray-500">Paylaşılabilir Link</div>
-            <div class="text-sm break-all">{{ shareLink }}</div>
+            <div class="break-all text-sm">{{ shareLink }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
             <div class="flex gap-2">
-              <button @click="copyLink" class="flex-1 px-3 py-2 bg-brand-500 text-white rounded">
+              <button @click="copyLink" class="flex-1 rounded bg-brand-500 px-3 py-2 text-white">
                 Linki Kopyala
               </button>
-              <button @click="openQR" class="flex-1 px-3 py-2 border rounded">QR Aç</button>
+              <button @click="openQR" class="flex-1 rounded border px-3 py-2">QR Aç</button>
             </div>
             <div class="flex flex-col md:flex-row md:gap-2">
-              <button @click="sendEmail" class="flex-1 px-3 py-2 border rounded mb-2 md:mb-0">
+              <button @click="sendEmail" class="mb-2 flex-1 rounded border px-3 py-2 md:mb-0">
                 E-posta ile Gönder
               </button>
-              <button @click="sendSMS" class="flex-1 px-3 py-2 border rounded">
+              <button @click="sendSMS" class="flex-1 rounded border px-3 py-2">
                 SMS ile Gönder
               </button>
             </div>
           </div>
-          <div v-if="copied" class="text-sm text-green-600 mt-2">Link panoya kopyalandı.</div>
-          <div class="text-sm text-gray-500 mt-2">
+          <div v-if="copied" class="mt-2 text-sm text-green-600">Link panoya kopyalandı.</div>
+          <div class="mt-2 text-sm text-gray-500">
             Not: E-posta/SMS göndermek için gerçek sunucu entegrasyonu gerekir; butonlar varsayılan
             uygulamayı açar.
           </div>
@@ -222,13 +222,17 @@
           const n = encodeURIComponent("qm_order_session") + "=";
           const parts = (document.cookie || "").split("; ");
           for (const p of parts) {
-            if (p.startsWith(n)) { sid = decodeURIComponent(p.substring(n.length)); break; }
+            if (p.startsWith(n)) {
+              sid = decodeURIComponent(p.substring(n.length));
+              break;
+            }
           }
         }
       } catch (e) {
         /* ignore */
       }
-      const shareLink = window.location.origin + "/order/" + id + (sid ? ("?sid=" + encodeURIComponent(sid)) : "");
+      const shareLink =
+        window.location.origin + "/order/" + id + (sid ? "?sid=" + encodeURIComponent(sid) : "");
       // Generate QR via backend endpoint (proxied by Vite)
       const qrUrl = "/api/qr/image?text=" + encodeURIComponent(shareLink) + "&size=300";
 
@@ -314,7 +318,7 @@
         // Menü yüklemesini istemli olarak kaldırdık; öğe adları artık API'nin lines snapshot'ından gelir.
         // Eski siparişlerde name yoksa ve menü gerekirse, aşağıdaki satırı açabilirsin:
         // if (!store.menuLoaded) { void store.loadMenu() }
-  void loadOrderIfMissing();
+        void loadOrderIfMissing();
         try {
           window.addEventListener("qm:orderSessionExpired", () => {
             // localStorage expiry kontrolü ile birlikte banner tetiklenecek

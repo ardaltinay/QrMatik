@@ -6,11 +6,11 @@
       @click.stop="toggle"
       ref="btn"
       tabindex="0"
-      class="w-full text-left bg-white border rounded-lg shadow-sm px-4 py-2 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-brand-200"
+      class="focus:ring-brand-200 flex w-full items-center justify-between rounded-lg border bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2"
     >
       <span class="truncate">{{ selectedLabel }}</span>
       <svg
-        class="w-5 h-5 text-gray-400 ml-2"
+        class="ml-2 h-5 w-5 text-gray-400"
         viewBox="0 0 20 20"
         fill="none"
         stroke="currentColor"
@@ -28,13 +28,13 @@
           v-if="open"
           ref="list"
           :style="listStyle"
-          class="z-50 bg-white border rounded-lg shadow-lg max-h-64 overflow-auto"
+          class="z-50 max-h-64 overflow-auto rounded-lg border bg-white shadow-lg"
         >
           <li
             v-for="(opt, idx) in options"
             :key="opt.value"
             :class="[
-              'px-4 py-2 cursor-pointer',
+              'cursor-pointer px-4 py-2',
               idx === highlight ? 'bg-brand-50' : 'hover:bg-gray-50',
             ]"
             @mousedown.prevent="select(opt.value)"

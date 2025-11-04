@@ -1,14 +1,14 @@
 <template>
   <transition name="slide-up">
-    <div v-if="order" class="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-xl z-50">
-      <div class="p-4 border-b flex justify-between items-center">
+    <div v-if="order" class="fixed right-0 top-0 z-50 h-full w-full bg-white shadow-xl md:w-96">
+      <div class="flex items-center justify-between border-b p-4">
         <div>
           <h3 class="font-semibold">Sipariş #{{ order.id }}</h3>
           <div class="text-sm text-gray-500">{{ order.createdAt }}</div>
         </div>
-        <button @click="$emit('close')" class="p-2 rounded hover:bg-gray-100">✕</button>
+        <button @click="$emit('close')" class="rounded p-2 hover:bg-gray-100">✕</button>
       </div>
-      <div class="p-4 space-y-3 overflow-auto max-h-[75vh]">
+      <div class="max-h-[75vh] space-y-3 overflow-auto p-4">
         <div v-for="it in order.items" :key="it.itemId" class="flex justify-between">
           <div>
             <div class="font-medium">{{ it.name || menuName(it.itemId) }}</div>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="mt-4">
-          <label class="block text-sm text-gray-600 mb-1">Durum</label>
+          <label class="mb-1 block text-sm text-gray-600">Durum</label>
           <div>
             <BaseSelect
               v-model="localStatus"
@@ -40,15 +40,15 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 mt-4">
-          <button @click="applyStatus" class="px-3 py-2 bg-brand-500 text-white rounded-lg shadow">
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button @click="applyStatus" class="rounded-lg bg-brand-500 px-3 py-2 text-white shadow">
             Durum Güncelle
           </button>
-          <button @click="$emit('print', order)" class="px-3 py-2 border rounded-lg">Yazdır</button>
+          <button @click="$emit('print', order)" class="rounded-lg border px-3 py-2">Yazdır</button>
           <button
             v-if="canCancel"
             @click="cancelOrder"
-            class="px-3 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700"
+            class="rounded-lg bg-red-600 px-3 py-2 text-white shadow hover:bg-red-700"
           >
             İptal Et
           </button>
@@ -102,7 +102,11 @@
         try {
           await store.updateOrderStatus(props.order.id, "canceled");
           ui.toastSuccess("Sipariş iptal edildi");
-          try { await store.loadOrders(); } catch (e) { /* ignore */ }
+          try {
+            await store.loadOrders();
+          } catch (e) {
+            /* ignore */
+          }
           emit("updated", props.order.id);
           emit("close");
         } catch {
@@ -110,7 +114,7 @@
         }
       }
 
-  return { menuName, localStatus, applyStatus, formatMoney, canCancel, cancelOrder };
+      return { menuName, localStatus, applyStatus, formatMoney, canCancel, cancelOrder };
     },
   };
 </script>

@@ -3,17 +3,17 @@ package com.qrmatik.server.service;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
-import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.OrderItemRepository;
-import org.springframework.data.domain.PageRequest;
+import com.qrmatik.server.repository.TenantRepository;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Collections;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -107,7 +107,8 @@ public class MenuService {
     public List<MenuItemEntity> popular(String tenant, int limit) {
         int lim = (limit <= 0 ? 4 : Math.min(limit, 50));
         List<Object[]> rows = orderItemRepository.topMenuItemCounts(tenant, PageRequest.of(0, lim));
-        if (rows == null || rows.isEmpty()) return Collections.emptyList();
+        if (rows == null || rows.isEmpty())
+            return Collections.emptyList();
         List<UUID> ids = new ArrayList<>();
         for (Object[] r : rows) {
             if (r != null && r.length >= 1 && r[0] != null) {
@@ -115,19 +116,27 @@ public class MenuService {
                     ids.add((UUID) r[0]);
                 } catch (ClassCastException cce) {
                     if (r[0] instanceof String s) {
-                        try { ids.add(UUID.fromString(s)); } catch (Exception ignore) {}
+                        try {
+                            ids.add(UUID.fromString(s));
+                        } catch (Exception ignore) {
+                        }
                     }
                 }
             }
         }
         List<MenuItemEntity> list = repository.findAllById(ids);
         Map<UUID, MenuItemEntity> map = new HashMap<>();
-        for (MenuItemEntity m : list) { if (m != null && m.getId() != null) map.put(m.getId(), m); }
+        for (MenuItemEntity m : list) {
+            if (m != null && m.getId() != null)
+                map.put(m.getId(), m);
+        }
         List<MenuItemEntity> out = new ArrayList<>();
-        for (UUID id : ids) { MenuItemEntity x = map.get(id); if (x != null) out.add(x); }
+        for (UUID id : ids) {
+            MenuItemEntity x = map.get(id);
+            if (x != null)
+                out.add(x);
+        }
         return out;
     }
 
 }
-
-

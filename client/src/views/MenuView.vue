@@ -1,11 +1,11 @@
 <template>
   <div class="menu">
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <h1 class="text-2xl font-semibold">Menü</h1>
       <button
         @click="onRefresh"
         :disabled="isRefreshing"
-        class="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50 disabled:opacity-60"
+        class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-60"
         title="Menüyü sunucudan yeniden yükle"
       >
         {{ isRefreshing ? "Yükleniyor..." : "Yenile" }}
@@ -13,13 +13,13 @@
     </div>
 
     <!-- filtreler (üstte ve sağa hizalı) -->
-    <div class="flex gap-2 mb-3 justify-start flex-wrap">
+    <div class="mb-3 flex flex-wrap justify-start gap-2">
       <button
         v-for="p in primaries"
         :key="p"
         @click="primary = p"
         :class="[
-          'px-3 py-1 rounded-full',
+          'rounded-full px-3 py-1',
           primary === p ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700',
         ]"
       >
@@ -27,11 +27,11 @@
       </button>
     </div>
 
-    <div class="flex gap-2 mb-4 flex-wrap justify-start">
+    <div class="mb-4 flex flex-wrap justify-start gap-2">
       <button
         @click="sub = 'all'"
         :class="[
-          'px-2 py-1 rounded',
+          'rounded px-2 py-1',
           sub === 'all' ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-700',
         ]"
       >
@@ -42,7 +42,7 @@
         :key="s"
         @click="sub = s"
         :class="[
-          'px-2 py-1 rounded',
+          'rounded px-2 py-1',
           sub === s ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-700',
         ]"
       >
@@ -51,37 +51,52 @@
     </div>
 
     <div class="grid">
-      <MenuItemCard
-        v-for="item in filtered"
-        :key="item.id"
-        :item="item"
-        @add="openAddNote"
-      />
+      <MenuItemCard v-for="item in filtered" :key="item.id" :item="item" @add="openAddNote" />
     </div>
-  <CartDrawer :mobileOpen="mobileOpen" @update:mobileOpen="(v) => (mobileOpen = v)" />
+    <CartDrawer :mobileOpen="mobileOpen" @update:mobileOpen="(v) => (mobileOpen = v)" />
 
     <!-- mobile sticky mini cart bar -->
-  <div v-if="store.cart.length && !mobileOpen" class="md:hidden fixed left-4 right-4 bottom-4 z-50">
+    <div
+      v-if="store.cart.length && !mobileOpen"
+      class="fixed bottom-4 left-4 right-4 z-50 md:hidden"
+    >
       <button
         @click="mobileOpen = true"
-        class="w-full bg-indigo-600 text-white rounded-full px-4 py-3 flex items-center justify-between shadow-lg"
+        class="flex w-full items-center justify-between rounded-full bg-indigo-600 px-4 py-3 text-white shadow-lg"
       >
         <div class="font-medium">Sepet ({{ store.cart.length }})</div>
         <div class="text-sm">Öğe: {{ totalItems }}</div>
       </button>
     </div>
     <!-- Add-to-cart note modal -->
-    <div v-if="noteModal.open" class="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+    <div
+      v-if="noteModal.open"
+      class="fixed inset-0 z-50 flex items-end justify-center md:items-center"
+    >
       <div class="absolute inset-0 bg-black/40" @click="closeNoteModal"></div>
-      <div class="relative bg-white w-full md:max-w-md md:rounded-xl p-4 md:p-6 shadow-xl md:mx-auto rounded-t-xl">
+      <div
+        class="relative w-full rounded-t-xl bg-white p-4 shadow-xl md:mx-auto md:max-w-md md:rounded-xl md:p-6"
+      >
         <div class="text-lg font-semibold">Not ekle</div>
-        <div class="text-sm text-gray-500 mt-1">İsteğe bağlı: bu ürün için mutfak/bar'a not bırakabilirsiniz.</div>
-        <div class="mt-3">
-          <textarea v-model="noteModal.note" rows="3" class="w-full border rounded-md p-2 focus:outline-none focus:ring focus:ring-indigo-200" placeholder="Örn. soğansız, acılı olsun..."></textarea>
+        <div class="mt-1 text-sm text-gray-500">
+          İsteğe bağlı: bu ürün için mutfak/bar'a not bırakabilirsiniz.
         </div>
-        <div class="mt-4 flex gap-2 justify-end">
-          <button @click="closeNoteModal" class="px-3 py-1.5 rounded-md border">Vazgeç</button>
-          <button @click="confirmAddWithNote" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white">Sepete ekle</button>
+        <div class="mt-3">
+          <textarea
+            v-model="noteModal.note"
+            rows="3"
+            class="w-full rounded-md border p-2 focus:outline-none focus:ring focus:ring-indigo-200"
+            placeholder="Örn. soğansız, acılı olsun..."
+          ></textarea>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button @click="closeNoteModal" class="rounded-md border px-3 py-1.5">Vazgeç</button>
+          <button
+            @click="confirmAddWithNote"
+            class="rounded-md bg-indigo-600 px-3 py-1.5 text-white"
+          >
+            Sepete ekle
+          </button>
         </div>
       </div>
     </div>
@@ -99,7 +114,7 @@
     name: "MenuView",
     components: { MenuItemCard, CartDrawer },
     setup() {
-  const store = useOrderStore();
+      const store = useOrderStore();
       const mobileOpen = ref(false);
       if (!store.menuLoaded) {
         void store.loadMenu();

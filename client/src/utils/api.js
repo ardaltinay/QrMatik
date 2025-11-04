@@ -38,19 +38,26 @@ export async function fetchJson(path, opts = {}) {
         const { useAuthStore } = await import("@/stores/authStore");
         const auth = useAuthStore();
         auth.logout();
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       try {
         const { default: router } = await import("@/router");
         if (typeof window !== "undefined") {
-          const isAdminPath = window.location && String(window.location.pathname || "").startsWith("/admin");
+          const isAdminPath =
+            window.location && String(window.location.pathname || "").startsWith("/admin");
           if (isAdminPath) router.push({ name: "admin" });
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       try {
         const { useUiStore } = await import("@/stores/uiStore");
         const ui = useUiStore();
         ui.toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
     let msg = "İstek başarısız: " + res.status;
     try {
@@ -63,13 +70,17 @@ export async function fetchJson(path, opts = {}) {
           msg = text;
         }
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     if (!silent) {
       try {
         const { useUiStore } = await import("@/stores/uiStore");
         const ui = useUiStore();
         ui.toastError(msg);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
     throw new Error(msg);
   }

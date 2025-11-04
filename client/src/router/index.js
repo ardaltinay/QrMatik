@@ -95,18 +95,21 @@ const routes = [
   {
     path: "/super/tenants",
     name: "super-tenants",
-    component: () => import(/* webpackChunkName: "super-tenants" */ "../views/TenantsAdminView.vue"),
+    component: () =>
+      import(/* webpackChunkName: "super-tenants" */ "../views/TenantsAdminView.vue"),
     meta: { requiresAuth: true, requiresRole: "superadmin" },
   },
   {
     path: "/tenant-not-found",
     name: "tenant-not-found",
-    component: () => import(/* webpackChunkName: "tenant-not-found" */ "../views/TenantNotFound.vue"),
+    component: () =>
+      import(/* webpackChunkName: "tenant-not-found" */ "../views/TenantNotFound.vue"),
   },
   {
     path: "/tenant-required",
     name: "tenant-required",
-    component: () => import(/* webpackChunkName: "tenant-required" */ "../views/TenantRequired.vue"),
+    component: () =>
+      import(/* webpackChunkName: "tenant-required" */ "../views/TenantRequired.vue"),
   },
 ];
 
@@ -121,10 +124,13 @@ router.beforeEach(async (to, from, next) => {
   try {
     // Skip tenant check for super admin routes
     const path = to.path || "";
-  if (!path.startsWith("/super") && !path.startsWith("/tenant-not-found")) {
+    if (!path.startsWith("/super") && !path.startsWith("/tenant-not-found")) {
       const host = typeof window !== "undefined" ? window.location.hostname : "";
       const query = to.query || {};
-      const qTenant = (query.tenant || query.t || query.code) ? String(query.tenant || query.t || query.code) : null;
+      const qTenant =
+        query.tenant || query.t || query.code
+          ? String(query.tenant || query.t || query.code)
+          : null;
       let detected = qTenant;
       if (!detected) {
         // path style /r/:tenant
@@ -146,27 +152,49 @@ router.beforeEach(async (to, from, next) => {
         // If not yet verified this session, verify now by calling tenant/config
         const verifiedKey = "qm_tenant_verified_" + detected;
         let verifiedVal = null;
-        try { verifiedVal = sessionStorage.getItem(verifiedKey); } catch { /* ignore */ }
+        try {
+          verifiedVal = sessionStorage.getItem(verifiedKey);
+        } catch {
+          /* ignore */
+        }
         if (verifiedVal === "notfound") {
           return next({ name: "tenant-not-found" });
         }
         if (verifiedVal !== "ok") {
           try {
             const { fetchJson } = await import("@/utils/api");
-            await fetchJson("/api/tenant/config?code=" + encodeURIComponent(detected), { silentError: true });
+            await fetchJson("/api/tenant/config?code=" + encodeURIComponent(detected), {
+              silentError: true,
+            });
             // persist tenant and mark verified
-            try { localStorage.setItem("qm_tenant", detected); sessionStorage.setItem(verifiedKey, "ok"); } catch { /* ignore */ }
+            try {
+              localStorage.setItem("qm_tenant", detected);
+              sessionStorage.setItem(verifiedKey, "ok");
+            } catch {
+              /* ignore */
+            }
           } catch {
-            try { localStorage.removeItem("qm_tenant"); sessionStorage.setItem(verifiedKey, "notfound"); } catch { /* ignore */ }
+            try {
+              localStorage.removeItem("qm_tenant");
+              sessionStorage.setItem(verifiedKey, "notfound");
+            } catch {
+              /* ignore */
+            }
             return next({ name: "tenant-not-found" });
           }
         } else {
           // keep localStorage in sync
-          try { localStorage.setItem("qm_tenant", detected); } catch { /* ignore */ }
+          try {
+            localStorage.setItem("qm_tenant", detected);
+          } catch {
+            /* ignore */
+          }
         }
       }
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const { useAuthStore } = await import("@/stores/authStore");
   const auth = useAuthStore();
@@ -179,7 +207,9 @@ router.beforeEach(async (to, from, next) => {
       try {
         const tenant = localStorage.getItem("qm_tenant");
         if (tenant) localStorage.setItem("qm_table_tenant", tenant);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
   } catch {
     /* ignore */
@@ -202,7 +232,10 @@ router.beforeEach(async (to, from, next) => {
       try {
         const host = typeof window !== "undefined" ? window.location.hostname : "";
         const query = to.query || {};
-        const qTenant = (query.tenant || query.t || query.code) ? String(query.tenant || query.t || query.code) : null;
+        const qTenant =
+          query.tenant || query.t || query.code
+            ? String(query.tenant || query.t || query.code)
+            : null;
         detected = qTenant;
         if (!detected) {
           const path = to.path || "";
@@ -219,7 +252,9 @@ router.beforeEach(async (to, from, next) => {
             if (hostParts.length > 2) detected = hostParts[0];
           }
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       if (!detected) {
         return next({ name: "tenant-required" });
       }

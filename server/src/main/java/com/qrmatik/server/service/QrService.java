@@ -11,18 +11,18 @@ import com.qrmatik.server.repository.TableRepository;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +85,8 @@ public class QrService {
     private String buildTableUrl(String tenantCode, String tableCode) {
         // Build subdomain-based URL: https://{tenant}.{domain}/menu?table={code}
         // Dev: baseUrl like http://localhost:5173 => use {tenant}.localhost:5173
-        // Prod: baseUrl like https://app.example.com => use {tenant}.example.com (strip common app/www prefix)
+        // Prod: baseUrl like https://app.example.com => use {tenant}.example.com (strip
+        // common app/www prefix)
         try {
             java.net.URL u = new java.net.URL(baseUrl);
             String protocol = u.getProtocol();
@@ -101,8 +102,10 @@ public class QrService {
                 } else {
                     // production: prefix tenant; if host starts with app./www. remove that prefix
                     String domain = host;
-                    if (domain.startsWith("app.")) domain = domain.substring(4);
-                    else if (domain.startsWith("www.")) domain = domain.substring(4);
+                    if (domain.startsWith("app."))
+                        domain = domain.substring(4);
+                    else if (domain.startsWith("www."))
+                        domain = domain.substring(4);
                     effectiveHost = tc + "." + domain;
                 }
             }

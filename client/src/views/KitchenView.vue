@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="mb-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-  <h2 class="text-xl font-semibold">Mutfak - Gelen Yemek Siparişleri</h2>
-        <div class="flex items-center gap-2 w-full sm:w-auto">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-xl font-semibold">Mutfak - Gelen Yemek Siparişleri</h2>
+        <div class="flex w-full items-center gap-2 sm:w-auto">
           <div class="w-full sm:w-48">
             <BaseSelect
               v-model="filter"
@@ -16,7 +16,7 @@
             />
           </div>
           <button
-            class="px-3 py-1.5 rounded-md border border-red-300 text-red-600 hover:bg-red-50"
+            class="rounded-md border border-red-300 px-3 py-1.5 text-red-600 hover:bg-red-50"
             @click="onLogout"
           >
             Çıkış
@@ -27,7 +27,13 @@
 
     <div v-if="filtered.length">
       <div class="grid gap-3">
-        <OrderTicket v-for="o in filtered" :key="o.id" :order="o" department="kitchen" @updateStatus="updateStatus" />
+        <OrderTicket
+          v-for="o in filtered"
+          :key="o.id"
+          :order="o"
+          department="kitchen"
+          @updateStatus="updateStatus"
+        />
       </div>
     </div>
     <div v-else>
@@ -77,7 +83,13 @@
         // CANCELED, PAYMENT_COMPLETED, SERVED ve EXPIRED mutfakta görünmesin
         const base = orders.value
           .filter((o) => hasFood(o))
-          .filter((o) => o.status !== "canceled" && o.status !== "payment_completed" && o.status !== "served" && o.status !== "expired")
+          .filter(
+            (o) =>
+              o.status !== "canceled" &&
+              o.status !== "payment_completed" &&
+              o.status !== "served" &&
+              o.status !== "expired",
+          )
           // Yeni siparişler 2 dakikalık iptal süresi bitmeden görünmesin
           .filter((o) => {
             if ((o.status || "").toLowerCase() !== "new") return true;

@@ -1,21 +1,21 @@
 <template>
   <div
-    class="p-3 bg-white border rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between hover:shadow-lg transition"
+    class="flex flex-col rounded-lg border bg-white p-3 transition hover:shadow-lg sm:flex-row sm:items-center sm:justify-between"
   >
     <div>
       <div class="font-medium">#{{ order.id }} — {{ order.table }}</div>
       <div class="text-sm text-gray-500">{{ order.createdAt }}</div>
-      <div class="text-sm text-gray-700 mt-1">
+      <div class="mt-1 text-sm text-gray-700">
         Toplam: <span class="font-medium">{{ formatMoney(order.total) }}</span>
       </div>
     </div>
-    <div class="mt-3 sm:mt-0 flex items-center gap-2">
-      <div class="px-3 py-1 rounded-full text-sm font-medium" :class="statusColor">
+    <div class="mt-3 flex items-center gap-2 sm:mt-0">
+      <div class="rounded-full px-3 py-1 text-sm font-medium" :class="statusColor">
         {{ statusLabel }}
       </div>
       <button
         @click="$emit('open', order)"
-        class="px-3 py-1 bg-white border rounded-lg shadow-sm hover:bg-gray-50"
+        class="rounded-lg border bg-white px-3 py-1 shadow-sm hover:bg-gray-50"
       >
         Detay
       </button>

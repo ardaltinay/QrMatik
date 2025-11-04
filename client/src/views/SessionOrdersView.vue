@@ -1,11 +1,11 @@
 <template>
-  <div class="max-w-3xl mx-auto p-4">
-    <h1 class="text-2xl font-semibold mb-4">Siparişlerim</h1>
+  <div class="mx-auto max-w-3xl p-4">
+    <h1 class="mb-4 text-2xl font-semibold">Siparişlerim</h1>
 
     <!-- Masa bilgisi -->
     <div
       v-if="orders.length && tableInfo"
-      class="mb-4 p-3 rounded-lg bg-gray-50 border text-gray-700"
+      class="mb-4 rounded-lg border bg-gray-50 p-3 text-gray-700"
     >
       <span class="font-medium">Masa:</span>
       <span>{{ tableInfo }}</span>
@@ -15,7 +15,7 @@
       <div
         v-for="o in orders"
         :key="o.id"
-        class="bg-white p-4 rounded-lg shadow mb-4 cursor-pointer hover:shadow-md transition"
+        class="mb-4 cursor-pointer rounded-lg bg-white p-4 shadow transition hover:shadow-md"
         @click="goDetail(o)"
       >
         <div class="flex justify-between">
@@ -27,11 +27,14 @@
           <div class="text-right">
             <div class="text-sm text-gray-500">Durum</div>
             <div class="mt-1">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium" :class="statusBadge(o.status)">
+              <span
+                class="rounded-full px-2.5 py-1 text-xs font-medium"
+                :class="statusBadge(o.status)"
+              >
                 {{ statusLabel(o.status) }}
               </span>
             </div>
-            <div class="text-sm text-gray-500 mt-3">Toplam</div>
+            <div class="mt-3 text-sm text-gray-500">Toplam</div>
             <div class="font-medium">{{ formatMoney(o.total) }}</div>
           </div>
         </div>
@@ -40,7 +43,7 @@
         <div class="mt-3" v-if="isCancelableStatus(o)">
           <div class="flex items-center gap-3">
             <button
-              class="px-3 py-1.5 text-sm rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="!canCancel(o)"
               @click.stop="cancelOrder(o)"
             >
@@ -49,19 +52,17 @@
             <span class="text-xs text-gray-600" v-if="canCancel(o)">
               Kalan süre: {{ formatRemaining(o) }}
             </span>
-            <span class="text-xs text-gray-500" v-else>
-              Süre doldu
-            </span>
+            <span class="text-xs text-gray-500" v-else> Süre doldu </span>
           </div>
         </div>
 
         <div class="mt-4">
-          <h4 class="font-semibold mb-2">İçerik</h4>
+          <h4 class="mb-2 font-semibold">İçerik</h4>
           <ul class="space-y-1">
             <li v-for="it in o.items" :key="it.itemId" class="flex justify-between">
               <div>
                 <div>{{ it.name || menuItemName(it.itemId) }}</div>
-                <div v-if="it.note" class="text-xs text-gray-600 mt-0.5">Not: {{ it.note }}</div>
+                <div v-if="it.note" class="mt-0.5 text-xs text-gray-600">Not: {{ it.note }}</div>
               </div>
               <div class="text-gray-600">x{{ it.qty }}</div>
             </li>
@@ -236,8 +237,8 @@
 
   onMounted(() => {
     // Ensure we also pick up cookie-based session if localStorage is empty
-    if (!sessionId.value && typeof document !== 'undefined') {
-      sessionId.value = getCookie('qm_order_session');
+    if (!sessionId.value && typeof document !== "undefined") {
+      sessionId.value = getCookie("qm_order_session");
     }
     // İsimler artık DTO lines üzerinden geldiği için menüyü otomatik yüklemiyoruz; gerekirse fallback için yüklenebilir.
     load();

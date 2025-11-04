@@ -9,12 +9,14 @@ import com.qrmatik.server.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TenantAdminService {
+    private static final Pattern CODE_RE = Pattern.compile("^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,16 +44,14 @@ public class TenantAdminService {
     public Optional<TenantEntity> create(TenantInsertRequest req) {
         if (req.getCode() == null || req.getCode().isBlank())
             return Optional.empty();
-        if (tenantRepository.findByCode(req.getCode()).isPresent())
+        String code = req.getCode().trim();
+        if (!CODE_RE.matcher(code).matches())
             return Optional.empty();
-        TenantEntity e = TenantEntity.builder()
-                .code(req.getCode().trim())
-                .name(req.getName())
-                .logoUrl(req.getLogoUrl())
-                .primaryColor(req.getPrimaryColor())
-                .accentColor(req.getAccentColor())
-                .configJson(req.getConfig())
-                .build();
+        if (tenantRepository.findByCode(code).isPresent())
+            return Optional.empty();
+        TenantEntity e = TenantEntity.builder().code(code).name(req.getName()).ownerName(req.getOwnerName())
+                .ownerEmail(req.getOwnerEmail()).logoUrl(req.getLogoUrl()).primaryColor(req.getPrimaryColor())
+                .accentColor(req.getAccentColor()).configJson(req.getConfig()).build();
         return Optional.of(tenantRepository.save(e));
     }
 
@@ -63,6 +63,10 @@ public class TenantAdminService {
         TenantEntity e = found.get();
         if (req.getName() != null)
             e.setName(req.getName());
+        if (req.getOwnerName() != null)
+            e.setOwnerName(req.getOwnerName());
+        if (req.getOwnerEmail() != null)
+            e.setOwnerEmail(req.getOwnerEmail());
         if (req.getLogoUrl() != null)
             e.setLogoUrl(req.getLogoUrl());
         if (req.getPrimaryColor() != null)

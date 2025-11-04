@@ -21,14 +21,19 @@ public class MenuItemConverter {
     }
 
     private String normalizeImage(String img) {
-        if (img == null || img.isBlank()) return null;
+        if (img == null || img.isBlank())
+            return null;
         String s = img.trim();
         // If already absolute URL, leave as is
         String lower = s.toLowerCase();
-        if (lower.startsWith("http://") || lower.startsWith("https://")) return s;
-        // Ensure file handler path is absolute so frontend fetches from backend via proxy
-        if (s.startsWith("/files/")) return s;
-        if (s.startsWith("files/")) return "/" + s; // make it absolute
+        if (lower.startsWith("http://") || lower.startsWith("https://"))
+            return s;
+        // Ensure file handler path is absolute so frontend fetches from backend via
+        // proxy
+        if (s.startsWith("/files/"))
+            return s;
+        if (s.startsWith("files/"))
+            return "/" + s; // make it absolute
 
         // Legacy stored paths: map to /files handler
         if (s.startsWith("/uploads/")) {

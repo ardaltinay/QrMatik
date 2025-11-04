@@ -1,10 +1,10 @@
 <template>
-  <div class="fixed top-4 right-4 z-[100] space-y-2">
+  <div class="fixed right-4 top-4 z-[100] space-y-2">
     <div
       v-for="t in toasts"
       :key="t.id"
       :class="[
-        'min-w-[240px] max-w-sm px-4 py-3 rounded shadow-lg text-white',
+        'min-w-[240px] max-w-sm rounded px-4 py-3 text-white shadow-lg',
         t.type === 'error' ? 'bg-red-600' : t.type === 'success' ? 'bg-green-600' : 'bg-gray-800',
       ]"
     >

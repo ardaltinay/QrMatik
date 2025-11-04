@@ -14,7 +14,9 @@ export const useOrderStore = defineStore("order", () => {
     const tenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
     if (tenant) {
       const cached =
-        typeof localStorage !== "undefined" ? localStorage.getItem("qm_menu_cache_" + tenant) : null;
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("qm_menu_cache_" + tenant)
+          : null;
       if (cached) {
         try {
           const obj = JSON.parse(cached);
@@ -54,12 +56,15 @@ export const useOrderStore = defineStore("order", () => {
       let cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Path=/";
       // Enforce minimum 3 hours for order session persistence across subdomains
       const MIN_SECONDS = 3 * 60 * 60; // 3 hours
-      const eff = typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
+      const eff =
+        typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
       cookie += "; Max-Age=" + String(eff);
       const base = getBaseDomain();
       if (base && base.includes(".")) cookie += "; Domain=." + base;
       document.cookie = cookie;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
   function deleteCookie(name) {
     try {
@@ -67,7 +72,9 @@ export const useOrderStore = defineStore("order", () => {
       let cookie = encodeURIComponent(name) + "=; Max-Age=0; Path=/";
       if (base && base.includes(".")) cookie += "; Domain=." + base;
       document.cookie = cookie;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
   function getCookie(name) {
     try {
@@ -77,7 +84,9 @@ export const useOrderStore = defineStore("order", () => {
         if (p.startsWith(n)) return decodeURIComponent(p.substring(n.length));
       }
       return null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   }
 
   const orders = ref([]);
@@ -120,12 +129,14 @@ export const useOrderStore = defineStore("order", () => {
                 (it.category && it.category.toLowerCase().includes("drink") ? "drink" : "food"),
               sub: it.sub || it.subcategory || "main",
               image:
-                it.image || "https://picsum.photos/seed/menu" + (it.id || Math.random()) + "/400/240",
+                it.image ||
+                "https://picsum.photos/seed/menu" + (it.id || Math.random()) + "/400/240",
             }));
             menu.value = fresh;
             // update cache
             try {
-              const tenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+              const tenant =
+                typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
               if (tenant) {
                 const payload = { ts: Date.now(), menu: menu.value };
                 localStorage.setItem("qm_menu_cache_" + tenant, JSON.stringify(payload));
@@ -135,8 +146,7 @@ export const useOrderStore = defineStore("order", () => {
             }
           } catch {
             /* ignore */
-          }
-          finally {
+          } finally {
             menuLoading = null;
           }
         })();
@@ -172,7 +182,8 @@ export const useOrderStore = defineStore("order", () => {
         menuLoaded.value = true;
         // persist normalized menu per tenant (only if tenant resolved)
         try {
-          const tenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+          const tenant =
+            typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
           if (tenant) {
             const payload = { ts: Date.now(), menu: menu.value };
             localStorage.setItem("qm_menu_cache_" + tenant, JSON.stringify(payload));
@@ -230,7 +241,16 @@ export const useOrderStore = defineStore("order", () => {
         const hasDrink = items.some((it) => {
           const c = String(it.category || "").toLowerCase();
           const s = String(it.subcategory || "").toLowerCase();
-          return c.includes("drink") || c.includes("içecek") || c.includes("icecek") || c.includes("bar") || s.includes("drink") || s.includes("içecek") || s.includes("icecek") || s.includes("bar");
+          return (
+            c.includes("drink") ||
+            c.includes("içecek") ||
+            c.includes("icecek") ||
+            c.includes("bar") ||
+            s.includes("drink") ||
+            s.includes("içecek") ||
+            s.includes("icecek") ||
+            s.includes("bar")
+          );
         });
         const type = hasDrink ? "bar" : "kitchen";
         return {
@@ -266,14 +286,18 @@ export const useOrderStore = defineStore("order", () => {
 
   function addToCart(itemId, note = "") {
     const keyNote = String(note || "").trim();
-    const existing = cart.value.find((i) => i.itemId === itemId && String(i.note || "").trim() === keyNote);
+    const existing = cart.value.find(
+      (i) => i.itemId === itemId && String(i.note || "").trim() === keyNote,
+    );
     if (existing) existing.qty++;
     else cart.value.push({ itemId, qty: 1, note: keyNote || undefined });
   }
 
   function removeFromCart(itemId, note = "") {
     const keyNote = String(note || "").trim();
-    cart.value = cart.value.filter((i) => !(i.itemId === itemId && String(i.note || "").trim() === keyNote));
+    cart.value = cart.value.filter(
+      (i) => !(i.itemId === itemId && String(i.note || "").trim() === keyNote),
+    );
   }
 
   function clearCart() {
@@ -285,9 +309,14 @@ export const useOrderStore = defineStore("order", () => {
     // Cross-tenant session guard: if there's an existing customer session bound to another tenant, block and show a helpful message
     try {
       const ui = useUiStore();
-      const currentTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
-      const existingSession = typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session") : null;
-      const sessionTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session_tenant") : null;
+      const currentTenant =
+        typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+      const existingSession =
+        typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session") : null;
+      const sessionTenant =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("qm_order_session_tenant")
+          : null;
       if (existingSession && sessionTenant && currentTenant && sessionTenant !== currentTenant) {
         ui.toastError(
           "Bu cihazda açık bir sipariş oturumu başka bir restoran için. Bu oturum tamamlanmadan farklı restorandan sipariş veremezsiniz.",
@@ -298,7 +327,7 @@ export const useOrderStore = defineStore("order", () => {
     } catch {
       /* ignore */
     }
-  const items = cart.value.map((i) => ({ ...i }));
+    const items = cart.value.map((i) => ({ ...i }));
     // enrich with snapshot of name and price to avoid menu fetches on tracking page
     const enrichedItems = items.map((i) => {
       const mi = menu.value.find((m) => m.id === i.itemId);
@@ -318,7 +347,7 @@ export const useOrderStore = defineStore("order", () => {
       createdAt: new Date().toISOString(),
       total: calcTotal,
     };
-  orders.value.push(order);
+    orders.value.push(order);
     // try to POST to server; include existing sessionId if present
     try {
       const payload = {
@@ -334,11 +363,18 @@ export const useOrderStore = defineStore("order", () => {
       };
       // tableCode sadece geçerli ve mevcut tenant'a aitse gönderilsin
       try {
-        const currentTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
-        const tableTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_table_tenant") : null;
-        const canSendTable = order.table && order.table !== "guest" && (!currentTenant || !tableTenant || tableTenant === currentTenant);
+        const currentTenant =
+          typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+        const tableTenant =
+          typeof localStorage !== "undefined" ? localStorage.getItem("qm_table_tenant") : null;
+        const canSendTable =
+          order.table &&
+          order.table !== "guest" &&
+          (!currentTenant || !tableTenant || tableTenant === currentTenant);
         if (canSendTable) payload.tableCode = order.table;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       const existingSession = (() => {
         try {
           let sid = localStorage.getItem("qm_order_session");
@@ -360,10 +396,18 @@ export const useOrderStore = defineStore("order", () => {
             // Show a clear message for cross-tenant session attempts and generic for others
             try {
               const ui = useUiStore();
-              const currentTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
-              const sessionTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session_tenant") : null;
-              const hasSession = typeof localStorage !== "undefined" ? !!localStorage.getItem("qm_order_session") : false;
-              const isCrossTenantLikely = hasSession && currentTenant && (!sessionTenant || sessionTenant !== currentTenant);
+              const currentTenant =
+                typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+              const sessionTenant =
+                typeof localStorage !== "undefined"
+                  ? localStorage.getItem("qm_order_session_tenant")
+                  : null;
+              const hasSession =
+                typeof localStorage !== "undefined"
+                  ? !!localStorage.getItem("qm_order_session")
+                  : false;
+              const isCrossTenantLikely =
+                hasSession && currentTenant && (!sessionTenant || sessionTenant !== currentTenant);
               if (r.status === 400 && isCrossTenantLikely) {
                 ui.toastError(
                   "Mevcut sipariş oturumunuz farklı bir restorana ait. Bu oturum tamamlanmadan bu restorandan sipariş veremezsiniz.",
@@ -372,7 +416,9 @@ export const useOrderStore = defineStore("order", () => {
               } else {
                 ui.toastError("Sipariş gönderilemedi. Lütfen tekrar deneyin.");
               }
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
             return;
           }
           const created = await r.json();
@@ -424,7 +470,9 @@ export const useOrderStore = defineStore("order", () => {
             // also set cookie to share across subdomains (max-age ~ 24h default)
             try {
               setCookie("qm_order_session", sess, 60 * 60 * 24);
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
             // persist expiry from header or DTO if present
             try {
               const expHeader = r.headers.get("X-Order-Expires");
@@ -438,9 +486,12 @@ export const useOrderStore = defineStore("order", () => {
             }
             // Bind session to current tenant to provide better UX and error messages across subdomains
             try {
-              const currentTenant = typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
+              const currentTenant =
+                typeof localStorage !== "undefined" ? localStorage.getItem("qm_tenant") : null;
               if (currentTenant) localStorage.setItem("qm_order_session_tenant", currentTenant);
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
             window.dispatchEvent(
               new CustomEvent("qm:orderSession", {
                 detail: { sessionId: sess, orderId: created.id },
@@ -551,10 +602,13 @@ export const useOrderStore = defineStore("order", () => {
       if (normalized === "canceled") {
         // Decide path: if admin context (auth token present or /admin path), use staff endpoint.
         const isAdminPath =
-          typeof window !== "undefined" && window.location && String(window.location.pathname || "").startsWith("/admin");
+          typeof window !== "undefined" &&
+          window.location &&
+          String(window.location.pathname || "").startsWith("/admin");
         let hasAuth = false;
         try {
-          const raw = typeof localStorage !== "undefined" ? localStorage.getItem("qm_session") : null;
+          const raw =
+            typeof localStorage !== "undefined" ? localStorage.getItem("qm_session") : null;
           if (raw) {
             const sess = JSON.parse(raw);
             hasAuth = !!(sess && sess.token);
@@ -572,7 +626,8 @@ export const useOrderStore = defineStore("order", () => {
           // Customer cancel path via dedicated endpoint using sessionId
           let sid = null;
           try {
-            sid = typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session") : null;
+            sid =
+              typeof localStorage !== "undefined" ? localStorage.getItem("qm_order_session") : null;
           } catch {
             /* ignore */
           }
@@ -666,9 +721,9 @@ export const useOrderStore = defineStore("order", () => {
     orders,
     ordersById,
     loadMenu,
-  loadOrders,
-  refreshMenu,
-  clearMenuCache,
+    loadOrders,
+    refreshMenu,
+    clearMenuCache,
     loadSessionOrders,
     addToCart,
     removeFromCart,

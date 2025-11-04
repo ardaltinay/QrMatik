@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">Kullanıcı Yönetimi</h2>
-    <div class="mb-4 grid grid-cols-1 sm:grid-cols-4 gap-2 items-start">
+    <h2 class="mb-4 text-xl font-semibold">Kullanıcı Yönetimi</h2>
+    <div class="mb-4 grid grid-cols-1 items-start gap-2 sm:grid-cols-4">
       <input
         v-model="username"
         placeholder="Kullanıcı adı"
-        class="w-full p-2 rounded-lg border shadow-sm focus:ring-2 focus:ring-brand-200"
+        class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
       />
       <div class="w-full sm:w-auto">
         <BaseSelect
@@ -22,9 +22,9 @@
         v-model="password"
         type="password"
         placeholder="Parola"
-        class="w-full p-2 rounded-lg border shadow-sm focus:ring-2 focus:ring-brand-200"
+        class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
       />
-      <button @click="addUser" class="px-3 py-2 bg-brand-500 text-white rounded-lg shadow">
+      <button @click="addUser" class="rounded-lg bg-brand-500 px-3 py-2 text-white shadow">
         Ekle
       </button>
     </div>
@@ -33,17 +33,17 @@
       <div
         v-for="u in store.users"
         :key="u.id"
-        class="p-3 bg-white border rounded-lg flex flex-col sm:flex-row sm:justify-between gap-3 items-start sm:items-center shadow-sm"
+        class="flex flex-col items-start gap-3 rounded-lg border bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <div class="font-medium">{{ u.username }}</div>
           <div class="text-sm text-gray-500">{{ u.role }}</div>
         </div>
         <div class="flex gap-2">
-          <button @click="editUser(u)" class="px-3 py-1 bg-white border rounded-lg">Düzenle</button>
+          <button @click="editUser(u)" class="rounded-lg border bg-white px-3 py-1">Düzenle</button>
           <button
             @click="store.deleteUser(u.id)"
-            class="px-3 py-1 bg-red-50 text-red-600 rounded-lg"
+            class="rounded-lg bg-red-50 px-3 py-1 text-red-600"
           >
             Sil
           </button>
@@ -51,12 +51,12 @@
       </div>
     </div>
 
-    <div v-if="editing" class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
-      <div class="bg-white p-6 rounded-lg shadow w-full max-w-md">
-        <h3 class="font-semibold mb-2">Kullanıcı Düzenle</h3>
+    <div v-if="editing" class="fixed inset-0 flex items-center justify-center bg-black/40 p-4">
+      <div class="w-full max-w-md rounded-lg bg-white p-6 shadow">
+        <h3 class="mb-2 font-semibold">Kullanıcı Düzenle</h3>
         <input
           v-model="editing.username"
-          class="w-full p-2 rounded-lg border mb-2 shadow-sm focus:ring-2 focus:ring-brand-200"
+          class="focus:ring-brand-200 mb-2 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
         />
         <div>
           <BaseSelect
@@ -73,11 +73,11 @@
           v-model="editing.password"
           type="password"
           placeholder="Yeni parola (isteğe bağlı)"
-          class="w-full p-2 rounded-lg border my-2 shadow-sm focus:ring-2 focus:ring-brand-200"
+          class="focus:ring-brand-200 my-2 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
         />
         <div class="flex justify-end gap-2">
-          <button @click="editing = null" class="px-3 py-1 border rounded-lg">İptal</button>
-          <button @click="saveEdit" class="px-3 py-1 bg-brand-500 text-white rounded-lg">
+          <button @click="editing = null" class="rounded-lg border px-3 py-1">İptal</button>
+          <button @click="saveEdit" class="rounded-lg bg-brand-500 px-3 py-1 text-white">
             Kaydet
           </button>
         </div>

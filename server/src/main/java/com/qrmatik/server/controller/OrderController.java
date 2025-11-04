@@ -1,8 +1,8 @@
 package com.qrmatik.server.controller;
 
 import com.qrmatik.server.converter.OrderConverter;
-import com.qrmatik.server.dto.CreateOrderRequest;
 import com.qrmatik.server.dto.CancelRequest;
+import com.qrmatik.server.dto.CreateOrderRequest;
 import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.StatusUpdate;
 import com.qrmatik.server.model.OrderEntity;
@@ -12,8 +12,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -47,13 +47,16 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> get(@PathVariable String id, @org.springframework.web.bind.annotation.RequestParam(name = "sid", required = false) String sid) {
+    public ResponseEntity<OrderDto> get(@PathVariable String id,
+            @org.springframework.web.bind.annotation.RequestParam(name = "sid", required = false) String sid) {
         Optional<OrderEntity> o = orderService.getById(id);
-        if (o.isEmpty()) return ResponseEntity.notFound().build();
+        if (o.isEmpty())
+            return ResponseEntity.notFound().build();
         OrderEntity e = o.get();
         // If unauthenticated, require valid session id to view order details
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean authenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+        boolean authenticated = auth != null && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
         if (!authenticated) {
             if (sid == null || sid.isBlank()) {
                 return ResponseEntity.notFound().build();
@@ -100,9 +103,10 @@ public class OrderController {
         String tenant = TenantContext.getTenant();
         List<OrderEntity> entities = orderService.bySessionForTenant(sessionId, tenant);
         // Session is considered expired only if ALL orders in the session are expired
-        // This ensures canceling a single order (which sets its sessionExpiresAt to now)
+        // This ensures canceling a single order (which sets its sessionExpiresAt to
+        // now)
         // doesn't hide other active orders from the same session.
-    LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         boolean anyNonExpired = false;
         for (OrderEntity e : entities) {
             boolean isExpired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));
@@ -121,14 +125,14 @@ public class OrderController {
     public ResponseEntity<?> closeTable(@PathVariable String tableCode) {
         String tenant = TenantContext.getTenant();
         int count = orderService.closeSessionsForTable(tableCode, tenant);
-    return ResponseEntity.ok(Map.of("closed", count));
+        return ResponseEntity.ok(Map.of("closed", count));
     }
 
     @PostMapping("/{id}/cancel")
     public ResponseEntity<?> cancel(@PathVariable String id, @RequestBody CancelRequest req) {
         String tenant = TenantContext.getTenant();
         String sessionId = (req != null ? req.getSessionId() : null);
-    Optional<OrderEntity> updated = orderService.cancelBySession(id, tenant, sessionId);
+        Optional<OrderEntity> updated = orderService.cancelBySession(id, tenant, sessionId);
         return updated.map(e -> ResponseEntity.ok(converter.toDto(e)))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }

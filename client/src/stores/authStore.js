@@ -49,7 +49,9 @@ export const useAuthStore = defineStore("auth", () => {
           const hostParts = host.split(".");
           if (hostParts.length > 2) return true;
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       return false;
     })();
     if (role !== "superadmin" && !hasTenant) {
@@ -57,7 +59,9 @@ export const useAuthStore = defineStore("auth", () => {
         const { useUiStore } = await import("@/stores/uiStore");
         const ui = useUiStore();
         ui.toastError("Tenant gerekli: Lütfen restoran alt alan adı üzerinden giriş yapın.");
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       throw new Error("tenant-required");
     }
     token.value = data.token;

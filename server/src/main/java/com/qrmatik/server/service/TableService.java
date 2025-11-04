@@ -25,36 +25,38 @@ public class TableService {
 
     public List<TableEntity> listForCurrentTenant() {
         String tcode = TenantContext.getTenant();
-        if (tcode == null || tcode.isBlank()) return List.of();
+        if (tcode == null || tcode.isBlank())
+            return List.of();
         return tableRepository.findByTenant_Code(tcode);
     }
 
     @Transactional
     public Optional<TableEntity> createForCurrentTenant(TableInsertRequest req) {
         String tcode = TenantContext.getTenant();
-        if (tcode == null || tcode.isBlank()) return Optional.empty();
-        if (req == null || req.getCode() == null || req.getCode().isBlank()) return Optional.empty();
+        if (tcode == null || tcode.isBlank())
+            return Optional.empty();
+        if (req == null || req.getCode() == null || req.getCode().isBlank())
+            return Optional.empty();
         String code = req.getCode().trim();
         // enforce per-tenant uniqueness via findByCodeAndTenant_Code
         if (tableRepository.findByCodeAndTenant_Code(code, tcode).isPresent()) {
             return Optional.empty();
         }
         TenantEntity tenant = tenantRepository.findByCode(tcode).orElse(null);
-        if (tenant == null) return Optional.empty();
-        TableEntity e = TableEntity.builder()
-                .code(code)
-                .description(req.getDescription())
-                .status(req.getStatus() == null ? TableStatus.AVAILABLE : req.getStatus())
-                .tenant(tenant)
-                .build();
+        if (tenant == null)
+            return Optional.empty();
+        TableEntity e = TableEntity.builder().code(code).description(req.getDescription())
+                .status(req.getStatus() == null ? TableStatus.AVAILABLE : req.getStatus()).tenant(tenant).build();
         return Optional.of(tableRepository.save(e));
     }
 
     @Transactional
     public Optional<TableEntity> updateForCurrentTenant(UUID id, TableInsertRequest req) {
         String tcode = TenantContext.getTenant();
-        if (tcode == null || tcode.isBlank()) return Optional.empty();
-        if (id == null) return Optional.empty();
+        if (tcode == null || tcode.isBlank())
+            return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         TableEntity e = tableRepository.findById(id).orElse(null);
         if (e == null || e.getTenant() == null || e.getTenant().getCode() == null
                 || !tcode.equals(e.getTenant().getCode())) {
@@ -70,19 +72,24 @@ public class TableService {
                 e.setCode(newCode);
             }
         }
-        if (req.getDescription() != null) e.setDescription(req.getDescription());
-        if (req.getStatus() != null) e.setStatus(req.getStatus());
+        if (req.getDescription() != null)
+            e.setDescription(req.getDescription());
+        if (req.getStatus() != null)
+            e.setStatus(req.getStatus());
         return Optional.of(tableRepository.save(e));
     }
 
     @Transactional
     public boolean deleteForCurrentTenant(UUID id) {
         String tcode = TenantContext.getTenant();
-        if (tcode == null || tcode.isBlank()) return false;
-        if (id == null) return false;
+        if (tcode == null || tcode.isBlank())
+            return false;
+        if (id == null)
+            return false;
         TableEntity e = tableRepository.findById(id).orElse(null);
         if (e == null || e.getTenant() == null || e.getTenant().getCode() == null
-                || !tcode.equals(e.getTenant().getCode())) return false;
+                || !tcode.equals(e.getTenant().getCode()))
+            return false;
         try {
             tableRepository.delete(e);
             return true;

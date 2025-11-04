@@ -10,6 +10,8 @@ import lombok.Setter;
 public class TenantInsertRequest {
     private String code;
     private String name;
+    private String ownerName;
+    private String ownerEmail;
     private String logoUrl;
     private String primaryColor;
     private String accentColor;

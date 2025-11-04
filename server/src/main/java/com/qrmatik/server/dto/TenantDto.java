@@ -15,6 +15,8 @@ public class TenantDto {
     private String id;
     private String code;
     private String name;
+    private String ownerName;
+    private String ownerEmail;
     private String logoUrl;
     private String primaryColor;
     private String accentColor;

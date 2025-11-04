@@ -21,12 +21,9 @@ public class TableDto {
     private TableStatus status;
 
     public static TableDto fromEntity(TableEntity e) {
-        if (e == null) return null;
-        return TableDto.builder()
-                .id(e.getId())
-                .code(e.getCode())
-                .description(e.getDescription())
-                .status(e.getStatus())
+        if (e == null)
+            return null;
+        return TableDto.builder().id(e.getId()).code(e.getCode()).description(e.getDescription()).status(e.getStatus())
                 .build();
     }
 }

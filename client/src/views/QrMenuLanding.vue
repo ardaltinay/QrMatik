@@ -1,19 +1,17 @@
 <template>
-  <div class="max-w-4xl mx-auto px-6 py-12">
+  <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
         Dijital QR Menü ve QR Sipariş Sistemi
       </h1>
       <p class="text-gray-600">
         QrMatik ile işletmenize <strong>dijital menü</strong>, <strong>QR sipariş</strong> ve
-        <strong>akıllı QR menü</strong> altyapısını kolayca ekleyin. Restoranlar, kafeler ve benzeri işletmeler için hızlı
-        kurulum, canlı takip, mutfak/bar panoları ve raporlama.
+        <strong>akıllı QR menü</strong> altyapısını kolayca ekleyin. Restoranlar, kafeler ve benzeri
+        işletmeler için hızlı kurulum, canlı takip, mutfak/bar panoları ve raporlama.
       </p>
     </header>
 
-
-
-    <section class="grid gap-4 mb-10">
+    <section class="mb-10 grid gap-4">
       <h2 class="text-2xl font-semibold">Öne çıkan özellikler</h2>
       <ul class="grid gap-2 text-gray-700">
         <li>• QR ile hızlı erişim; <em>Yeni → Hazırlanıyor → Hazır → Servis</em> akışında takip</li>
@@ -23,87 +21,119 @@
       </ul>
     </section>
 
-    <section class="grid gap-3 mb-10">
+    <section class="mb-10 grid gap-3">
       <h2 class="text-2xl font-semibold">Hızlı başlangıç</h2>
-      <ol class="list-decimal pl-5 text-gray-700 space-y-1">
+      <ol class="list-decimal space-y-1 pl-5 text-gray-700">
         <li>Kayıt olun ve işletme bilgilerinizi ekleyin.</li>
         <li>Menü kalemlerinizi ve fiyatlarınızı girin.</li>
         <li>Masa/alan kodları için karekod (QR) üretin ve yerleştirin.</li>
-        <li>Müşterileriniz QR'ı okutup <strong>dijital menü</strong>den <strong>QR sipariş</strong> verir.</li>
+        <li>
+          Müşterileriniz QR'ı okutup <strong>dijital menü</strong>den
+          <strong>QR sipariş</strong> verir.
+        </li>
       </ol>
     </section>
 
     <!-- Aranan terimler ve kullanım alanları: en altta akordeon -->
     <section class="py-2">
-      <details class="group bg-white border rounded-xl shadow-sm">
-        <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between">
+      <details class="group rounded-xl border bg-white shadow-sm">
+        <summary class="flex cursor-pointer select-none items-center justify-between px-4 py-3">
           <span class="font-semibold text-gray-900">Aranan terimler ve kullanım alanları</span>
-          <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+          <span class="text-gray-400 transition-transform group-open:rotate-180">▾</span>
         </summary>
-        <div class="px-4 pb-4 text-sm text-gray-700 leading-6">
-          <ul class="list-disc pl-5 space-y-1">
-            <li><strong>qr restoran / restoran qr / restorant qr:</strong> Masaya özel karekod ile mobil sipariş.</li>
-            <li><strong>dijital menü / dijital qr menü / qr digital menü:</strong> Menünüzü telefondan, anında güncel gösterin.</li>
-            <li><strong>qr sipariş:</strong> Müşteriler masadan kalkmadan sipariş verir; durumunu canlı takip eder.</li>
-            <li><strong>karekod restoran / restoran karekod menü:</strong> Tek QR ile menü ve sipariş akışı.</li>
-            <li><strong>akıllı qr menü:</strong> Stok/menü değişiklikleri anında yansır; mutfak ve bar ekranlarına düşer.</li>
+        <div class="px-4 pb-4 text-sm leading-6 text-gray-700">
+          <ul class="list-disc space-y-1 pl-5">
+            <li>
+              <strong>qr restoran / restoran qr / restorant qr:</strong> Masaya özel karekod ile
+              mobil sipariş.
+            </li>
+            <li>
+              <strong>dijital menü / dijital qr menü / qr digital menü:</strong> Menünüzü
+              telefondan, anında güncel gösterin.
+            </li>
+            <li>
+              <strong>qr sipariş:</strong> Müşteriler masadan kalkmadan sipariş verir; durumunu
+              canlı takip eder.
+            </li>
+            <li>
+              <strong>karekod restoran / restoran karekod menü:</strong> Tek QR ile menü ve sipariş
+              akışı.
+            </li>
+            <li>
+              <strong>akıllı qr menü:</strong> Stok/menü değişiklikleri anında yansır; mutfak ve bar
+              ekranlarına düşer.
+            </li>
           </ul>
         </div>
       </details>
     </section>
     <!-- Sticky CTA (mobile): demo anchor on home -->
-    <div class="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white/90 backdrop-blur border-t">
-      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
-  <a href="/#demo" class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm bg-brand-gradient text-white rounded-md shadow hover:opacity-95">Demo talep et</a>
-        <router-link to="/" class="px-4 py-2 rounded-md border bg-white text-gray-800 hover:bg-gray-50">Anasayfa</router-link>
+    <div class="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur md:hidden">
+      <div class="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
+        <a
+          href="/#demo"
+          class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95"
+          >Demo talep et</a
+        >
+        <router-link
+          to="/"
+          class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+          >Anasayfa</router-link
+        >
       </div>
     </div>
     <div class="h-16 md:hidden"></div>
   </div>
-
 </template>
 
 <script setup>
-import { useHead } from '@unhead/vue'
+  import { useHead } from "@unhead/vue";
 
-useHead({
-  title: 'Dijital QR Menü ve QR Sipariş | QrMatik',
-  meta: [
-    { name: 'description', content: 'QrMatik ile dijital menü, QR sipariş ve akıllı QR menü: restoran, kafe ve barlar için karekod menü ve mobil sipariş altyapısı.' },
-    { property: 'og:title', content: 'Dijital QR Menü ve QR Sipariş | QrMatik' },
-    { property: 'og:description', content: 'Restoranlar için dijital menü, QR sipariş ve akıllı QR menü. Karekod restoran menüsü ve canlı sipariş takibi.' },
-    { property: 'og:type', content: 'website' },
-    { name: 'twitter:card', content: 'summary_large_image' }
-  ],
-  script: [
-    {
-      type: 'application/ld+json',
-      children: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        'mainEntity': [
-          {
-            '@type': 'Question',
-            'name': 'Dijital QR menü nedir? Nasıl çalışır?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'Dijital QR menü, masaya yerleştirilen karekodun telefonla okutulmasıyla açılan çevrim içi menüdür. QrMatik ile müşteriler menüden ürün seçip QR sipariş verir ve sipariş durumunu canlı takip eder.'
-            }
-          },
-          {
-            '@type': 'Question',
-            'name': 'QR restoran (restorant) çözümü hangi işletmeler için uygun?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'Restoran, kafe ve barlar için uygundur. Karekod restoran menüsüyle sipariş hızlanır; mutfak/bar ekranlarıyla hazırlık ve servis akışı düzenlenir.'
-            }
-          }
-        ]
-      })
-    }
-  ]
-})
+  useHead({
+    title: "Dijital QR Menü ve QR Sipariş | QrMatik",
+    meta: [
+      {
+        name: "description",
+        content:
+          "QrMatik ile dijital menü, QR sipariş ve akıllı QR menü: restoran, kafe ve barlar için karekod menü ve mobil sipariş altyapısı.",
+      },
+      { property: "og:title", content: "Dijital QR Menü ve QR Sipariş | QrMatik" },
+      {
+        property: "og:description",
+        content:
+          "Restoranlar için dijital menü, QR sipariş ve akıllı QR menü. Karekod restoran menüsü ve canlı sipariş takibi.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    script: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "Dijital QR menü nedir? Nasıl çalışır?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Dijital QR menü, masaya yerleştirilen karekodun telefonla okutulmasıyla açılan çevrim içi menüdür. QrMatik ile müşteriler menüden ürün seçip QR sipariş verir ve sipariş durumunu canlı takip eder.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "QR restoran (restorant) çözümü hangi işletmeler için uygun?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Restoran, kafe ve barlar için uygundur. Karekod restoran menüsüyle sipariş hızlanır; mutfak/bar ekranlarıyla hazırlık ve servis akışı düzenlenir.",
+              },
+            },
+          ],
+        }),
+      },
+    ],
+  });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

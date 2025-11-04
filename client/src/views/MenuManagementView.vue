@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">Menü Yönetimi</h2>
-    <div class="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-2">
+    <h2 class="mb-4 text-xl font-semibold">Menü Yönetimi</h2>
+    <div class="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-5">
       <input
         v-model="name"
         placeholder="Ürün adı"
-        class="w-full p-2 rounded-lg border shadow-sm focus:ring-2 focus:ring-brand-200"
+        class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
       />
       <input
         v-model.number="price"
@@ -13,34 +13,34 @@
         step="0.01"
         min="0"
         placeholder="Fiyat"
-        class="w-full p-2 rounded-lg border shadow-sm focus:ring-2 focus:ring-brand-200"
+        class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
       />
       <BaseSelect v-model="category" :options="categoryOptionItems" />
       <BaseSelect v-model="subcategory" :options="subOptionItems(category)" />
-      <button @click="addItem" class="px-3 py-2 bg-brand-500 text-white rounded-lg shadow">
+      <button @click="addItem" class="rounded-lg bg-brand-500 px-3 py-2 text-white shadow">
         Ekle
       </button>
     </div>
-    <div class="text-sm text-amber-600 mb-3" v-if="statuses._new">{{ statuses._new }}</div>
+    <div class="mb-3 text-sm text-amber-600" v-if="statuses._new">{{ statuses._new }}</div>
 
-    <div class="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       <div
         v-for="it in store.menu"
         :key="it.id"
-        class="p-3 bg-white border rounded-lg flex flex-col gap-3 shadow-sm overflow-hidden"
+        class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-white p-3 shadow-sm"
       >
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="font-medium" v-if="!editing[it.id]">{{ it.name }}</div>
             <div v-else class="flex flex-col gap-2">
-              <input v-model="drafts[it.id].name" class="w-full p-2 rounded border" />
+              <input v-model="drafts[it.id].name" class="w-full rounded border p-2" />
               <div class="grid grid-cols-3 gap-2">
                 <input
                   v-model.number="drafts[it.id].price"
                   type="number"
                   step="0.01"
                   min="0"
-                  class="p-2 rounded border"
+                  class="rounded border p-2"
                 />
                 <BaseSelect v-model="drafts[it.id].category" :options="categoryOptionItems" />
                 <BaseSelect
@@ -54,25 +54,25 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button v-if="!editing[it.id]" @click="startEdit(it)" class="px-2 py-1 border rounded">
+            <button v-if="!editing[it.id]" @click="startEdit(it)" class="rounded border px-2 py-1">
               Düzenle
             </button>
             <template v-else>
-              <button @click="saveEdit(it.id)" class="px-2 py-1 bg-green-600 text-white rounded">
+              <button @click="saveEdit(it.id)" class="rounded bg-green-600 px-2 py-1 text-white">
                 Kaydet
               </button>
-              <button @click="cancelEdit(it.id)" class="px-2 py-1 border rounded">Vazgeç</button>
+              <button @click="cancelEdit(it.id)" class="rounded border px-2 py-1">Vazgeç</button>
             </template>
           </div>
         </div>
-        <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex flex-wrap items-center gap-4">
           <img
             v-if="it.image"
             :src="it.image"
             alt=""
-            class="w-24 h-16 object-cover rounded border"
+            class="h-16 w-24 rounded border object-cover"
           />
-          <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex flex-wrap items-center gap-2">
             <input
               type="file"
               accept="image/*"
@@ -82,15 +82,15 @@
             <button
               @click="upload(it.id)"
               :disabled="!pendingFiles[it.id] || !isUuid(it.id)"
-              class="px-3 py-1 bg-brand-500 text-white rounded disabled:opacity-50"
+              class="rounded bg-brand-500 px-3 py-1 text-white disabled:opacity-50"
             >
               Yükle
             </button>
-            <button @click="askRemove(it)" class="px-3 py-1 bg-red-50 text-red-600 rounded-lg">
+            <button @click="askRemove(it)" class="rounded-lg bg-red-50 px-3 py-1 text-red-600">
               Sil
             </button>
           </div>
-          <div class="text-sm text-gray-500 basis-full" v-if="statuses[it.id]">
+          <div class="basis-full text-sm text-gray-500" v-if="statuses[it.id]">
             {{ statuses[it.id] }}
           </div>
           <div class="text-xs text-amber-600" v-else-if="!isUuid(it.id)">
@@ -103,16 +103,16 @@
     <!-- confirm delete modal -->
     <div
       v-if="confirm.open"
-      class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     >
-      <div class="bg-white rounded-lg p-4 w-full max-w-sm shadow-xl">
-        <div class="font-semibold mb-2">Silme Onayı</div>
+      <div class="w-full max-w-sm rounded-lg bg-white p-4 shadow-xl">
+        <div class="mb-2 font-semibold">Silme Onayı</div>
         <div class="text-sm text-gray-600">
           “{{ confirm.name }}” ürününü silmek istediğinize emin misiniz?
         </div>
         <div class="mt-4 flex justify-end gap-2">
-          <button @click="cancelRemoveConfirm" class="px-3 py-1 border rounded">Vazgeç</button>
-          <button @click="confirmRemove" class="px-3 py-1 bg-red-600 text-white rounded">
+          <button @click="cancelRemoveConfirm" class="rounded border px-3 py-1">Vazgeç</button>
+          <button @click="confirmRemove" class="rounded bg-red-600 px-3 py-1 text-white">
             Sil
           </button>
         </div>

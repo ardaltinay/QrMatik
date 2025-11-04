@@ -37,21 +37,24 @@ public class TableController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TableInsertRequest req) {
         Optional<TableEntity> e = tableService.createForCurrentTenant(req);
-        if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid or duplicate table code");
+        if (e.isEmpty())
+            return ResponseEntity.badRequest().body("Invalid or duplicate table code");
         return ResponseEntity.ok(TableDto.fromEntity(e.get()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody TableInsertRequest req) {
         Optional<TableEntity> e = tableService.updateForCurrentTenant(id, req);
-        if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid table or duplicate code");
+        if (e.isEmpty())
+            return ResponseEntity.badRequest().body("Invalid table or duplicate code");
         return ResponseEntity.ok(TableDto.fromEntity(e.get()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") UUID id) {
         boolean ok = tableService.deleteForCurrentTenant(id);
-        if (!ok) return ResponseEntity.badRequest().body("Invalid table");
+        if (!ok)
+            return ResponseEntity.badRequest().body("Invalid table");
         return ResponseEntity.noContent().build();
     }
 }

@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-
-// logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
@@ -74,7 +72,8 @@ public class OrderService {
             return Optional.empty();
         OrderEntity order = o.get();
 
-        // Personel (ADMIN/KITCHEN/BAR) iptali: sadece NEW, PREPARING, READY durumlarında izin ver
+        // Personel (ADMIN/KITCHEN/BAR) iptali: sadece NEW, PREPARING, READY
+        // durumlarında izin ver
         if (parsed == OrderStatus.CANCELED) {
             OrderStatus cur = order.getStatus();
             if (cur != OrderStatus.NEW && cur != OrderStatus.PREPARING && cur != OrderStatus.READY) {
@@ -119,8 +118,8 @@ public class OrderService {
     }
 
     /**
-     * Mark orders older than 1 day as EXPIRED if they are not already in a terminal state.
-     * Returns the number of orders updated.
+     * Mark orders older than 1 day as EXPIRED if they are not already in a terminal
+     * state. Returns the number of orders updated.
      */
     public int markExpiredOrders() {
         LocalDateTime cutoff = LocalDateTime.now().minusDays(1);
@@ -128,11 +127,14 @@ public class OrderService {
         int count = 0;
         for (OrderEntity e : all) {
             try {
-                if (e == null) continue;
+                if (e == null)
+                    continue;
                 LocalDateTime created = e.getCreatedTime();
-                if (created == null || !created.isBefore(cutoff)) continue;
+                if (created == null || !created.isBefore(cutoff))
+                    continue;
                 OrderStatus st = e.getStatus();
-                if (st == OrderStatus.SERVED || st == OrderStatus.PAYMENT_COMPLETED || st == OrderStatus.CANCELED || st == OrderStatus.EXPIRED) {
+                if (st == OrderStatus.SERVED || st == OrderStatus.PAYMENT_COMPLETED || st == OrderStatus.CANCELED
+                        || st == OrderStatus.EXPIRED) {
                     continue;
                 }
                 e.setStatus(OrderStatus.EXPIRED);
@@ -140,8 +142,10 @@ public class OrderService {
                 orderRepository.save(e);
                 // Update table availability similar to canceled/completed
                 try {
-                    updateTableAvailabilityForTable(e.getTable(), e.getTenant() != null ? e.getTenant().getCode() : null);
-                } catch (Exception ignore) {}
+                    updateTableAvailabilityForTable(e.getTable(),
+                            e.getTenant() != null ? e.getTenant().getCode() : null);
+                } catch (Exception ignore) {
+                }
                 count++;
             } catch (Exception ignore) {
                 // ignore individual failures to prevent breaking the sweep
@@ -157,19 +161,21 @@ public class OrderService {
         input.setSessionExpiresAt(LocalDateTime.now().plusHours(24));
         String incomingSession = req.getSessionId();
         input.setSessionId((incomingSession == null || incomingSession.isBlank())
-        ? UUID.randomUUID().toString()
+                ? UUID.randomUUID().toString()
                 : incomingSession);
 
         String tcode = (tenant != null && !tenant.isBlank()) ? tenant.trim() : null;
 
-        // Enforce cross-tenant session rule: existing session must belong to the same tenant
+        // Enforce cross-tenant session rule: existing session must belong to the same
+        // tenant
         if (incomingSession != null && !incomingSession.isBlank()) {
             try {
                 List<OrderEntity> existing = orderRepository.findBySessionId(incomingSession);
                 String existingTenant = null;
                 if (existing != null) {
                     for (OrderEntity e : existing) {
-                        if (e != null && e.getTenant() != null && e.getTenant().getCode() != null && !e.getTenant().getCode().isBlank()) {
+                        if (e != null && e.getTenant() != null && e.getTenant().getCode() != null
+                                && !e.getTenant().getCode().isBlank()) {
                             existingTenant = e.getTenant().getCode();
                             break; // take the first non-null tenant
                         }
@@ -183,8 +189,10 @@ public class OrderService {
                     // Otherwise, align order tenant to the existing session's tenant
                     try {
                         tenantRepository.findByCode(existingTenant).ifPresent(input::setTenant);
-                    } catch (Exception ignore) {}
-                    // Also make sure we use the canonical session id (in case of formatting differences)
+                    } catch (Exception ignore) {
+                    }
+                    // Also make sure we use the canonical session id (in case of formatting
+                    // differences)
                     input.setSessionId(incomingSession);
                 }
             } catch (Exception ignore) {
@@ -201,7 +209,8 @@ public class OrderService {
                 return Optional.empty();
             }
             var table = tableOpt.get();
-            // tenant tutarlılığı: hem paramda tenant hem tablonun tenantı varsa ve farklıysa reddet
+            // tenant tutarlılığı: hem paramda tenant hem tablonun tenantı varsa ve
+            // farklıysa reddet
             String tableTenant = (table.getTenant() != null ? table.getTenant().getCode() : null);
             if (tcode != null && tableTenant != null && !tcode.equals(tableTenant)) {
                 return Optional.empty();
@@ -261,30 +270,36 @@ public class OrderService {
     }
 
     public Optional<OrderEntity> cancelBySession(String id, String tenant, String sessionId) {
-        if (sessionId == null || sessionId.isBlank()) return Optional.empty();
+        if (sessionId == null || sessionId.isBlank())
+            return Optional.empty();
         Optional<OrderEntity> o = getById(id);
-        if (o.isEmpty()) return Optional.empty();
+        if (o.isEmpty())
+            return Optional.empty();
         OrderEntity order = o.get();
         // tenant guard
         if (tenant != null) {
             TenantEntity ordTenant = order.getTenant();
             String oc = (ordTenant != null ? ordTenant.getCode() : null);
-            if (oc != null && !tenant.equals(oc)) return Optional.empty();
+            if (oc != null && !tenant.equals(oc))
+                return Optional.empty();
         }
         // session guard
-        if (!sessionId.equals(order.getSessionId())) return Optional.empty();
+        if (!sessionId.equals(order.getSessionId()))
+            return Optional.empty();
         // only NEW within 2 minutes
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime created = order.getCreatedTime();
         boolean within2min = created != null && !created.isBefore(now.minusMinutes(2));
-        if (order.getStatus() != OrderStatus.NEW || !within2min) return Optional.empty();
+        if (order.getStatus() != OrderStatus.NEW || !within2min)
+            return Optional.empty();
 
         order.setStatus(OrderStatus.CANCELED);
         order.setSessionExpiresAt(now);
         OrderEntity saved = orderRepository.save(order);
         try {
             updateTableAvailabilityForTable(saved.getTable(), tenant);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return Optional.of(saved);
     }
 
@@ -310,11 +325,13 @@ public class OrderService {
                     tableRef = null; // id tabanlı arama yerine aşağıda code+tenant ile devam edilecek
                 }
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         List<OrderEntity> list;
         if (tableRef != null && tableRef.getId() != null) {
-            // Tablo bulundu, tenant varsa tenant'a göre, yoksa sadece tableId ile güvenli daraltma
+            // Tablo bulundu, tenant varsa tenant'a göre, yoksa sadece tableId ile güvenli
+            // daraltma
             if (tcode != null && !tcode.isBlank()) {
                 list = orderRepository.findByTable_IdAndTenant_Code(tableRef.getId(), tcode);
             } else {
@@ -324,7 +341,8 @@ public class OrderService {
             // Tablo bulunamadıysa ve tenant yoksa güvenli davran: işlem yapma
             if (tcode == null || tcode.isBlank()) {
                 if (log.isWarnEnabled()) {
-                    log.warn("closeSessionsForTable aborted: table not found for code={}, tenant is null/blank", tableCode);
+                    log.warn("closeSessionsForTable aborted: table not found for code={}, tenant is null/blank",
+                            tableCode);
                 }
                 return 0;
             }
@@ -340,7 +358,8 @@ public class OrderService {
                 e.setSessionExpiresAt(now);
                 changed = true;
             }
-            // Admin masa kapatma: ödeme tamamlanmadıysa CANCELED olarak işaretle (null dahil)
+            // Admin masa kapatma: ödeme tamamlanmadıysa CANCELED olarak işaretle (null
+            // dahil)
             if (e.getStatus() == null || e.getStatus() != OrderStatus.PAYMENT_COMPLETED) {
                 e.setStatus(OrderStatus.CANCELED);
                 changed = true;
@@ -363,7 +382,8 @@ public class OrderService {
                     tableRepository.findByCode(tableCode).ifPresent(t -> updateTableAvailabilityForTable(t, tcode));
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         if (log.isDebugEnabled()) {
             log.debug("closeSessionsForTable updated orders count={}", count);
         }
@@ -382,20 +402,20 @@ public class OrderService {
             if (ln.getItemId() != null) {
                 menuItem = menuItemRepository.findById(ln.getItemId()).orElse(null);
             }
-        // Fiyat otoritesi sunucuda: menü kalemi varsa onun fiyatını kullan; yoksa istekten geleni düş
-        BigDecimal unitPrice = (menuItem != null && menuItem.getPrice() != null)
-            ? menuItem.getPrice()
-            : (ln.getPrice() != null ? ln.getPrice() : BigDecimal.ZERO);
+            // Fiyat otoritesi sunucuda: menü kalemi varsa onun fiyatını kullan; yoksa
+            // istekten geleni düş
+            BigDecimal unitPrice = (menuItem != null && menuItem.getPrice() != null)
+                    ? menuItem.getPrice()
+                    : (ln.getPrice() != null ? ln.getPrice() : BigDecimal.ZERO);
             String nameSnapshot = (ln.getName() != null && !ln.getName().isBlank())
                     ? ln.getName()
                     : (menuItem != null ? menuItem.getName() : null);
             OrderItemEntity li = OrderItemEntity.builder().order(input).menuItem(menuItem).quantity(qty)
                     .unitPrice(unitPrice).nameSnapshot(nameSnapshot)
                     .imageSnapshot(menuItem != null ? menuItem.getImage() : null)
-            .categorySnapshot(menuItem != null ? menuItem.getCategory() : null)
-            .subcategorySnapshot(menuItem != null ? menuItem.getSubcategory() : null)
-            .note(ln.getNote())
-            .build();
+                    .categorySnapshot(menuItem != null ? menuItem.getCategory() : null)
+                    .subcategorySnapshot(menuItem != null ? menuItem.getSubcategory() : null).note(ln.getNote())
+                    .build();
             lines.add(li);
         }
         if (!lines.isEmpty()) {

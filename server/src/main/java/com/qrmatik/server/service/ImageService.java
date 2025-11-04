@@ -34,8 +34,7 @@ public class ImageService {
         }
     }
 
-    public SavedImages saveMenuItemImage(String tenantCode, UUID menuItemId, MultipartFile file)
-            throws IOException {
+    public SavedImages saveMenuItemImage(String tenantCode, UUID menuItemId, MultipartFile file) throws IOException {
         if (file == null || file.isEmpty())
             throw new IOException("Empty file");
         String contentType = file.getContentType() != null ? file.getContentType().toLowerCase(Locale.ROOT) : "";
@@ -46,10 +45,11 @@ public class ImageService {
         if (ext == null) {
             throw new IOException("Unsupported image type. Please upload JPG/PNG (WEBP supported if enabled).");
         }
-    Path base = resolveUploadBase();
-    Path dir = base.resolve("tenants").resolve(safe(tenantCode)).resolve("menu").resolve(String.valueOf(menuItemId));
-    log.info("Saving menu image. uploadDir={}, resolvedBase={}, resolvedDir={}", uploadDir, base.toAbsolutePath(),
-        dir.toAbsolutePath());
+        Path base = resolveUploadBase();
+        Path dir = base.resolve("tenants").resolve(safe(tenantCode)).resolve("menu")
+                .resolve(String.valueOf(menuItemId));
+        log.info("Saving menu image. uploadDir={}, resolvedBase={}, resolvedDir={}", uploadDir, base.toAbsolutePath(),
+                dir.toAbsolutePath());
         Files.createDirectories(dir);
 
         // Save original as original.{ext} (use copy to avoid cross-FS move issues)
@@ -78,7 +78,8 @@ public class ImageService {
     private Path resolveUploadBase() {
         try {
             Path configured = Paths.get(uploadDir);
-            if (configured.isAbsolute()) return configured.normalize();
+            if (configured.isAbsolute())
+                return configured.normalize();
             URI codeSrc = ImageService.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             Path loc = Paths.get(codeSrc);
             if (loc.getFileName() != null && loc.getFileName().toString().equals("classes")) {

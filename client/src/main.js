@@ -53,25 +53,48 @@ async function loadTenantConfig() {
   if (!tenant) return { found: true }; // no implicit fallback
   // fetch tenant config; only persist tenant if config resolves
   // Persist candidate tenant
-  try { localStorage.setItem("qm_tenant", tenant); } catch { /* ignore */ }
+  try {
+    localStorage.setItem("qm_tenant", tenant);
+  } catch {
+    /* ignore */
+  }
   // fetch tenant config using JSON helper (handles errors/toasts)
   try {
-    const cfg = await fetchJson("/api/tenant/config?code=" + encodeURIComponent(tenant), { silentError: true });
+    const cfg = await fetchJson("/api/tenant/config?code=" + encodeURIComponent(tenant), {
+      silentError: true,
+    });
     if (cfg && typeof cfg === "object") {
       if (cfg.primaryColor)
         document.documentElement.style.setProperty("--brand-primary", cfg.primaryColor);
       if (cfg.accentColor)
         document.documentElement.style.setProperty("--brand-accent", cfg.accentColor);
-      try { localStorage.setItem("qm_tenant_cfg", JSON.stringify(cfg)); } catch { /* ignore */ }
-      try { sessionStorage.setItem("qm_tenant_verified_" + tenant, "ok"); } catch { /* ignore */ }
+      try {
+        localStorage.setItem("qm_tenant_cfg", JSON.stringify(cfg));
+      } catch {
+        /* ignore */
+      }
+      try {
+        sessionStorage.setItem("qm_tenant_verified_" + tenant, "ok");
+      } catch {
+        /* ignore */
+      }
       return { found: true };
     }
   } catch {
     // 404 veya diğer hatalarda tenant bilgisini temizle ve kullanıcıyı bilgilendir
-    try { localStorage.removeItem("qm_tenant"); localStorage.removeItem("qm_tenant_cfg"); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem("qm_tenant");
+      localStorage.removeItem("qm_tenant_cfg");
+    } catch {
+      /* ignore */
+    }
     const ui = useUiStore();
     ui.toastError("Restoran bulunamadı veya pasif.");
-    try { sessionStorage.setItem("qm_tenant_verified_" + tenant, "notfound"); } catch { /* ignore */ }
+    try {
+      sessionStorage.setItem("qm_tenant_verified_" + tenant, "notfound");
+    } catch {
+      /* ignore */
+    }
     return { found: false };
   }
   return { found: true };
@@ -89,7 +112,9 @@ try {
     try {
       const tenant = localStorage.getItem("qm_tenant");
       if (tenant) localStorage.setItem("qm_table_tenant", tenant);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   } else {
     // Eğer daha önce ayarlanmamışsa varsayılan 'guest' kullan (sunucuya gönderilmeyecek)
     const existing = localStorage.getItem("qm_table_code");
@@ -125,12 +150,15 @@ try {
           return null;
         }
       })();
-      let cookie = encodeURIComponent("qm_order_session") + "=" + encodeURIComponent(sid) + "; Path=/";
+      let cookie =
+        encodeURIComponent("qm_order_session") + "=" + encodeURIComponent(sid) + "; Path=/";
       // 1 gün
       cookie += "; Max-Age=" + String(60 * 60 * 24);
       if (base && base.includes(".")) cookie += "; Domain=." + base;
       document.cookie = cookie;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   })();
 
   const exp = localStorage.getItem("qm_order_session_expires");
@@ -148,12 +176,16 @@ try {
             const parts = h.split(".");
             if (parts.length >= 3) return parts.slice(-2).join(".");
             return h;
-          } catch { return null; }
+          } catch {
+            return null;
+          }
         })();
         let cookie = encodeURIComponent("qm_order_session") + "=; Max-Age=0; Path=/";
         if (base && base.includes(".")) cookie += "; Domain=." + base;
         document.cookie = cookie;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       const ui = useUiStore();
       ui.toast("Oturum süresi doldu", "info");
     }
@@ -166,6 +198,10 @@ try {
 loadTenantConfig().then((res) => {
   app.mount("#app");
   if (res && res.found === false) {
-    try { router.replace({ name: "tenant-not-found" }); } catch { /* ignore */ }
+    try {
+      router.replace({ name: "tenant-not-found" });
+    } catch {
+      /* ignore */
+    }
   }
 });

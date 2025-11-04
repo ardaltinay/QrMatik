@@ -1,24 +1,37 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <header class="bg-white shadow relative">
-      <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+  <div class="flex min-h-screen flex-col">
+    <header class="relative bg-white shadow">
+      <div class="container mx-auto flex items-center justify-between px-6 py-4">
         <router-link to="/" class="flex items-center gap-3">
-          <img src="@/assets/logo.svg" alt="QrMatik" class="w-10 h-10" />
+          <img src="@/assets/logo.svg" alt="QrMatik" class="h-10 w-10" />
           <div class="text-xl font-bold text-brand-700">QrMatik</div>
         </router-link>
-        <nav class="hidden md:flex gap-4 items-center">
+        <nav class="hidden items-center gap-4 md:flex">
           <router-link to="/" class="text-gray-700 hover:text-indigo-600">Anasayfa</router-link>
-          <router-link v-if="hasTenant" to="/menu" class="text-gray-700 hover:text-indigo-600">Menü</router-link>
-          <router-link v-if="!hasTenant" to="/about" class="text-gray-700 hover:text-indigo-600">Hakkında</router-link>
-          <router-link v-if="isAdmin && hasTenant" to="/admin" class="text-gray-700 hover:text-indigo-600"
+          <router-link v-if="hasTenant" to="/menu" class="text-gray-700 hover:text-indigo-600"
+            >Menü</router-link
+          >
+          <router-link v-if="!hasTenant" to="/about" class="text-gray-700 hover:text-indigo-600"
+            >Hakkında</router-link
+          >
+          <router-link
+            v-if="isAdmin && hasTenant"
+            to="/admin"
+            class="text-gray-700 hover:text-indigo-600"
             >Admin</router-link
           >
-          <router-link v-else-if="isSuperAdmin" to="/super/tenants" class="text-gray-700 hover:text-indigo-600"
-            >Admin</router-link>
-          <a v-if="hasTenant" :href="apexHome" class="ml-2 text-gray-700 hover:text-indigo-600">QrMatik Anasayfa</a>
+          <router-link
+            v-else-if="isSuperAdmin"
+            to="/super/tenants"
+            class="text-gray-700 hover:text-indigo-600"
+            >Admin</router-link
+          >
+          <a v-if="hasTenant" :href="apexHome" class="ml-2 text-gray-700 hover:text-indigo-600"
+            >QrMatik Anasayfa</a
+          >
         </nav>
         <div class="md:hidden">
-          <button ref="menuButton" @click="open = !open" class="p-2 rounded bg-gray-100">
+          <button ref="menuButton" @click="open = !open" class="rounded bg-gray-100 p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-6 w-6"
@@ -41,17 +54,17 @@
         <div
           v-if="open"
           ref="mobileMenu"
-          class="md:hidden absolute left-0 right-0 top-full z-40 flex justify-center"
+          class="absolute left-0 right-0 top-full z-40 flex justify-center md:hidden"
         >
           <div
-            class="mt-2 w-[calc(100%-2rem)] bg-white rounded-b-xl shadow-xl overflow-hidden motion-safe:animate-slideDown"
+            class="mt-2 w-[calc(100%-2rem)] overflow-hidden rounded-b-xl bg-white shadow-xl motion-safe:animate-slideDown"
           >
-            <div class="p-3 border-b flex items-center justify-between">
+            <div class="flex items-center justify-between border-b p-3">
               <div class="flex items-center gap-3">
-                <img src="@/assets/logo.svg" alt="QrMatik" class="w-8 h-8" />
-                <div class="font-semibold text-base">QrMatik</div>
+                <img src="@/assets/logo.svg" alt="QrMatik" class="h-8 w-8" />
+                <div class="text-base font-semibold">QrMatik</div>
               </div>
-              <button @click="open = false" class="p-2 rounded bg-gray-100">
+              <button @click="open = false" class="rounded bg-gray-100 p-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-5 w-5"
@@ -71,42 +84,42 @@
                 <router-link
                   @click="open = false"
                   to="/"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >Anasayfa</router-link
                 >
                 <router-link
                   @click="open = false"
                   v-if="hasTenant"
                   to="/menu"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >Menü</router-link
                 >
                 <router-link
                   v-if="!hasTenant"
                   @click="open = false"
                   to="/about"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >Hakkında</router-link
                 >
                 <router-link
                   v-if="isAdmin && hasTenant"
                   @click="open = false"
                   to="/admin"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >Admin</router-link
                 >
                 <router-link
                   v-else-if="isSuperAdmin"
                   @click="open = false"
                   to="/super/tenants"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >Admin</router-link
                 >
                 <a
                   v-if="hasTenant"
                   :href="apexHome"
                   @click="open = false"
-                  class="py-3 px-3 rounded-md hover:bg-gray-50 transition text-base font-medium"
+                  class="rounded-md px-3 py-3 text-base font-medium transition hover:bg-gray-50"
                   >QrMatik Anasayfa</a
                 >
               </nav>
@@ -116,7 +129,7 @@
       </transition>
     </header>
 
-    <main class="container mx-auto px-6 py-8 flex-1">
+    <main class="container mx-auto flex-1 px-6 py-8">
       <router-view />
     </main>
     <SiteFooter />
@@ -137,7 +150,9 @@
   const auth = useAuthStore();
 
   const isAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "admin");
-  const isSuperAdmin = computed(() => auth.user && String(auth.user.role).toLowerCase() === "superadmin");
+  const isSuperAdmin = computed(
+    () => auth.user && String(auth.user.role).toLowerCase() === "superadmin",
+  );
   const route = useRoute();
   const hasTenant = computed(() => {
     try {
@@ -155,7 +170,9 @@
         const hostParts = host.split(".");
         if (hostParts.length > 2) return true;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return false;
   });
 
@@ -177,7 +194,9 @@
         }
       }
       return (loc.protocol || "https:") + "//" + apexHost + "/";
-    } catch { return "/"; }
+    } catch {
+      return "/";
+    }
   });
 
   function onDocClick(e) {
@@ -215,35 +234,61 @@
   const canonical = computed(() => {
     try {
       return window.location.origin + window.location.pathname + window.location.search;
-    } catch { return "/"; }
+    } catch {
+      return "/";
+    }
   });
 
   const routeNoindex = computed(() => {
     try {
       const p = route.path || "";
-      return p.startsWith("/admin") || p.startsWith("/super") || p.startsWith("/my-orders") || p.startsWith("/order/");
-    } catch { return false; }
+      return (
+        p.startsWith("/admin") ||
+        p.startsWith("/super") ||
+        p.startsWith("/my-orders") ||
+        p.startsWith("/order/")
+      );
+    } catch {
+      return false;
+    }
   });
 
   // Global head defaults + tenant/admin-specific robots
   useHead(() => ({
     title: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim",
     meta: [
-      { name: "description", content: hasTenant.value ? "QR ile menü ve hızlı sipariş deneyimi" : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın." },
-      (hasTenant.value || routeNoindex.value) ? { name: "robots", content: "noindex,nofollow" } : { name: "robots", content: "index,follow" },
-      { property: "og:title", content: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim" },
-      { property: "og:description", content: hasTenant.value ? "QR ile menü ve hızlı sipariş deneyimi" : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın." },
+      {
+        name: "description",
+        content: hasTenant.value
+          ? "QR ile menü ve hızlı sipariş deneyimi"
+          : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın.",
+      },
+      hasTenant.value || routeNoindex.value
+        ? { name: "robots", content: "noindex,nofollow" }
+        : { name: "robots", content: "index,follow" },
+      {
+        property: "og:title",
+        content: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim",
+      },
+      {
+        property: "og:description",
+        content: hasTenant.value
+          ? "QR ile menü ve hızlı sipariş deneyimi"
+          : "QR ile menüye hızlı eriş, sipariş ver; mutfak ve bar anında çalışsın.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonical.value },
       { property: "og:site_name", content: "QrMatik" },
       { name: "twitter:card", content: "summary_large_image" },
       // Rich previews (apex only image)
-      ...(hasTenant.value ? [] : [
-        { property: "og:image", content: "/og-image.svg" },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
-        { name: "twitter:image", content: "/og-image.svg" },
-      ]),
+      ...(hasTenant.value
+        ? []
+        : [
+            { property: "og:image", content: "/og-image.svg" },
+            { property: "og:image:width", content: "1200" },
+            { property: "og:image:height", content: "630" },
+            { name: "twitter:image", content: "/og-image.svg" },
+          ]),
     ],
     link: [
       { rel: "canonical", href: canonical.value },

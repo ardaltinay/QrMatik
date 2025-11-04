@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => ({
       ? [
           prerender({
             staticDir: path.resolve(__dirname, "dist"),
-        routes: ["/", "/about", "/qr-menu"],
+            routes: ["/", "/about", "/qr-menu"],
           }),
         ]
       : []),

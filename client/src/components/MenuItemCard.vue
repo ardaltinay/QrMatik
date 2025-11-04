@@ -1,18 +1,18 @@
 <template>
   <div
-    class="bg-white border rounded-lg p-0 shadow-sm overflow-hidden transform transition hover:-translate-y-1 hover:scale-[1.01] hover:shadow-lg"
+    class="transform overflow-hidden rounded-lg border bg-white p-0 shadow-sm transition hover:-translate-y-1 hover:scale-[1.01] hover:shadow-lg"
   >
-    <img v-if="item.image" :src="item.image" alt="" class="w-full h-40 object-cover" />
-    <div class="p-4 flex flex-col gap-2">
+    <img v-if="item.image" :src="item.image" alt="" class="h-40 w-full object-cover" />
+    <div class="flex flex-col gap-2 p-4">
       <div>
         <div class="text-sm text-gray-500">{{ catLabel }} · {{ subLabel }}</div>
-        <div class="mt-1 text-base font-semibold text-gray-900 truncate">{{ item.name }}</div>
+        <div class="mt-1 truncate text-base font-semibold text-gray-900">{{ item.name }}</div>
       </div>
       <div class="flex items-center justify-between">
-        <div class="text-indigo-600 font-semibold">{{ item.price }}₺</div>
+        <div class="font-semibold text-indigo-600">{{ item.price }}₺</div>
         <button
           @click="$emit('add', item)"
-          class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          class="rounded-md bg-indigo-600 px-3 py-1 text-white hover:bg-indigo-700"
         >
           Sepete Ekle
         </button>

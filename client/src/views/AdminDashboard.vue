@@ -4,16 +4,16 @@
       <h1 class="text-2xl font-semibold">Admin Paneli</h1>
       <div v-if="isAdmin">
         <template v-if="auth.user">
-          <span class="text-sm text-gray-600 mr-4">Merhaba, {{ auth.user.username }}</span>
-          <button @click="onLogout" class="px-3 py-1 border rounded">Çıkış</button>
+          <span class="mr-4 text-sm text-gray-600">Merhaba, {{ auth.user.username }}</span>
+          <button @click="onLogout" class="rounded border px-3 py-1">Çıkış</button>
         </template>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
       <aside
         v-if="isAdmin"
-        class="lg:col-span-1 p-4 bg-white rounded-lg shadow-lg sticky top-6 lg:top-20 self-start max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-5rem)] overflow-auto z-10"
+        class="sticky top-6 z-10 max-h-[calc(100vh-2rem)] self-start overflow-auto rounded-lg bg-white p-4 shadow-lg lg:top-20 lg:col-span-1 lg:max-h-[calc(100vh-5rem)]"
       >
         <nav class="flex flex-col gap-3">
           <button
@@ -21,7 +21,7 @@
             type="button"
             :class="
               navItemClass('/admin/orders') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/orders', 'admin')"
           >
@@ -32,7 +32,7 @@
             type="button"
             :class="
               navItemClass('/admin/users') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/users', 'admin')"
           >
@@ -43,7 +43,7 @@
             type="button"
             :class="
               navItemClass('/admin/menu-management') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/menu-management', 'admin')"
           >
@@ -54,7 +54,7 @@
             type="button"
             :class="
               navItemClass('/admin/tables') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/tables', 'admin')"
           >
@@ -65,7 +65,7 @@
             type="button"
             :class="
               navItemClass('/admin/reports') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/reports', 'admin')"
           >
@@ -76,7 +76,7 @@
             type="button"
             :class="
               navItemClass('/admin/qr') +
-              ' shadow-sm hover:shadow-lg transition-shadow block w-full'
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
             "
             @click="navigateOrLogin('/admin/qr', 'admin')"
           >
@@ -88,29 +88,29 @@
       <main
         :class="
           (isAdmin ? 'lg:col-span-3' : 'lg:col-span-4') +
-          ' p-4 bg-white rounded-lg shadow-md relative z-20'
+          ' relative z-20 rounded-lg bg-white p-4 shadow-md'
         "
       >
         <template v-if="auth.user">
           <router-view />
         </template>
         <template v-else>
-          <div class="min-h-[40vh] flex items-center justify-center">
-            <div class="w-full max-w-sm bg-white border rounded-xl shadow p-6">
-              <h3 class="font-semibold mb-4">Admin Girişi</h3>
+          <div class="flex min-h-[40vh] items-center justify-center">
+            <div class="w-full max-w-sm rounded-xl border bg-white p-6 shadow">
+              <h3 class="mb-4 font-semibold">Admin Girişi</h3>
               <input
                 v-model="username"
                 placeholder="Kullanıcı adı"
-                class="w-full mb-3 p-2 border rounded"
+                class="mb-3 w-full rounded border p-2"
               />
               <input
                 v-model="password"
                 placeholder="Parola"
                 type="password"
-                class="w-full mb-4 p-2 border rounded"
+                class="mb-4 w-full rounded border p-2"
               />
               <div class="flex justify-end gap-2">
-                <button @click="login" class="px-3 py-2 bg-brand-500 text-white rounded">
+                <button @click="login" class="rounded bg-brand-500 px-3 py-2 text-white">
                   Giriş Yap
                 </button>
               </div>
@@ -237,7 +237,17 @@
         return base + (active ? " bg-brand-500 text-white" : " hover:bg-gray-100");
       }
 
-      return { auth, showLogin, username, password, login, navigateOrLogin, navItemClass, isAdmin, onLogout };
+      return {
+        auth,
+        showLogin,
+        username,
+        password,
+        login,
+        navigateOrLogin,
+        navItemClass,
+        isAdmin,
+        onLogout,
+      };
     },
   };
 </script>

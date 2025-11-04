@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2 class="text-lg font-semibold mb-3">QR Kodları</h2>
+    <h2 class="mb-3 text-lg font-semibold">QR Kodları</h2>
     <div class="mb-2 text-sm text-gray-600">Tenant kodu (boş bırakılırsa tüm tenant'lar için):</div>
-    <input v-model="qrTenant" placeholder="tenant kodu" class="w-full p-2 mb-3 border rounded" />
-    <div class="flex gap-2 mb-3">
-      <button @click="downloadQrs" class="px-3 py-2 bg-brand-500 text-white rounded">
+    <input v-model="qrTenant" placeholder="tenant kodu" class="mb-3 w-full rounded border p-2" />
+    <div class="mb-3 flex gap-2">
+      <button @click="downloadQrs" class="rounded bg-brand-500 px-3 py-2 text-white">
         PDF İndir
       </button>
-      <button @click="fillTenantFromStorage" class="px-3 py-2 border rounded">
+      <button @click="fillTenantFromStorage" class="rounded border px-3 py-2">
         LocalStorage'dan Doldur
       </button>
     </div>

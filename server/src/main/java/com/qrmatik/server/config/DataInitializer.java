@@ -23,8 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final JdbcTemplate jdbcTemplate;
 
     public DataInitializer(UserRepository userRepository, MenuItemRepository menuRepository,
-            TableRepository tableRepository,
-            TenantRepository tenantRepository, JdbcTemplate jdbcTemplate) {
+            TableRepository tableRepository, TenantRepository tenantRepository, JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
         this.menuRepository = menuRepository;
         this.tableRepository = tableRepository;
@@ -54,9 +53,9 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(UserEntity.builder().username("bar").role("bar").tenant(t)
                     .passwordHash(pe.encode("bar123")).build());
             userRepository.save(UserEntity.builder().username("test").role("test").tenant(t)
-                .passwordHash(pe.encode("test123")).build());
+                    .passwordHash(pe.encode("test123")).build());
             userRepository.save(UserEntity.builder().username("super").role("superadmin").tenant(t)
-                .passwordHash(pe.encode("super123")).build());
+                    .passwordHash(pe.encode("super123")).build());
         }
 
         if (menuRepository.count() == 0) {

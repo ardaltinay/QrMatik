@@ -10,15 +10,9 @@ public class TenantConverter {
     public TenantDto toDto(TenantEntity e) {
         if (e == null)
             return null;
-        return TenantDto.builder()
-                .id(e.getId() != null ? e.getId().toString() : null)
-                .code(e.getCode())
-                .name(e.getName())
-                .logoUrl(e.getLogoUrl())
-                .primaryColor(e.getPrimaryColor())
-                .accentColor(e.getAccentColor())
-                .config(e.getConfigJson())
-                .build();
+        return TenantDto.builder().id(e.getId() != null ? e.getId().toString() : null).code(e.getCode())
+                .name(e.getName()).ownerName(e.getOwnerName()).ownerEmail(e.getOwnerEmail()).logoUrl(e.getLogoUrl())
+                .primaryColor(e.getPrimaryColor()).accentColor(e.getAccentColor()).config(e.getConfigJson()).build();
     }
 
     public UUID parseId(String id) {

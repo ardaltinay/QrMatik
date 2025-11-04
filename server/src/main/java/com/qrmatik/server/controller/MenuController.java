@@ -40,7 +40,6 @@ public class MenuController {
         return menuService.popular(tenant, limit).stream().map(converter::toDto).toList();
     }
 
-
     @PostMapping
     public ResponseEntity<MenuItemDto> create(@RequestBody MenuItemEntity m) {
         String tenant = TenantContext.getTenant();
