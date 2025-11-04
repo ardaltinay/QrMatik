@@ -1,6 +1,6 @@
 package com.qrmatik.server.service;
 
-import com.qrmatik.server.dto.TableUpsertRequest;
+import com.qrmatik.server.dto.TableInsertRequest;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.model.TenantEntity;
@@ -30,7 +30,7 @@ public class TableService {
     }
 
     @Transactional
-    public Optional<TableEntity> createForCurrentTenant(TableUpsertRequest req) {
+    public Optional<TableEntity> createForCurrentTenant(TableInsertRequest req) {
         String tcode = TenantContext.getTenant();
         if (tcode == null || tcode.isBlank()) return Optional.empty();
         if (req == null || req.getCode() == null || req.getCode().isBlank()) return Optional.empty();
@@ -51,7 +51,7 @@ public class TableService {
     }
 
     @Transactional
-    public Optional<TableEntity> updateForCurrentTenant(UUID id, TableUpsertRequest req) {
+    public Optional<TableEntity> updateForCurrentTenant(UUID id, TableInsertRequest req) {
         String tcode = TenantContext.getTenant();
         if (tcode == null || tcode.isBlank()) return Optional.empty();
         if (id == null) return Optional.empty();

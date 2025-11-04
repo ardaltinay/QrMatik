@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TenantUpsertRequest {
+public class TenantInsertRequest {
     private String code;
     private String name;
     private String logoUrl;

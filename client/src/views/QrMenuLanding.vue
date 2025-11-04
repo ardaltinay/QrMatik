@@ -6,7 +6,7 @@
       </h1>
       <p class="text-gray-600">
         QrMatik ile işletmenize <strong>dijital menü</strong>, <strong>QR sipariş</strong> ve
-        <strong>akıllı QR menü</strong> altyapısını kolayca ekleyin. Restoranlar, kafeler ve barlar için hızlı
+        <strong>akıllı QR menü</strong> altyapısını kolayca ekleyin. Restoranlar, kafeler ve benzeri işletmeler için hızlı
         kurulum, canlı takip, mutfak/bar panoları ve raporlama.
       </p>
     </header>
@@ -19,7 +19,7 @@
         <li>• QR ile hızlı erişim; <em>Yeni → Hazırlanıyor → Hazır → Servis</em> akışında takip</li>
         <li>• Mutfak ve bar için ayrı panolar, tek tıkla durum güncelleme</li>
         <li>• Tablo/masa bazlı sipariş oturumları ve raporlar</li>
-        <li>• Çok kiracılı yapı; her işletme kendi alt alan adında çalışır</li>
+        <li>• Çoklu işletme desteği; her işletme kendi alt alan adında çalışır</li>
       </ul>
     </section>
 

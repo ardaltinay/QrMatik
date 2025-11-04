@@ -88,6 +88,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "qr-menu" */ "../views/QrMenuLanding.vue"),
   },
   {
+    path: "/signup/tenant",
+    name: "tenant-signup",
+    component: () => import(/* webpackChunkName: "tenant-signup" */ "../views/TenantSignup.vue"),
+  },
+  {
     path: "/super/tenants",
     name: "super-tenants",
     component: () => import(/* webpackChunkName: "super-tenants" */ "../views/TenantsAdminView.vue"),

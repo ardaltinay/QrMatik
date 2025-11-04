@@ -25,7 +25,7 @@
             <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Temassız</span>
             <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Hızlı Kurulum</span>
             <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Mutfak & Bar Panoları</span>
-            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Çok Kiracılı</span>
+            <span class="px-2.5 py-1 text-xs rounded-full bg-white border shadow-sm">Çoklu İşletme Desteği</span>
           </div>
           <div class="flex gap-3">
             <!-- Menüyü Görüntüle: tek ise tam genişlik, ikili ise yarım genişlik -->
@@ -45,6 +45,12 @@
               class="flex-1 min-w-0 text-center px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-yellow-500 text-white rounded-md shadow hover:bg-yellow-600"
               >Siparişlerimi Gör</router-link
             >
+            <!-- Apex: Yeni işletme kaydı oluştur CTA -->
+            <router-link
+              v-if="!hasTenant"
+              to="/signup/tenant"
+              class="flex-1 min-w-0 text-center px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-md hover:bg-white"
+              >Yeni işletme kaydı oluştur</router-link>
           </div>
           <!-- Apex için keşif CTA'sı -->
           <div v-if="!hasTenant" class="mt-4">

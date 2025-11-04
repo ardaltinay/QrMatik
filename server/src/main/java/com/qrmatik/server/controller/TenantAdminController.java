@@ -3,7 +3,7 @@ package com.qrmatik.server.controller;
 import com.qrmatik.server.converter.TenantConverter;
 import com.qrmatik.server.dto.TenantDto;
 import com.qrmatik.server.dto.TenantBootstrapUsersRequest;
-import com.qrmatik.server.dto.TenantUpsertRequest;
+import com.qrmatik.server.dto.TenantInsertRequest;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.service.TenantAdminService;
 import java.net.URI;
@@ -30,7 +30,7 @@ public class TenantAdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody TenantUpsertRequest req) {
+    public ResponseEntity<?> create(@RequestBody TenantInsertRequest req) {
         Optional<TenantEntity> created = service.create(req);
         if (created.isEmpty())
             return ResponseEntity.badRequest().body("Invalid or duplicate tenant code");
@@ -40,7 +40,7 @@ public class TenantAdminController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TenantDto> update(@PathVariable String id, @RequestBody TenantUpsertRequest req) {
+    public ResponseEntity<TenantDto> update(@PathVariable String id, @RequestBody TenantInsertRequest req) {
         Optional<TenantEntity> updated = service.update(id, req);
         return updated.map(e -> ResponseEntity.ok(converter.toDto(e))).orElseGet(() -> ResponseEntity.notFound().build());
     }

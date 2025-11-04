@@ -34,7 +34,7 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth
         // Allow CORS preflight requests universally
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-        .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config")
+    .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**")
         .permitAll().requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
     .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()

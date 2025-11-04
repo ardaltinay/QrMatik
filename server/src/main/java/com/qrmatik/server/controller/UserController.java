@@ -2,7 +2,7 @@ package com.qrmatik.server.controller;
 
 import com.qrmatik.server.converter.UserConverter;
 import com.qrmatik.server.dto.UserDto;
-import com.qrmatik.server.dto.UserUpsertRequest;
+import com.qrmatik.server.dto.UserInsertRequest;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.service.TenantContext;
 import com.qrmatik.server.service.UserService;
@@ -31,14 +31,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody UserUpsertRequest req) {
+    public ResponseEntity<UserDto> create(@RequestBody UserInsertRequest req) {
         String tenant = TenantContext.getTenant();
         UserEntity saved = userService.create(req, tenant);
         return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(converter.toDto(saved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserUpsertRequest req) {
+    public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserInsertRequest req) {
         String tenant = TenantContext.getTenant();
         Optional<UserEntity> updated = userService.update(id, req, tenant);
         return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))

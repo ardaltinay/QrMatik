@@ -1,7 +1,7 @@
 package com.qrmatik.server.controller;
 
 import com.qrmatik.server.dto.TableDto;
-import com.qrmatik.server.dto.TableUpsertRequest;
+import com.qrmatik.server.dto.TableInsertRequest;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.service.TableService;
 import java.util.List;
@@ -35,14 +35,14 @@ public class TableController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody TableUpsertRequest req) {
+    public ResponseEntity<?> create(@RequestBody TableInsertRequest req) {
         Optional<TableEntity> e = tableService.createForCurrentTenant(req);
         if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid or duplicate table code");
         return ResponseEntity.ok(TableDto.fromEntity(e.get()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody TableUpsertRequest req) {
+    public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody TableInsertRequest req) {
         Optional<TableEntity> e = tableService.updateForCurrentTenant(id, req);
         if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid table or duplicate code");
         return ResponseEntity.ok(TableDto.fromEntity(e.get()));

@@ -1,7 +1,7 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.TenantBootstrapUsersRequest;
-import com.qrmatik.server.dto.TenantUpsertRequest;
+import com.qrmatik.server.dto.TenantInsertRequest;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.repository.TenantRepository;
@@ -39,7 +39,7 @@ public class TenantAdminService {
     }
 
     @Transactional
-    public Optional<TenantEntity> create(TenantUpsertRequest req) {
+    public Optional<TenantEntity> create(TenantInsertRequest req) {
         if (req.getCode() == null || req.getCode().isBlank())
             return Optional.empty();
         if (tenantRepository.findByCode(req.getCode()).isPresent())
@@ -56,7 +56,7 @@ public class TenantAdminService {
     }
 
     @Transactional
-    public Optional<TenantEntity> update(String id, TenantUpsertRequest req) {
+    public Optional<TenantEntity> update(String id, TenantInsertRequest req) {
         Optional<TenantEntity> found = getById(id);
         if (found.isEmpty())
             return Optional.empty();
@@ -92,18 +92,18 @@ public class TenantAdminService {
 
         // Create or update users if usernames provided
         if (req.getAdminUsername() != null && req.getAdminPassword() != null) {
-            upsertUser(tenant, req.getAdminUsername(), "ADMIN", req.getAdminPassword());
+            insertUser(tenant, req.getAdminUsername(), "ADMIN", req.getAdminPassword());
         }
         if (req.getKitchenUsername() != null && req.getKitchenPassword() != null) {
-            upsertUser(tenant, req.getKitchenUsername(), "KITCHEN", req.getKitchenPassword());
+            insertUser(tenant, req.getKitchenUsername(), "KITCHEN", req.getKitchenPassword());
         }
         if (req.getBarUsername() != null && req.getBarPassword() != null) {
-            upsertUser(tenant, req.getBarUsername(), "BAR", req.getBarPassword());
+            insertUser(tenant, req.getBarUsername(), "BAR", req.getBarPassword());
         }
         return true;
     }
 
-    private void upsertUser(TenantEntity tenant, String username, String role, String rawPassword) {
+    private void insertUser(TenantEntity tenant, String username, String role, String rawPassword) {
         var existing = userRepository.findByUsernameAndTenant_Code(username, tenant.getCode());
         UserEntity u = existing.orElseGet(() -> UserEntity.builder().username(username).tenant(tenant).build());
         u.setRole(role);

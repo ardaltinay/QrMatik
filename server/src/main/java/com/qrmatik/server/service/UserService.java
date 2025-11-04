@@ -1,6 +1,6 @@
 package com.qrmatik.server.service;
 
-import com.qrmatik.server.dto.UserUpsertRequest;
+import com.qrmatik.server.dto.UserInsertRequest;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.repository.TenantRepository;
@@ -41,7 +41,7 @@ public class UserService {
         }
     }
 
-    public UserEntity create(UserUpsertRequest req, String tenant) {
+    public UserEntity create(UserInsertRequest req, String tenant) {
         UserEntity u = new UserEntity();
         u.setUsername(req.getUsername());
         u.setRole(req.getRole());
@@ -55,7 +55,7 @@ public class UserService {
         return repository.save(u);
     }
 
-    public Optional<UserEntity> update(String id, UserUpsertRequest req, String tenant) {
+    public Optional<UserEntity> update(String id, UserInsertRequest req, String tenant) {
         Optional<UserEntity> found = getById(id);
         if (found.isEmpty())
             return Optional.empty();
