@@ -25,11 +25,11 @@
       <h2 class="text-2xl font-semibold">Hızlı başlangıç</h2>
       <ol class="list-decimal space-y-1 pl-5 text-gray-700">
         <li>Kayıt olun ve işletme bilgilerinizi ekleyin.</li>
-        <li>Menü kalemlerinizi ve fiyatlarınızı girin.</li>
+        <li>Menü kalemlerinizi ve fiyatlarınızı girin.(Veya bizimle iletişime geçin destek olalım.)</li>
         <li>Masa/alan kodları için karekod (QR) üretin ve yerleştirin.</li>
         <li>
-          Müşterileriniz QR'ı okutup <strong>dijital menü</strong>den
-          <strong>QR sipariş</strong> verir.
+          Hepsi bu kadar! Müşterileriniz QR'ı okutup <strong>dijital qr menü</strong>den
+          <strong>sipariş vermeye ve sipariş takibi yapmaya</strong> başlasın.
         </li>
       </ol>
     </section>

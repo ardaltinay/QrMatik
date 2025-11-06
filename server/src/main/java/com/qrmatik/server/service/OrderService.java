@@ -1,7 +1,13 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.CreateOrderRequest;
-import com.qrmatik.server.model.*;
+import com.qrmatik.server.model.MenuItemEntity;
+import com.qrmatik.server.model.OrderEntity;
+import com.qrmatik.server.model.OrderItemEntity;
+import com.qrmatik.server.model.OrderStatus;
+import com.qrmatik.server.model.TableEntity;
+import com.qrmatik.server.model.TableStatus;
+import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;
@@ -14,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +31,8 @@ public class OrderService {
     private final TableRepository tableRepository;
     private final MenuItemRepository menuItemRepository;
     private final TenantRepository tenantRepository;
+    @Value("${app.table.linger-minutes:30}")
+    private int tableLingerMinutes;
 
     public OrderService(OrderRepository orderRepository, TableRepository tableRepository,
             MenuItemRepository menuItemRepository, TenantRepository tenantRepository) {
@@ -86,7 +95,8 @@ public class OrderService {
         if (parsed == OrderStatus.SERVED) {
             order.setSessionExpiresAt(LocalDateTime.now().plusHours(3));
         } else if (parsed == OrderStatus.PAYMENT_COMPLETED) {
-            order.setSessionExpiresAt(LocalDateTime.now());
+            // Ödeme tamamlandıktan sonra müşterinin masada kalması için bekleme süresi
+            order.setSessionExpiresAt(LocalDateTime.now().plusMinutes(Math.max(0, tableLingerMinutes)));
         } else if (parsed == OrderStatus.CANCELED) {
             // İptalde de oturum hemen kapansın
             order.setSessionExpiresAt(LocalDateTime.now());
@@ -101,14 +111,8 @@ public class OrderService {
             }
         }
         OrderEntity saved = orderRepository.save(order);
-        // After payment completed, if no active orders remain on this table, mark table
-        // AVAILABLE
-        if (parsed == OrderStatus.PAYMENT_COMPLETED) {
-            try {
-                updateTableAvailabilityForTable(saved.getTable(), tenant);
-            } catch (Exception ignore) {
-            }
-        } else if (parsed == OrderStatus.CANCELED) {
+        // Sipariş durumuna göre masanın uygunluğunu güncelle
+        if (parsed == OrderStatus.PAYMENT_COMPLETED || parsed == OrderStatus.CANCELED || parsed == OrderStatus.EXPIRED) {
             try {
                 updateTableAvailabilityForTable(saved.getTable(), tenant);
             } catch (Exception ignore) {
@@ -223,9 +227,13 @@ public class OrderService {
             }
 
             input.setTable(table);
-            // On order creation, mark table AVAILABLE per requirement
-            if (table.getStatus() != com.qrmatik.server.model.TableStatus.AVAILABLE) {
-                table.setStatus(com.qrmatik.server.model.TableStatus.AVAILABLE);
+            // UNAVAILABLE masaya sipariş kabul etmeyelim
+            if (table.getStatus() == TableStatus.UNAVAILABLE) {
+                throw new TableUnavailableException("Bu masa şu anda kullanım dışı.");
+            }
+            // Sipariş oluşturulunca masa BUSY olsun
+            if (table.getStatus() != TableStatus.BUSY) {
+                table.setStatus(TableStatus.BUSY);
                 tableRepository.save(table);
             }
         } else {
@@ -300,6 +308,36 @@ public class OrderService {
             updateTableAvailabilityForTable(saved.getTable(), tenant);
         } catch (Exception ignore) {
         }
+        return Optional.of(saved);
+    }
+
+    public Optional<OrderEntity> requestBillBySession(String id, String tenant, String sessionId) {
+        if (sessionId == null || sessionId.isBlank())
+            return Optional.empty();
+        Optional<OrderEntity> o = getById(id);
+        if (o.isEmpty())
+            return Optional.empty();
+        OrderEntity order = o.get();
+        // tenant guard
+        if (tenant != null) {
+            TenantEntity ordTenant = order.getTenant();
+            String oc = (ordTenant != null ? ordTenant.getCode() : null);
+            if (oc != null && !tenant.equals(oc))
+                return Optional.empty();
+        }
+        // session guard
+        if (!sessionId.equals(order.getSessionId()))
+            return Optional.empty();
+        // allow only after SERVED, and ignore if already terminal
+        OrderStatus cur = order.getStatus();
+        if (cur == null || cur == OrderStatus.CANCELED || cur == OrderStatus.PAYMENT_COMPLETED
+                || cur == OrderStatus.EXPIRED)
+            return Optional.empty();
+        if (cur != OrderStatus.SERVED && cur != OrderStatus.BILL_REQUESTED)
+            return Optional.empty();
+        order.setStatus(OrderStatus.BILL_REQUESTED);
+        // keep current session expiry; do not shorten here
+        OrderEntity saved = orderRepository.save(order);
         return Optional.of(saved);
     }
 
@@ -423,8 +461,7 @@ public class OrderService {
         }
     }
 
-    // If all non-expired orders for the table are payment completed, mark table
-    // AVAILABLE
+    // Masa uygunluğunu güncelle: aktif (süresi dolmamış) sipariş varsa BUSY, yoksa AVAILABLE
     private void updateTableAvailabilityForTable(TableEntity table, String tenant) {
         if (table == null)
             return;
@@ -439,14 +476,22 @@ public class OrderService {
         boolean anyActive = false;
         for (OrderEntity e : list) {
             boolean expired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));
-            if (!expired && e.getStatus() != OrderStatus.PAYMENT_COMPLETED && e.getStatus() != OrderStatus.CANCELED) {
+            // PAYMENT_COMPLETED da session bitene kadar masayı meşgul saysın
+            if (!expired && e.getStatus() != OrderStatus.CANCELED) {
                 anyActive = true;
                 break;
             }
         }
-        if (!anyActive && table.getStatus() != com.qrmatik.server.model.TableStatus.AVAILABLE) {
-            table.setStatus(com.qrmatik.server.model.TableStatus.AVAILABLE);
-            tableRepository.save(table);
+        if (anyActive) {
+            if (table.getStatus() != TableStatus.BUSY) {
+                table.setStatus(TableStatus.BUSY);
+                tableRepository.save(table);
+            }
+        } else {
+            if (table.getStatus() != TableStatus.AVAILABLE) {
+                table.setStatus(TableStatus.AVAILABLE);
+                tableRepository.save(table);
+            }
         }
     }
 }

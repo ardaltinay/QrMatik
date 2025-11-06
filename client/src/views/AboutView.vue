@@ -7,12 +7,6 @@
     </p>
     <div class="mt-8 grid gap-6 md:grid-cols-2">
       <div class="rounded-xl border bg-white p-5 shadow-sm">
-        <div class="mb-2 font-semibold">Vizyon</div>
-        <p class="text-sm text-gray-600">
-          Hızlı ve temassız restoran deneyimini herkes için erişilebilir kılmak.
-        </p>
-      </div>
-      <div class="rounded-xl border bg-white p-5 shadow-sm">
         <div class="mb-2 font-semibold">Öne Çıkanlar</div>
         <ul class="list-disc space-y-1 pl-5 text-sm text-gray-600">
           <li>QR ile hızlı başlangıç</li>
@@ -21,6 +15,40 @@
           <li>Sipariş takibi, iptal ve ödeme</li>
         </ul>
       </div>
+
+      <!-- Hikayemiz -->
+      <div class="rounded-xl border bg-white p-5 shadow-sm">
+        <div class="mb-2 font-semibold">Hikayemiz</div>
+        <p class="text-sm leading-6 text-gray-600">
+          QrMatik, restoranlarda beklemeyi azaltmak ve hataları en aza indirmek amacıyla doğdu.
+          Bugün onlarca işletmenin her gün binlerce siparişi hızlı ve hatasız yönetmesine yardımcı oluyoruz.
+        </p>
+      </div>
+
+      <!-- Güvenlik & Gizlilik -->
+      <div class="rounded-xl border bg-white p-5 shadow-sm">
+        <div class="mb-2 font-semibold">Güvenlik & Gizlilik</div>
+        <ul class="list-disc space-y-1 pl-5 text-sm leading-6 text-gray-600">
+          <li>Tüm trafik HTTPS ile şifrelenir</li>
+          <li>Rol bazlı erişim ve yetkilendirme</li>
+          <li>Günlük otomatik yedekleme rutini</li>
+          <li>KVKK'ya uyumlu veri işleme</li>
+        </ul>
+      </div>
+
+      <!-- Destek & SLA -->
+      <div class="rounded-xl border bg-white p-5 shadow-sm">
+        <div class="mb-2 font-semibold">Destek & SLA</div>
+        <ul class="list-disc space-y-1 pl-5 text-sm leading-6 text-gray-600">
+          <li>Hafta içi 09:00–18:00 destek</li>
+          <li>Ortalama ilk yanıt: 30 dakikanın altında</li>
+          <li>E-posta: <a class="text-brand-600 hover:underline" href="mailto:support@qrmatik.cloud">support@qrmatik.cloud</a></li>
+        </ul>
+      </div>
+
+
+
+
     </div>
   </div>
 </template>

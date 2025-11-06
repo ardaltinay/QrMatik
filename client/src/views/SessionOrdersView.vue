@@ -22,7 +22,7 @@
           <div>
             <div class="text-sm text-gray-500">Sipariş No</div>
             <div class="text-xl font-medium">#{{ orderCodeFromId(o.id) }}</div>
-            <div class="text-sm text-gray-500">{{ formatDate(o.createdAt) }}</div>
+            <div class="text-sm text-gray-500">{{ formatDateTz(o.createdAt || o.createdTime) }}</div>
           </div>
           <div class="text-right">
             <div class="text-sm text-gray-500">Durum</div>
@@ -77,7 +77,7 @@
 
 <script setup>
   import { ref, onMounted, onBeforeUnmount, watch, computed } from "vue";
-  import { formatDate, orderCodeFromId, formatMoney, statusLabel } from "@/utils/format";
+  import { formatDateTz, orderCodeFromId, formatMoney, statusLabel } from "@/utils/format";
   import { useRoute, useRouter } from "vue-router";
   import { useOrderStore } from "@/stores/orderStore";
   import { useUiStore } from "@/stores/uiStore";

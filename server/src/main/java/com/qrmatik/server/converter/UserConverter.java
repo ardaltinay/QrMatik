@@ -12,7 +12,7 @@ public class UserConverter {
         UserDto d = new UserDto();
         d.setId(e.getId());
         d.setUsername(e.getUsername());
-        d.setRole(e.getRole());
+        d.setRole(e.getRole() != null ? e.getRole().name().toLowerCase() : null);
         return d;
     }
 }

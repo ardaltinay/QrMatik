@@ -1,5 +1,6 @@
 package com.qrmatik.server.config;
 
+import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
+    private final TenantRepository tenantRepository;
+
+    public TenantFilter(TenantRepository tenantRepository) {
+        this.tenantRepository = tenantRepository;
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -52,12 +58,17 @@ public class TenantFilter extends OncePerRequestFilter {
                     return parts[i + 1];
             }
         }
-        // host subdomain: tenant.example.com
+        // host subdomain: tenant.example.com (and dev: tenant.localhost)
         String host = request.getServerName();
         if (host != null) {
             String[] hostParts = host.split("\\.");
-            if (hostParts.length > 2)
-                return hostParts[0];
+            // e.g. foo.bar.example.com -> foo
+            if (hostParts.length > 2) return hostParts[0];
+            // Dev convenience: test.localhost -> test
+            if (hostParts.length == 2 && "localhost".equalsIgnoreCase(hostParts[1])) return hostParts[0];
+            // custom domain mapping (e.g., menu.mybistro.com, mybistro.com)
+            var tOpt = tenantRepository.findByCustomDomain(host.toLowerCase());
+            if (tOpt.isPresent()) return tOpt.get().getCode();
         }
         return null;
     }

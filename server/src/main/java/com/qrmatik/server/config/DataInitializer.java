@@ -3,6 +3,9 @@ package com.qrmatik.server.config;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
+import com.qrmatik.server.model.UserRole;
+import com.qrmatik.server.model.TableEntity;
+import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
@@ -33,35 +36,30 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // On startup, normalize NULL version columns to 0 to avoid optimistic locking
-        // NPEs on legacy rows
         tryNormalizeVersions();
-        // Drop legacy columns if exist (e.g., primary_type removed from entity)
+        tryDeduplicateUsers();
+        tryMigrateUserUniqueConstraint();
         tryDropLegacyColumns();
-        // Ensure existing users (from older seeds) have a password hash
         ensureUserPasswords();
         if (userRepository.count() == 0) {
-            // create default tenant if missing and attach relations
             TenantEntity t = tenantRepository.findByCode("default")
                     .orElseGet(() -> tenantRepository.save(TenantEntity.builder().code("default").name("Demo Tenant")
                             .logoUrl("").primaryColor("#0f172a").accentColor("#6366f1").build()));
             BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
-            userRepository.save(UserEntity.builder().username("admin").role("admin").tenant(t)
+    userRepository.save(UserEntity.builder().username("admin").role(UserRole.ADMIN).tenant(t)
                     .passwordHash(pe.encode("admin123")).build());
-            userRepository.save(UserEntity.builder().username("kitchen").role("kitchen").tenant(t)
+    userRepository.save(UserEntity.builder().username("kitchen").role(UserRole.KITCHEN).tenant(t)
                     .passwordHash(pe.encode("kitchen123")).build());
-            userRepository.save(UserEntity.builder().username("bar").role("bar").tenant(t)
+    userRepository.save(UserEntity.builder().username("bar").role(UserRole.BAR).tenant(t)
                     .passwordHash(pe.encode("bar123")).build());
-            userRepository.save(UserEntity.builder().username("test").role("test").tenant(t)
+    userRepository.save(UserEntity.builder().username("test").role(UserRole.STAFF).tenant(t)
                     .passwordHash(pe.encode("test123")).build());
-            userRepository.save(UserEntity.builder().username("super").role("superadmin").tenant(t)
+    userRepository.save(UserEntity.builder().username("super").role(UserRole.SUPERADMIN).tenant(t)
                     .passwordHash(pe.encode("super123")).build());
         }
 
         if (menuRepository.count() == 0) {
             TenantEntity tenant = tenantRepository.findByCode("default").orElse(null);
-            // Yeni model: category = food|drink, subcategory =
-            // pizza|salad|soda|wine|dessert
             menuRepository
                     .save(MenuItemEntity.builder().name("Margherita").price(BigDecimal.valueOf(45.0)).category("food")
                             .subcategory("pizza").image("https://picsum.photos/seed/1/400/240").tenant(tenant).build());
@@ -83,25 +81,68 @@ public class DataInitializer implements CommandLineRunner {
         }
         if (tableRepository.count() == 0) {
             TenantEntity tenant = tenantRepository.findByCode("default").orElse(null);
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("A1").description("Masa A1")
-                    .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("B3").description("Masa B3")
-                    .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("Bar-01").description("Bar 1")
-                    .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("C2").description("Masa C2")
-                    .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
-            tableRepository.save(com.qrmatik.server.model.TableEntity.builder().code("guest").description("Masa guest")
-                    .tenant(tenant).status(com.qrmatik.server.model.TableStatus.AVAILABLE).build());
+        tableRepository.save(TableEntity.builder().code("A1").description("Masa A1")
+            .tenant(tenant).status(TableStatus.AVAILABLE).build());
+        tableRepository.save(TableEntity.builder().code("B3").description("Masa B3")
+            .tenant(tenant).status(TableStatus.AVAILABLE).build());
+        tableRepository.save(TableEntity.builder().code("Bar-01").description("Bar 1")
+            .tenant(tenant).status(TableStatus.AVAILABLE).build());
+        tableRepository.save(TableEntity.builder().code("C2").description("Masa C2")
+            .tenant(tenant).status(TableStatus.AVAILABLE).build());
+        tableRepository.save(TableEntity.builder().code("guest").description("Masa guest")
+            .tenant(tenant).status(TableStatus.AVAILABLE).build());
         }
-        // seed some tables
         if (menuRepository.count() >= 0) {
-            // Note: check table repo via constructor-supplied object
         }
         try {
-            // use table repository if available via reflection to avoid strict ordering
-            // issues
-            // but we can call directly (repositories are supplied in constructor)
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void tryDeduplicateUsers() {
+        try {
+            jdbcTemplate.update(
+                "DELETE u FROM users u " +
+                "JOIN (SELECT tenant_id, username, MAX(created_time) mx FROM users GROUP BY tenant_id, username) m " +
+                "ON u.tenant_id = m.tenant_id AND u.username = m.username " +
+                "WHERE u.created_time < m.mx"
+            );
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void tryMigrateUserUniqueConstraint() {
+        try {
+            var idxNames = jdbcTemplate.queryForList(
+                "SELECT DISTINCT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS " +
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' " +
+                "AND COLUMN_NAME = 'username' AND NON_UNIQUE = 0",
+                String.class
+            );
+            for (String idx : idxNames) {
+                try {
+                    jdbcTemplate.execute("ALTER TABLE users DROP INDEX `" + idx + "`");
+                } catch (Exception ignored) {
+                }
+            }
+            Integer existing = null;
+            try {
+                existing = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM (SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS " +
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='users' AND NON_UNIQUE=0 " +
+                    "GROUP BY INDEX_NAME HAVING SUM(CASE WHEN COLUMN_NAME='tenant_id' THEN 1 ELSE 0 END)>0 " +
+                    "AND SUM(CASE WHEN COLUMN_NAME='username' THEN 1 ELSE 0 END)>0) t",
+                    Integer.class
+                );
+            } catch (Exception ignored) {}
+            if (existing == null || existing == 0) {
+                try {
+                    jdbcTemplate.execute(
+                        "ALTER TABLE users ADD UNIQUE INDEX uk_users_tenant_username (tenant_id, username)"
+                    );
+                } catch (Exception ignored) {
+                }
+            }
         } catch (Exception ignored) {
         }
     }
@@ -116,7 +157,6 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    // Eski kolonları kaldırmayı dene (ör. primary_type)
     private void tryDropLegacyColumns() {
         try {
             jdbcTemplate.execute("ALTER TABLE menu_items DROP COLUMN primary_type");

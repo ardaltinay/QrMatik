@@ -5,12 +5,14 @@ import com.qrmatik.server.dto.CancelRequest;
 import com.qrmatik.server.dto.CreateOrderRequest;
 import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.StatusUpdate;
+import com.qrmatik.server.dto.RequestBillRequest;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.service.OrderService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,10 +35,12 @@ public class OrderController {
 
     private final OrderService orderService;
     private final OrderConverter converter;
+    private final ZoneId appZoneId;
 
-    public OrderController(OrderService orderService, OrderConverter converter) {
+    public OrderController(OrderService orderService, OrderConverter converter, ZoneId appZoneId) {
         this.orderService = orderService;
         this.converter = converter;
+        this.appZoneId = appZoneId;
     }
 
     @GetMapping
@@ -70,17 +74,29 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDto> create(@Valid @RequestBody CreateOrderRequest req) {
+    public ResponseEntity<?> create(@Valid @RequestBody CreateOrderRequest req) {
         String tenant = TenantContext.getTenant();
-        Optional<OrderEntity> savedOpt = orderService.create(req, tenant);
-        if (savedOpt.isEmpty())
-            return ResponseEntity.badRequest().build();
-        OrderEntity saved = savedOpt.get();
-        return ResponseEntity.created(URI.create("/api/orders/" + saved.getId()))
-                .header("X-Order-Session", saved.getSessionId())
-                .header("X-Order-Expires",
-                        saved.getSessionExpiresAt() != null ? String.valueOf(saved.getSessionExpiresAt()) : "")
-                .body(converter.toDto(saved));
+        try {
+            Optional<OrderEntity> savedOpt = orderService.create(req, tenant);
+            if (savedOpt.isEmpty())
+                return ResponseEntity.badRequest().build();
+            OrderEntity saved = savedOpt.get();
+            String expIso = "";
+            if (saved.getSessionExpiresAt() != null) {
+                try {
+                    // Serialize expiry as UTC instant (ISO 8601 with Z) to avoid timezone ambiguity on clients
+                    expIso = saved.getSessionExpiresAt().atZone(appZoneId).toInstant().toString();
+                } catch (Exception ignore) {
+                    expIso = String.valueOf(saved.getSessionExpiresAt());
+                }
+            }
+            return ResponseEntity.created(URI.create("/api/orders/" + saved.getId()))
+                    .header("X-Order-Session", saved.getSessionId())
+                    .header("X-Order-Expires", expIso)
+                    .body(converter.toDto(saved));
+        } catch (com.qrmatik.server.service.TableUnavailableException ex) {
+            return ResponseEntity.status(423).body(Map.of("message", ex.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/status")
@@ -106,7 +122,7 @@ public class OrderController {
         // This ensures canceling a single order (which sets its sessionExpiresAt to
         // now)
         // doesn't hide other active orders from the same session.
-        LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(appZoneId);
         boolean anyNonExpired = false;
         for (OrderEntity e : entities) {
             boolean isExpired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));
@@ -133,6 +149,15 @@ public class OrderController {
         String tenant = TenantContext.getTenant();
         String sessionId = (req != null ? req.getSessionId() : null);
         Optional<OrderEntity> updated = orderService.cancelBySession(id, tenant, sessionId);
+        return updated.map(e -> ResponseEntity.ok(converter.toDto(e)))
+                .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/{id}/request-bill")
+    public ResponseEntity<?> requestBill(@PathVariable String id, @RequestBody RequestBillRequest req) {
+        String tenant = TenantContext.getTenant();
+        String sessionId = (req != null ? req.getSessionId() : null);
+        Optional<OrderEntity> updated = orderService.requestBillBySession(id, tenant, sessionId);
         return updated.map(e -> ResponseEntity.ok(converter.toDto(e)))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }

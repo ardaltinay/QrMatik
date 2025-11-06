@@ -18,7 +18,27 @@ Endpoints
 - POST /api/orders - create order
 - PUT /api/orders/{id}/status - update status (body: {"status":"PREPARING"})
 
+Plans and limits
+
+- Tenants have a plan: FREE | STANDARD | PRO (field: `TenantEntity.plan`).
+- Public signup defaults to FREE.
+- Current enforced limits:
+    - Menu items: FREE ≤ 50, STANDARD ≤ 500, PRO unlimited
+    - Tables: FREE ≤ 10, STANDARD ≤ 50, PRO unlimited
+- Enforcement occurs on create via `PlanGuard`; exceeding returns HTTP 402 with a clear message.
+- Super admin can set/update plan via existing tenant admin endpoints:
+    - POST /api/tenants (body can include `plan`)
+    - PUT /api/tenants/{id} (body can include `plan`)
+
+Custom domains (Pro)
+
+- `TenantEntity.customDomain` alanı ile bir özel alan adı tanımlanabilir (yalnızca PRO plan).
+- Aynı domain başka tenant'ta kullanılamaz.
+- İsteklerde Host header'ı custom domain ile eşleşirse tenant otomatik çözülür (TenantFilter).
+- DNS tarafında, custom domain'iniz ana domaininize CNAME ile yönlendirilmelidir.
+
 Notes
 
 - This skeleton uses Lombok; your IDE should have Lombok support enabled.
 - For production you should harden CORS, security, and consider connection pooling and migrations (Flyway/Liquibase).
+ - Add DB migration for adding `plan` column if you do not use `spring.jpa.hibernate.ddl-auto=update`.

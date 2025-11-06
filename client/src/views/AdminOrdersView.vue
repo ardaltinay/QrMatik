@@ -19,6 +19,7 @@
                 { value: 'preparing', label: 'Hazırlanıyor' },
                 { value: 'ready', label: 'Hazır' },
                 { value: 'served', label: 'Servis Edildi' },
+                { value: 'bill_requested', label: 'Hesap İstendi' },
                 { value: 'payment_completed', label: 'Ödeme Tamamlandı' },
                 { value: 'canceled', label: 'İptal Edildi' },
               ]"
@@ -86,6 +87,17 @@
           "
         >
           Ödeme Tamamlandı
+        </button>
+        <button
+          @click="setFilter('bill_requested')"
+          class="w-full rounded-lg px-3 py-2 text-left"
+          :class="
+            filter === 'bill_requested'
+              ? 'bg-blue-600 text-white'
+              : 'bg-blue-50 text-blue-800 hover:bg-blue-100'
+          "
+        >
+          Hesap İstendi
         </button>
         <button
           @click="setFilter('canceled')"
@@ -160,6 +172,17 @@
           "
         >
           Ödeme Tamamlandı
+        </button>
+        <button
+          @click="setFilter('bill_requested')"
+          :class="
+            'rounded-full border px-3 py-1.5 text-sm ' +
+            (filter === 'bill_requested'
+              ? 'border-blue-600 bg-blue-600 text-white'
+              : 'border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100')
+          "
+        >
+          Hesap İstendi
         </button>
         <button
           @click="setFilter('canceled')"

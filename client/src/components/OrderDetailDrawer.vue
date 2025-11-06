@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between border-b p-4">
         <div>
           <h3 class="font-semibold">Sipariş #{{ order.id }}</h3>
-          <div class="text-sm text-gray-500">{{ order.createdAt }}</div>
+          <div class="text-sm text-gray-500">{{ formatDateTz(order.createdAt || order.createdTime) }}</div>
         </div>
         <button @click="$emit('close')" class="rounded p-2 hover:bg-gray-100">✕</button>
       </div>
@@ -62,7 +62,7 @@
   import { ref, computed } from "vue";
   import { useOrderStore } from "@/stores/orderStore";
   import BaseSelect from "@/components/BaseSelect.vue";
-  import { formatMoney } from "@/utils/format";
+  import { formatMoney, formatDateTz } from "@/utils/format";
   import { useUiStore } from "@/stores/uiStore";
 
   export default {
@@ -114,7 +114,7 @@
         }
       }
 
-      return { menuName, localStatus, applyStatus, formatMoney, canCancel, cancelOrder };
+      return { menuName, localStatus, applyStatus, formatMoney, formatDateTz, canCancel, cancelOrder };
     },
   };
 </script>

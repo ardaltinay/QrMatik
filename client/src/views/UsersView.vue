@@ -12,9 +12,10 @@
           v-model="role"
           :options="[
             { value: 'admin', label: 'Admin' },
-            { value: 'staff', label: 'Staff' },
+            { value: 'staff', label: 'Görevli' },
             { value: 'kitchen', label: 'Mutfak' },
             { value: 'bar', label: 'Bar' },
+              { value: 'cashier', label: 'Kasa' },
           ]"
         />
       </div>
@@ -63,9 +64,10 @@
             v-model="editing.role"
             :options="[
               { value: 'admin', label: 'Admin' },
-              { value: 'staff', label: 'Staff' },
+              { value: 'staff', label: 'Görevli' },
               { value: 'kitchen', label: 'Mutfak' },
               { value: 'bar', label: 'Bar' },
+              { value: 'cashier', label: 'Kasa' },
             ]"
           />
         </div>

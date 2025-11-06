@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByUsername(String username);
     List<UserEntity> findByTenant_Code(String tenantCode);
     Optional<UserEntity> findByUsernameAndTenant_Code(String username, String tenantCode);
+    Optional<UserEntity> findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(String username, String tenantCode);
+    Optional<UserEntity> findTopByUsernameOrderByCreatedTimeDesc(String username);
 }

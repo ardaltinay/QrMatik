@@ -16,7 +16,11 @@
         class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
       />
       <BaseSelect v-model="category" :options="categoryOptionItems" />
-      <BaseSelect v-model="subcategory" :options="subOptionItems(category)" />
+      <input
+        v-model="subcategory"
+        placeholder="Alt kategori"
+        class="focus:ring-brand-200 w-full rounded-lg border p-2 shadow-sm focus:ring-2"
+      />
       <button @click="addItem" class="rounded-lg bg-brand-500 px-3 py-2 text-white shadow">
         Ekle
       </button>
@@ -43,9 +47,10 @@
                   class="rounded border p-2"
                 />
                 <BaseSelect v-model="drafts[it.id].category" :options="categoryOptionItems" />
-                <BaseSelect
+                <input
                   v-model="drafts[it.id].subcategory"
-                  :options="subOptionItems(drafts[it.id].category)"
+                  placeholder="Alt kategori"
+                  class="rounded border p-2 w-full"
                 />
               </div>
             </div>
@@ -124,8 +129,8 @@
 <script>
   import { ref, reactive, onMounted, computed } from "vue";
   import { useOrderStore } from "@/stores/orderStore";
-  import { apiFetch } from "@/utils/api";
-  import { primaryLabel, subLabel } from "@/utils/format";
+  import { apiFetch, fetchJson } from "@/utils/api";
+  import { primaryLabel } from "@/utils/format";
   import BaseSelect from "@/components/BaseSelect.vue";
 
   export default {
@@ -153,10 +158,6 @@
       });
 
       const defaultCategoryOptions = ["food", "drink"];
-      const defaultSubs = {
-        food: ["starter", "main", "dessert", "pizza", "salad"],
-        drink: ["soda", "wine", "alcoholic", "non-alcoholic"],
-      };
       const tenantCfg = (() => {
         try {
           const raw = localStorage.getItem("qm_tenant_cfg");
@@ -177,19 +178,11 @@
           ? cfg.categories
           : defaultCategoryOptions,
       );
-      function subOptions(cat) {
-        if (!cat) return [];
-        if (cfg && cfg.subs && Array.isArray(cfg.subs[cat])) return cfg.subs[cat];
-        return defaultSubs[cat] || [];
-      }
       const categoryOptionItems = computed(() =>
         categoryOptions.value.map((c) => ({ value: c, label: primaryLabel(c) })),
       );
-      function subOptionItems(cat) {
-        return subOptions(cat).map((s) => ({ value: s, label: subLabel(s) }));
-      }
 
-      function addItem() {
+  function addItem() {
         if (!name.value) return;
         if (!category.value) {
           statuses["_new"] = "Kategori seçin";
@@ -211,14 +204,8 @@
           category: category.value,
           subcategory: subcategory.value,
         };
-        apiFetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        })
-          .then(async (res) => {
-            if (!res.ok) throw new Error("Ürün oluşturma başarısız");
-            const dto = await res.json();
+        fetchJson("/api/menu", { method: "POST", body: JSON.stringify(body) })
+          .then((dto) => {
             // normalize into store shape
             const newItem = {
               id: dto.id,
@@ -230,7 +217,6 @@
               image: dto.image || "",
             };
             store.menu.push(newItem);
-            // persist updated menu cache per tenant
             try {
               const tenant = localStorage.getItem("qm_tenant") || "default";
               const payload = { ts: Date.now(), menu: store.menu };
@@ -243,13 +229,8 @@
             category.value = "";
             subcategory.value = "";
           })
-          .catch(async (e) => {
-            try {
-              const { useUiStore } = await import("@/stores/uiStore");
-              useUiStore().toastError(e.message || "Hata");
-            } catch (e) {
-              /* ignore */
-            }
+          .catch(() => {
+            // fetchJson already shows a toast with server message
           });
       }
 
@@ -449,9 +430,7 @@
         cancelEdit,
         saveEdit,
         categoryOptions,
-        subOptions,
         categoryOptionItems,
-        subOptionItems,
         confirm,
         askRemove,
         cancelRemoveConfirm,

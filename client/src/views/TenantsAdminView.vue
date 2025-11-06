@@ -22,6 +22,15 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
+          <span
+            class="rounded-full border px-2 py-0.5 text-xs"
+            :class="{
+              'border-gray-300 text-gray-600': (t.plan||'FREE')==='FREE',
+              'border-amber-400 text-amber-700': t.plan==='STANDARD',
+              'border-emerald-400 text-emerald-700': t.plan==='PRO',
+            }"
+            >{{ (t.plan || 'FREE') }}</span
+          >
           <button class="rounded border px-2 py-1 text-sm" @click="openBootstrap(t)">
             Kullanıcıları Oluştur
           </button>
@@ -86,6 +95,25 @@
               />
             </label>
           </div>
+          <label class="block">
+            <span class="text-sm text-gray-600">Plan</span>
+            <select v-model="form.plan" class="w-full rounded border p-2">
+              <option value="FREE">Ücretsiz</option>
+              <option value="STANDARD">Standart</option>
+              <option value="PRO">Pro</option>
+            </select>
+          </label>
+          <label class="block" v-if="form.plan === 'PRO'">
+            <span class="text-sm text-gray-600">Özel Alan Adı (CNAME)</span>
+            <input
+              v-model="form.customDomain"
+              class="w-full rounded border p-2"
+              placeholder="menu.isletmem.com"
+            />
+            <span class="mt-1 block text-xs text-gray-500"
+              >DNS: custom alan adınızı ana domaininize CNAME ile yönlendirin.</span
+            >
+          </label>
           <label class="block">
             <span class="text-sm text-gray-600">Ayarlar (JSON)</span>
             <textarea
@@ -205,6 +233,8 @@
     logoUrl: "",
     primaryColor: "",
     accentColor: "",
+    plan: "FREE",
+    customDomain: "",
     config: "",
   });
 
@@ -238,6 +268,8 @@
       logoUrl: "",
       primaryColor: "",
       accentColor: "",
+      plan: "FREE",
+      customDomain: "",
       config: "",
     };
     showForm.value = true;
@@ -250,6 +282,8 @@
       logoUrl: t.logoUrl,
       primaryColor: t.primaryColor,
       accentColor: t.accentColor,
+      plan: t.plan || "FREE",
+      customDomain: t.customDomain || "",
       config: t.config || "",
     };
     showForm.value = true;

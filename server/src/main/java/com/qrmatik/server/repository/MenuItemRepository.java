@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItemEntity, UUID> {
     List<MenuItemEntity> findByTenant_Code(String tenantCode);
+    long countByTenant_Code(String tenantCode);
 }

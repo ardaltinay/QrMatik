@@ -10,6 +10,51 @@ export const useAuthStore = defineStore("auth", () => {
   if (parsed && parsed.role) parsed.role = String(parsed.role).toLowerCase();
   const user = ref(parsed);
   const token = ref(user.value && user.value.token ? user.value.token : null);
+  let expiryTimer = null;
+
+  function clearExpiryTimer() {
+    try { if (expiryTimer) clearTimeout(expiryTimer); } catch { /* ignore */ }
+    expiryTimer = null;
+  }
+
+  function decodeJwtExp(tkn) {
+    try {
+      const parts = String(tkn || '').split('.');
+      if (parts.length < 2) return null;
+      const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const json = atob(b64);
+      const obj = JSON.parse(json);
+      if (obj && typeof obj.exp === 'number') return obj.exp; // seconds since epoch
+    } catch { /* ignore */ }
+    return null;
+  }
+
+  async function scheduleAutoLogout() {
+    clearExpiryTimer();
+    if (!token.value) return;
+    const exp = decodeJwtExp(token.value);
+    if (!exp) return;
+    const ms = exp * 1000 - Date.now() - 3000; // 3s leeway
+    if (ms <= 0) {
+      try {
+        logout();
+        const { default: router } = await import("@/router");
+        router.replace({ name: "admin" });
+        const { useUiStore } = await import("@/stores/uiStore");
+        useUiStore().toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+      } catch { /* ignore */ }
+      return;
+    }
+    expiryTimer = setTimeout(async () => {
+      try {
+        logout();
+        const { default: router } = await import("@/router");
+        router.replace({ name: "admin" });
+        const { useUiStore } = await import("@/stores/uiStore");
+        useUiStore().toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+      } catch { /* ignore */ }
+    }, ms);
+  }
 
   function persist() {
     const payload = user.value
@@ -67,11 +112,13 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = data.token;
     user.value = { username: data.user?.username || username, role };
     persist();
+    scheduleAutoLogout();
   }
 
   function logout() {
     user.value = null;
     token.value = null;
+    clearExpiryTimer();
     try {
       localStorage.removeItem(SESSION_KEY);
     } catch (err) {
@@ -87,6 +134,18 @@ export const useAuthStore = defineStore("auth", () => {
   }
   function hasRole(r) {
     return user.value && String(user.value.role).toLowerCase() === String(r).toLowerCase();
+  }
+
+  // Initialize expiry watcher on store load if a token is present
+  if (token.value) {
+    // schedule but don't block
+    scheduleAutoLogout();
+    // double-check on tab focus (if time changed or sleep resume)
+    try {
+      window.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") scheduleAutoLogout();
+      });
+    } catch { /* ignore */ }
   }
 
   return { user, token, login, logout, isAdmin, isSuperAdmin, hasRole };

@@ -33,16 +33,24 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> create(@RequestBody UserInsertRequest req) {
         String tenant = TenantContext.getTenant();
-        UserEntity saved = userService.create(req, tenant);
-        return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(converter.toDto(saved));
+        try {
+            UserEntity saved = userService.create(req, tenant);
+            return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(converter.toDto(saved));
+        } catch (com.qrmatik.server.service.PlanFeatureUnavailableException ex) {
+            return ResponseEntity.status(402).body(new UserDto());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserInsertRequest req) {
         String tenant = TenantContext.getTenant();
-        Optional<UserEntity> updated = userService.update(id, req, tenant);
-        return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Optional<UserEntity> updated = userService.update(id, req, tenant);
+            return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (com.qrmatik.server.service.PlanFeatureUnavailableException ex) {
+            return ResponseEntity.status(402).build();
+        }
     }
 
     @DeleteMapping("/{id}")

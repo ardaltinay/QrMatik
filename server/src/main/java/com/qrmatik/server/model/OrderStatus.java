@@ -1,7 +1,7 @@
 package com.qrmatik.server.model;
 
 public enum OrderStatus {
-    NEW, PREPARING, READY, SERVED, PAYMENT_COMPLETED, CANCELED, EXPIRED;
+    NEW, PREPARING, READY, SERVED, BILL_REQUESTED, PAYMENT_COMPLETED, CANCELED, EXPIRED;
 
     public static OrderStatus fromString(String s) {
         if (s == null)

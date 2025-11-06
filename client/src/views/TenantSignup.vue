@@ -67,9 +67,16 @@
           <span class="text-sm text-gray-600">Logo URL'si</span>
           <input
             v-model="form.logoUrl"
-            class="w-full rounded border p-2"
-            placeholder="https://..."
+            class="w-full cursor-not-allowed rounded border bg-gray-50 p-2 text-gray-500"
+            placeholder="Standart/Pro planlarda etkinleşir"
+            disabled
+            aria-disabled="true"
           />
+          <p class="mt-1 text-xs text-gray-500">
+            Logo özelleştirme Standart/Pro yıllık planlarda mevcuttur. Ücretsiz planda renk
+            özelleştirmesi kullanılabilir. Planı yükselttikten sonra admin panelinden logo
+            ekleyebilirsiniz.
+          </p>
         </label>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label class="block">
@@ -198,8 +205,7 @@
         </div>
         <div class="mt-2">
           Yönetim için:
-          <code class="rounded border bg-white px-1 py-0.5">/r/{{ done.code }}/admin</code> veya alt
-          alan adı ile erişebilirsiniz.
+          <code class="rounded border bg-white px-1 py-0.5">{{ adminSubdomainUrl }}</code>
         </div>
       </div>
     </div>
@@ -280,6 +286,27 @@
       return `${sample}.${baseDomain}`;
     } catch {
       return "benim-restoranim.qrmatik.cloud";
+    }
+  });
+
+  const adminSubdomainUrl = computed(() => {
+    try {
+      const code = done.value && done.value.code ? String(done.value.code).trim() : '';
+      if (!code) return '';
+      const loc = typeof window !== 'undefined' ? window.location : null;
+      const hostname = loc && loc.hostname ? loc.hostname : 'qrmatik.cloud';
+      const protocol = loc && loc.protocol ? loc.protocol : 'https:';
+      const port = loc && loc.port ? ':' + loc.port : '';
+      let baseDomain = 'qrmatik.cloud';
+      if (hostname === 'localhost' || hostname.endsWith('.localhost')) {
+        baseDomain = 'localhost';
+      } else {
+        const parts = hostname.split('.');
+        if (parts.length >= 2) baseDomain = parts.slice(-2).join('.');
+      }
+      return `${protocol}//${code}.${baseDomain}${port}/admin`;
+    } catch {
+      return '';
     }
   });
 

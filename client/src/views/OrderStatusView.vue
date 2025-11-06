@@ -8,7 +8,7 @@
           <div>
             <div class="text-sm text-gray-500">Sipariş No</div>
             <div class="text-xl font-medium">#{{ orderCodeFromId(order.id) }}</div>
-            <div class="text-sm text-gray-500">{{ formatDate(order.createdAt) }}</div>
+            <div class="text-sm text-gray-500">{{ formatDateTz(order.createdAt || order.createdTime) }}</div>
           </div>
           <div class="text-right">
             <div class="text-sm text-gray-500">Masa / Yer</div>
@@ -68,20 +68,21 @@
         Oturum süreniz doldu. Siparişi görüntüleyebilirsiniz ancak işlem yapamazsınız.
       </div>
 
-      <!-- Payment action appears after served, hidden if already paid or expired -->
+      <!-- Hesap isteği: servis sonrası, ödeme akışı kaldırıldı -->
       <div
         v-if="order && order.status === 'served' && !isExpired"
         class="mt-4 rounded border bg-blue-50 p-3 text-blue-900"
       >
         <div class="mb-2">
-          Siparişiniz servis edildi. İsterseniz ödemenizi burdan yapabilirsiniz.
+          Siparişiniz servis edildi. Kasadan hesabınızı isteyebilirsiniz.
         </div>
-        <button
-          @click="completePayment"
-          class="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
-        >
-          Ödemeyi Yap
-        </button>
+        <button @click="requestBill" class="btn btn-primary">Hesabı İste</button>
+      </div>
+      <div
+        v-else-if="order && order.status === 'bill_requested'"
+        class="mt-4 rounded border bg-blue-50 p-3 text-blue-900"
+      >
+        Hesap isteğiniz alındı. Kasiyer bilgilendirildi.
       </div>
       <div
         v-else-if="order && order.status === 'payment_completed'"
@@ -140,7 +141,7 @@
 <script>
   import { useOrderStore } from "@/stores/orderStore";
   import { computed, ref, onMounted } from "vue";
-  import { formatDate, orderCodeFromId, formatMoney } from "@/utils/format";
+  import { orderCodeFromId, formatMoney, formatDateTz } from "@/utils/format";
   import { fetchJson } from "@/utils/api";
   import { useRoute } from "vue-router";
   import { useUiStore } from "@/stores/uiStore";
@@ -170,7 +171,7 @@
         const idx = steps.findIndex((s) => s.value === st);
         if (idx >= 0) return idx;
         // payment_completed gibi adımlar stepper dışında; hepsini tamamlanmış göster
-        if (st === "payment_completed") return steps.length - 1;
+        if (st === "payment_completed" || st === "bill_requested") return steps.length - 1;
         if (st === "canceled") return -1; // iptal için hiçbir adım tamamlanmış görünmesin
         return 0;
       });
@@ -184,14 +185,14 @@
         if (status === "preparing")
           return `${Math.max(1, baseMinutes - 2)} - ${baseMinutes + 2} dk içinde`;
         if (status === "ready") return "Çok yakında (paspas hazır)";
-        if (status === "payment_completed" || status === "canceled") return "";
+        if (status === "payment_completed" || status === "canceled" || status === "bill_requested") return "";
         return "";
       });
 
       const showEta = computed(() => {
         if (!order.value) return false;
         const s = order.value.status;
-        return s !== "served" && s !== "payment_completed" && s !== "canceled";
+        return s !== "served" && s !== "payment_completed" && s !== "canceled" && s !== "bill_requested";
       });
 
       const isExpired = computed(() => {
@@ -211,7 +212,7 @@
         return i ? i.name : "Unknown";
       }
 
-      // formatDate utils'ten kullanılır
+  // Tarih gösterimleri için formatDateTz kullanılır
 
       // share / QR
       // Include session id for privacy-aware deep link
@@ -301,16 +302,25 @@
         }
       }
 
-      async function completePayment() {
+      async function requestBill() {
         if (!order.value) return;
         try {
-          await store.updateOrderStatus(order.value.id, "payment_completed");
-          if (loadedOrder.value && String(loadedOrder.value.id) === String(order.value.id)) {
-            loadedOrder.value = { ...loadedOrder.value, status: "payment_completed" };
+          let sid = null;
+          try {
+            sid = localStorage.getItem("qm_order_session");
+          } catch (e) {
+            /* ignore */
           }
-          ui.toastSuccess("Ödeme tamamlandı");
+          await fetchJson(`/api/orders/${encodeURIComponent(order.value.id)}/request-bill`, {
+            method: "POST",
+            body: JSON.stringify({ sessionId: sid }),
+          });
+          if (loadedOrder.value && String(loadedOrder.value.id) === String(order.value.id)) {
+            loadedOrder.value = { ...loadedOrder.value, status: "bill_requested" };
+          }
+          ui.toast("Hesap isteğiniz gönderildi.", "info");
         } catch {
-          // hata toast'u fetchJson tarafından gösterilecek
+          /* toast fetchJson tarafından gösterilir */
         }
       }
 
@@ -335,8 +345,9 @@
         currentIdx,
         etaText,
         showEta,
-        isExpired,
-        formatDate,
+  isExpired,
+
+        formatDateTz,
         orderCodeFromId,
         formatMoney,
         shareLink,
@@ -348,7 +359,7 @@
         copied,
         mobileCircleStyle,
         mobileCircleFilledStyle,
-        completePayment,
+        requestBill,
       };
     },
   };

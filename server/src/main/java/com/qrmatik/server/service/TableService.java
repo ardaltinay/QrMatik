@@ -17,10 +17,12 @@ public class TableService {
 
     private final TableRepository tableRepository;
     private final TenantRepository tenantRepository;
+    private final PlanGuard planGuard;
 
-    public TableService(TableRepository tableRepository, TenantRepository tenantRepository) {
+    public TableService(TableRepository tableRepository, TenantRepository tenantRepository, PlanGuard planGuard) {
         this.tableRepository = tableRepository;
         this.tenantRepository = tenantRepository;
+        this.planGuard = planGuard;
     }
 
     public List<TableEntity> listForCurrentTenant() {
@@ -45,6 +47,8 @@ public class TableService {
         TenantEntity tenant = tenantRepository.findByCode(tcode).orElse(null);
         if (tenant == null)
             return Optional.empty();
+        // plan enforcement
+        planGuard.assertCanCreateTable(tcode);
         TableEntity e = TableEntity.builder().code(code).description(req.getDescription())
                 .status(req.getStatus() == null ? TableStatus.AVAILABLE : req.getStatus()).tenant(tenant).build();
         return Optional.of(tableRepository.save(e));

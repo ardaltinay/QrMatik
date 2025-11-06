@@ -16,8 +16,8 @@ public class OrderExpiryScheduler {
         this.orderService = orderService;
     }
 
-    // Run every 30 minutes to mark stale orders as EXPIRED
-    @Scheduled(cron = "0 */30 * * * *")
+    // Run every 30 minutes to mark stale orders as EXPIRED (aligned to app timezone)
+    @Scheduled(cron = "0 */30 * * * *", zone = "${app.time-zone:Europe/Istanbul}")
     public void sweepAndExpire() {
         try {
             int updated = orderService.markExpiredOrders();

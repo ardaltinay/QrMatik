@@ -32,13 +32,12 @@ public class OrderConverter {
         }
         OrderDto dto = new OrderDto();
         dto.setId(e.getId());
-        // Read table code from relation only
         String code = null;
         if (e.getTable() != null) {
             try {
                 code = e.getTable().getCode();
             } catch (Exception ignore) {
-                /* lazy load issues */ }
+            }
         }
         dto.setTableCode(code);
         dto.setSessionId(e.getSessionId());
@@ -49,8 +48,6 @@ public class OrderConverter {
         }
         dto.setCustomerName(e.getCustomerName());
         dto.setStatus(e.getStatus() != null ? e.getStatus().name() : null);
-        // Prefer persisted total; if missing, derive from lines as a safe fallback for
-        // legacy rows
         try {
             if (e.getTotal() != null) {
                 dto.setTotal(e.getTotal());
@@ -72,7 +69,6 @@ public class OrderConverter {
                 dto.setCreatedAt(e.getCreatedTime().atOffset(ZoneOffset.UTC));
             }
         } catch (Exception ignore) {
-            // leave createdAt null if conversion fails
         }
         dto.setSessionExpiresAt(e.getSessionExpiresAt());
         dto.setLines(lines);

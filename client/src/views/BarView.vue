@@ -80,13 +80,14 @@
           }
         };
         const hasDrink = (o) => Array.isArray(o.items) && o.items.some((it) => isDrinkItem(it));
-        // CANCELED, PAYMENT_COMPLETED, SERVED ve EXPIRED bar ekranında görünmesin
+        // CANCELED, PAYMENT_COMPLETED, BILL_REQUESTED, SERVED ve EXPIRED bar ekranında görünmesin
         const base = orders.value
           .filter((o) => hasDrink(o))
           .filter(
             (o) =>
               o.status !== "canceled" &&
               o.status !== "payment_completed" &&
+              o.status !== "bill_requested" &&
               o.status !== "served" &&
               o.status !== "expired",
           )

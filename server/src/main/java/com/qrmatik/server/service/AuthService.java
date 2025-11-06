@@ -21,9 +21,9 @@ public class AuthService {
     }
 
     public Optional<Map<String, Object>> login(String username, String password, String tenant) {
-        var opt = (tenant != null)
-                ? userRepository.findByUsernameAndTenant_Code(username, tenant)
-                : userRepository.findByUsername(username);
+    var opt = (tenant != null)
+        ? userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tenant)
+        : userRepository.findTopByUsernameOrderByCreatedTimeDesc(username);
         if (opt.isEmpty())
             return Optional.empty();
         UserEntity u = opt.get();
@@ -32,7 +32,8 @@ public class AuthService {
             return Optional.empty();
         }
         String tenantCode = (u.getTenant() != null ? u.getTenant().getCode() : null);
-        String token = jwtUtil.generateToken(u.getUsername(), u.getRole(), tenantCode);
-        return Optional.of(Map.of("token", token, "user", Map.of("username", u.getUsername(), "role", u.getRole())));
+        String token = jwtUtil.generateToken(u.getUsername(), u.getRole() != null ? u.getRole().name() : null, tenantCode);
+        String roleStr = (u.getRole() != null ? u.getRole().name().toLowerCase() : null);
+        return Optional.of(Map.of("token", token, "user", Map.of("username", u.getUsername(), "role", roleStr)));
     }
 }

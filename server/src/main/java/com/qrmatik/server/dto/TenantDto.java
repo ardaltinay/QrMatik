@@ -21,4 +21,6 @@ public class TenantDto {
     private String primaryColor;
     private String accentColor;
     private String config; // raw JSON string
+    private String plan; // FREE | STANDARD | PRO
+    private String customDomain; // optional, PRO only
 }

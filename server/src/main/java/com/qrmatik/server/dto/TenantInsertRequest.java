@@ -16,4 +16,6 @@ public class TenantInsertRequest {
     private String primaryColor;
     private String accentColor;
     private String config; // raw JSON string (optional)
+    private String plan; // optional: FREE | STANDARD | PRO (admin-only)
+    private String customDomain; // optional: PRO only
 }

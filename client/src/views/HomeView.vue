@@ -11,7 +11,7 @@
           <div>
             <div class="mb-2 flex items-center gap-3" v-if="tenantLogo && hasTenant">
               <img :src="tenantLogo" alt="Logo" class="h-10 w-10 rounded" />
-              <div class="text-sm text-gray-600">Restoran</div>
+              <div class="text-sm text-gray-600">{{ tenantName || 'Restoran' }}</div>
             </div>
             <h1 class="mb-3 text-4xl font-bold text-gray-900 sm:text-5xl">{{ heroTitle }}</h1>
             <p class="mb-4 text-gray-600">
@@ -106,7 +106,7 @@
               >
             </div>
           </div>
-          <div v-if="hasTenant" class="rounded-xl bg-white p-6 shadow">
+          <div v-if="hasTenant && isPaidPlan" class="rounded-xl bg-white p-6 shadow">
             <h3 class="mb-4 font-semibold">Popüler Ürünler</h3>
             <div v-if="popular.length" class="grid grid-cols-2 gap-4">
               <div v-for="it in popular" :key="it.id || it.name" class="rounded border p-3">
@@ -130,7 +130,7 @@
 
     <FAQAccordion v-if="!hasTenant" />
     <PricingPlans v-if="!hasTenant" />
-    <DemoContact v-if="!hasTenant" />
+  <ContactUs v-if="!hasTenant" />
     <!-- Sticky CTA (mobile only, apex) -->
     <div
       v-if="!hasTenant"
@@ -162,7 +162,7 @@
   import ScreenshotsGrid from "@/components/ScreenshotsGrid.vue";
   import FAQAccordion from "@/components/FAQAccordion.vue";
   import PricingPlans from "@/components/PricingPlans.vue";
-  import DemoContact from "@/components/DemoContact.vue";
+  import ContactUs from "@/components/ContactUs.vue";
   import { useHead } from "@unhead/vue";
 
   export default {
@@ -173,11 +173,12 @@
       ScreenshotsGrid,
       FAQAccordion,
       PricingPlans,
-      DemoContact,
+  ContactUs,
     },
     setup() {
-      const orderSession = ref(null);
+  const orderSession = ref(null);
       const tenantLogo = ref(null);
+  const tenantName = ref(null);
       const heroTitle = ref("QrMatik — Mobil Sipariş ve Yönetim");
       const showMyOrders = ref(false);
       const sessionCheckDone = ref(false);
@@ -212,6 +213,17 @@
       }
       const hasTenant = computed(() => !!detectTenantFromLocation());
       const popular = ref([]);
+      const isPaidPlan = computed(() => {
+        try {
+          const raw = localStorage.getItem("qm_tenant_cfg");
+          if (!raw) return false; // conservative: hide on unknown
+          const cfg = JSON.parse(raw);
+          const plan = String(cfg?.plan || "").toUpperCase();
+          return plan && plan !== "FREE";
+        } catch {
+          return false;
+        }
+      });
 
       function getCookie(name) {
         try {
@@ -401,8 +413,12 @@
             const cfg = JSON.parse(raw);
             const name = cfg?.displayName || cfg?.name || cfg?.title;
             if (name && hasTenant.value) heroTitle.value = name + " — Mobil Sipariş";
+            if (name && hasTenant.value) tenantName.value = name;
+            // Logo gösterimi: yalnızca ücretli planlarda etkin
+            const plan = String(cfg?.plan || "").toUpperCase();
+            const paid = plan && plan !== "FREE";
             const logo = cfg?.logoUrl || cfg?.logo;
-            if (logo) tenantLogo.value = logo;
+            if (paid && logo) tenantLogo.value = logo;
           }
         } catch {
           /* ignore */
@@ -412,8 +428,8 @@
         // Sunucu doğrulaması tamamlanana kadar butonu gizli tut
         showMyOrders.value = false;
         scheduleEvaluate();
-        // Load popular menu items (only when a tenant is detected)
-        if (hasTenant.value) {
+        // Load popular menu items (only when a tenant is detected AND on paid plans)
+        if (hasTenant.value && isPaidPlan.value) {
           fetchJson("/api/menu/popular?limit=4")
             .then((items) => {
               try {
@@ -455,6 +471,7 @@
       return {
         orderSession,
         tenantLogo,
+        tenantName,
         heroTitle,
         isAdmin,
         isSuperAdmin,
@@ -464,6 +481,7 @@
         sessionCheckDone,
         showOrdersButton,
         popular,
+        isPaidPlan,
         formatMoney,
         categoryLabel,
       };

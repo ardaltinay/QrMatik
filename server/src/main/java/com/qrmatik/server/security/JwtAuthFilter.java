@@ -37,14 +37,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Object tenantObj = claims.get("tenant");
                 String tenant = tenantObj instanceof String ? (String) tenantObj : null;
                 if (tenant != null && !tenant.trim().isEmpty()) {
-                    // JWT'deki tenant her zaman öncelikli olmalı (override)
                     TenantContext.setTenant(tenant.trim());
                 }
                 var authToken = new UsernamePasswordAuthenticationToken(username, null,
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (Exception ignored) {
-                // invalid token -> ignore, proceed unauthenticated
             }
         }
         filterChain.doFilter(request, response);

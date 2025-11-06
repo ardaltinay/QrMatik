@@ -1,8 +1,10 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.UserInsertRequest;
+import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
+import com.qrmatik.server.model.UserRole;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
 import java.util.List;
@@ -42,9 +44,26 @@ public class UserService {
     }
 
     public UserEntity create(UserInsertRequest req, String tenant) {
+        // FREE planda kitchen/bar kullanıcıları oluşturulamaz
+        if (tenant != null && req.getRole() != null) {
+            String r = req.getRole().trim().toLowerCase();
+            if ("kitchen".equals(r) || "bar".equals(r)) {
+                TenantEntity t = tenantRepository.findByCode(tenant).orElse(null);
+                if (t != null && (t.getPlan() == null || t.getPlan() == PlanType.FREE)) {
+                    throw new PlanFeatureUnavailableException("Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
+                }
+            }
+        }
         UserEntity u = new UserEntity();
         u.setUsername(req.getUsername());
-        u.setRole(req.getRole());
+        {
+            var er = UserRole.fromString(req.getRole());
+            if (er == null) {
+                // fallback: treat unknown as STAFF
+                er = UserRole.STAFF;
+            }
+            u.setRole(er);
+        }
         if (tenant != null) {
             Optional<TenantEntity> t = tenantRepository.findByCode(tenant);
             t.ifPresent(u::setTenant);
@@ -67,8 +86,21 @@ public class UserService {
         }
         if (req.getUsername() != null && !req.getUsername().isBlank())
             u.setUsername(req.getUsername());
-        if (req.getRole() != null && !req.getRole().isBlank())
-            u.setRole(req.getRole());
+        if (req.getRole() != null && !req.getRole().isBlank()) {
+            // FREE planda kitchen/bar rolüne güncellenemez
+            if (tenant != null) {
+                String r = req.getRole().trim().toLowerCase();
+                if ("kitchen".equals(r) || "bar".equals(r)) {
+                    TenantEntity t = tenantRepository.findByCode(tenant).orElse(null);
+                    if (t != null && (t.getPlan() == null || t.getPlan() == PlanType.FREE)) {
+                        throw new PlanFeatureUnavailableException("Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
+                    }
+                }
+            }
+            var er = UserRole.fromString(req.getRole());
+            if (er == null) er = UserRole.STAFF;
+            u.setRole(er);
+        }
         if (req.getPassword() != null && !req.getPassword().isBlank()) {
             u.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         }

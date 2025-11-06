@@ -2,8 +2,10 @@ package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.TenantBootstrapUsersRequest;
 import com.qrmatik.server.dto.TenantInsertRequest;
+import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
+import com.qrmatik.server.model.UserRole;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
 import java.util.List;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TenantAdminService {
     private static final Pattern CODE_RE = Pattern.compile("^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+    private static final Pattern DOMAIN_RE = Pattern
+        .compile("^(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\\.(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))+$");
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -49,9 +53,21 @@ public class TenantAdminService {
             return Optional.empty();
         if (tenantRepository.findByCode(code).isPresent())
             return Optional.empty();
-        TenantEntity e = TenantEntity.builder().code(code).name(req.getName()).ownerName(req.getOwnerName())
-                .ownerEmail(req.getOwnerEmail()).logoUrl(req.getLogoUrl()).primaryColor(req.getPrimaryColor())
-                .accentColor(req.getAccentColor()).configJson(req.getConfig()).build();
+        PlanType plan = PlanType.fromString(req.getPlan());
+    TenantEntity e = TenantEntity.builder().code(code).name(req.getName()).ownerName(req.getOwnerName())
+        .ownerEmail(req.getOwnerEmail()).logoUrl(req.getLogoUrl()).primaryColor(req.getPrimaryColor())
+        .accentColor(req.getAccentColor()).configJson(req.getConfig())
+        .plan(plan != null ? plan : PlanType.FREE).build();
+        // Custom domain only for PRO; validate and ensure uniqueness
+        String cd = req.getCustomDomain();
+        if (cd != null && !cd.isBlank() && (plan == PlanType.PRO)) {
+            String dom = cd.trim().toLowerCase();
+            if (DOMAIN_RE.matcher(dom).matches()) {
+                if (tenantRepository.findByCustomDomain(dom).isEmpty()) {
+                    e.setCustomDomain(dom);
+                }
+            }
+        }
         return Optional.of(tenantRepository.save(e));
     }
 
@@ -75,6 +91,31 @@ public class TenantAdminService {
             e.setAccentColor(req.getAccentColor());
         if (req.getConfig() != null)
             e.setConfigJson(req.getConfig());
+        if (req.getPlan() != null) {
+            PlanType plan = PlanType.fromString(req.getPlan());
+            if (plan != null)
+                e.setPlan(plan);
+            // If plan downgraded from PRO, clear customDomain
+            if (plan != PlanType.PRO) {
+                e.setCustomDomain(null);
+            }
+        }
+        if (req.getCustomDomain() != null) {
+            String cd = req.getCustomDomain();
+            String dom = cd == null ? null : cd.trim().toLowerCase();
+            if (dom == null || dom.isBlank()) {
+                e.setCustomDomain(null);
+            } else {
+                // Only allow for PRO
+                PlanType plan = e.getPlan() == null ? PlanType.FREE : e.getPlan();
+                if (plan == PlanType.PRO && DOMAIN_RE.matcher(dom).matches()) {
+                    var other = tenantRepository.findByCustomDomain(dom).orElse(null);
+                    if (other == null || other.getId().equals(e.getId())) {
+                        e.setCustomDomain(dom);
+                    }
+                }
+            }
+        }
         return Optional.of(tenantRepository.save(e));
     }
 
@@ -108,9 +149,11 @@ public class TenantAdminService {
     }
 
     private void insertUser(TenantEntity tenant, String username, String role, String rawPassword) {
-        var existing = userRepository.findByUsernameAndTenant_Code(username, tenant.getCode());
+    var existing = userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tenant.getCode());
         UserEntity u = existing.orElseGet(() -> UserEntity.builder().username(username).tenant(tenant).build());
-        u.setRole(role);
+        var er = UserRole.fromString(role);
+        if (er == null) er = UserRole.STAFF;
+        u.setRole(er);
         if (rawPassword != null && !rawPassword.isBlank()) {
             u.setPasswordHash(passwordEncoder.encode(rawPassword));
         }

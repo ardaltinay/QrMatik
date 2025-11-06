@@ -2,6 +2,7 @@ package com.qrmatik.server.service;
 
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.TenantEntity;
+import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderItemRepository;
 import com.qrmatik.server.repository.TenantRepository;
@@ -23,13 +24,15 @@ public class MenuService {
     private final ImageService imageService;
     private final TenantRepository tenantRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PlanGuard planGuard;
 
     public MenuService(MenuItemRepository repository, ImageService imageService, TenantRepository tenantRepository,
-            OrderItemRepository orderItemRepository) {
+            OrderItemRepository orderItemRepository, PlanGuard planGuard) {
         this.repository = repository;
         this.imageService = imageService;
         this.tenantRepository = tenantRepository;
         this.orderItemRepository = orderItemRepository;
+        this.planGuard = planGuard;
     }
 
     public List<MenuItemEntity> listForTenant(String tenant) {
@@ -47,6 +50,12 @@ public class MenuService {
                 t.ifPresent(m::setTenant);
             } catch (Exception ignored) {
             }
+        }
+        // plan enforcement
+        if (tenant != null) {
+            planGuard.assertCanCreateMenuItem(tenant);
+        } else if (m.getTenant() != null && m.getTenant().getCode() != null) {
+            planGuard.assertCanCreateMenuItem(m.getTenant().getCode());
         }
         return repository.save(m);
     }
@@ -105,6 +114,15 @@ public class MenuService {
     }
 
     public List<MenuItemEntity> popular(String tenant, int limit) {
+        // FREE planda popüler ürünler özelliği yok
+        try {
+            if (tenant != null) {
+                var t = tenantRepository.findByCode(tenant).orElse(null);
+                if (t != null && (t.getPlan() == null || t.getPlan() == PlanType.FREE)) {
+                    return Collections.emptyList();
+                }
+            }
+        } catch (Exception ignored) {}
         int lim = (limit <= 0 ? 4 : Math.min(limit, 50));
         List<Object[]> rows = orderItemRepository.topMenuItemCounts(tenant, PageRequest.of(0, lim));
         if (rows == null || rows.isEmpty())

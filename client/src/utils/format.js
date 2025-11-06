@@ -1,28 +1,37 @@
 // Reusable formatting utilities
 
-export function formatDate(s) {
+// Internal helper: parse various input shapes to a Date reliably, or return null
+function parseBestDate(input) {
   try {
-    if (!s) return "-";
-    if (typeof s === "number") return new Date(s).toLocaleString();
-    if (typeof s === "object") {
-      const y = s.year || s.y;
-      const mo = (s.monthValue || s.month || 1) - 1;
-      const d = s.dayOfMonth || s.day || 1;
-      const h = s.hour || 0;
-      const mi = s.minute || 0;
-      const se = s.second || 0;
-      if (y) return new Date(y, mo, d, h, mi, se).toLocaleString();
+    if (!input) return null;
+    if (input instanceof Date) return isNaN(input) ? null : input;
+    if (typeof input === "number") {
+      const d = new Date(input);
+      return isNaN(d) ? null : d;
     }
-    if (typeof s === "string") {
+    if (typeof input === "object") {
+      const y = input.year || input.y;
+      const mo = (input.monthValue || input.month || 1) - 1;
+      const d = input.dayOfMonth || input.day || 1;
+      const h = input.hour || 0;
+      const mi = input.minute || 0;
+      const se = input.second || 0;
+      if (y) {
+        const dt = new Date(y, mo, d, h, mi, se);
+        return isNaN(dt) ? null : dt;
+      }
+    }
+    if (typeof input === "string") {
+      let s = input;
       let d = new Date(s);
-      if (!isNaN(d)) return d.toLocaleString();
+      if (!isNaN(d)) return d;
       if (s.includes(" ")) {
         d = new Date(s.replace(" ", "T"));
-        if (!isNaN(d)) return d.toLocaleString();
+        if (!isNaN(d)) return d;
       }
       if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(s)) {
         d = new Date(s + "Z");
-        if (!isNaN(d)) return d.toLocaleString();
+        if (!isNaN(d)) return d;
       }
       const msIdx = s.indexOf(".");
       if (msIdx > 0) {
@@ -30,14 +39,16 @@ export function formatDate(s) {
         const tzIndex = Math.max(s.indexOf("Z"), s.search(/[+-]\d{2}:?\d{2}$/));
         const tz = tzIndex >= 0 ? s.substring(tzIndex) : "";
         d = new Date(base + tz || base);
-        if (!isNaN(d)) return d.toLocaleString();
+        if (!isNaN(d)) return d;
       }
     }
-    return String(s);
   } catch {
-    return String(s || "-");
+    // ignore
   }
+  return null;
 }
+
+// Deprecated: formatDate removed in favor of formatDateTz to ensure consistent tenant timezone display
 
 export function orderCodeFromId(id) {
   const s = id != null ? String(id) : "";
@@ -80,6 +91,31 @@ export function formatMoney(value, currency = "TRY") {
   }
 }
 
+// Prefer this helper when presenting absolute instants as local Turkish time
+export function formatDateTz(input, locale = undefined, timeZone = undefined) {
+  try {
+    // Read defaults from tenant config if available
+    if (!locale) {
+      try { locale = localStorage.getItem("qm_locale") || "tr-TR"; } catch { locale = "tr-TR"; }
+    }
+    if (!timeZone) {
+      try { timeZone = localStorage.getItem("qm_tz") || "Europe/Istanbul"; } catch { timeZone = "Europe/Istanbul"; }
+    }
+    const d = parseBestDate(input);
+    if (!d) return String(input || "-");
+    return new Intl.DateTimeFormat(locale, {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(d);
+  } catch {
+    return String(input || "-");
+  }
+}
+
 export function statusLabel(s) {
   try {
     const key = String(s || "").toLowerCase();
@@ -88,6 +124,7 @@ export function statusLabel(s) {
       preparing: "Hazırlanıyor",
       ready: "Hazır",
       served: "Servis Edildi",
+      bill_requested: "Hesap İstendi",
       payment_completed: "Ödeme Tamamlandı",
       canceled: "İptal Edildi",
       expired: "Süresi Doldu",

@@ -40,6 +40,12 @@ const routes = [
         meta: { requiresAuth: true, requiresRole: "bar" },
       },
       {
+        path: "cashier",
+        name: "cashier",
+        component: () => import(/* webpackChunkName: "cashier" */ "../views/CashierView.vue"),
+        meta: { requiresAuth: true, requiresRole: "cashier" },
+      },
+      {
         path: "orders",
         component: () => import(/* webpackChunkName: "orders" */ "../views/AdminOrdersView.vue"),
         meta: { requiresAuth: true, requiresRole: "admin" },
@@ -68,6 +74,16 @@ const routes = [
       {
         path: "qr",
         component: () => import(/* webpackChunkName: "admin-qr" */ "../views/AdminQrView.vue"),
+        meta: { requiresAuth: true, requiresRole: "admin" },
+      },
+      {
+        path: "branding",
+        component: () => import(/* webpackChunkName: "branding" */ "../views/BrandingView.vue"),
+        meta: { requiresAuth: true, requiresRole: "admin" },
+      },
+      {
+        path: "upgrade",
+        component: () => import(/* webpackChunkName: "upgrade" */ "../views/UpgradePlan.vue"),
         meta: { requiresAuth: true, requiresRole: "admin" },
       },
     ],
@@ -110,6 +126,11 @@ const routes = [
     name: "tenant-required",
     component: () =>
       import(/* webpackChunkName: "tenant-required" */ "../views/TenantRequired.vue"),
+  },
+  {
+    path: "/billing/checkout",
+    name: "billing-checkout",
+    component: () => import(/* webpackChunkName: "billing-checkout" */ "../views/BillingCheckout.vue"),
   },
 ];
 
@@ -163,12 +184,18 @@ router.beforeEach(async (to, from, next) => {
         if (verifiedVal !== "ok") {
           try {
             const { fetchJson } = await import("@/utils/api");
-            await fetchJson("/api/tenant/config?code=" + encodeURIComponent(detected), {
+            const cfg = await fetchJson("/api/tenant/config?code=" + encodeURIComponent(detected), {
               silentError: true,
             });
             // persist tenant and mark verified
             try {
               localStorage.setItem("qm_tenant", detected);
+              if (cfg && typeof cfg === "object") {
+                // also persist full config for plan gating
+                localStorage.setItem("qm_tenant_cfg", JSON.stringify(cfg));
+              }
+              if (cfg && cfg.locale) localStorage.setItem("qm_locale", String(cfg.locale));
+              if (cfg && cfg.timeZone) localStorage.setItem("qm_tz", String(cfg.timeZone));
               sessionStorage.setItem(verifiedKey, "ok");
             } catch {
               /* ignore */
@@ -176,6 +203,7 @@ router.beforeEach(async (to, from, next) => {
           } catch {
             try {
               localStorage.removeItem("qm_tenant");
+              localStorage.removeItem("qm_tenant_cfg");
               sessionStorage.setItem(verifiedKey, "notfound");
             } catch {
               /* ignore */
@@ -199,6 +227,50 @@ router.beforeEach(async (to, from, next) => {
   const { useAuthStore } = await import("@/stores/authStore");
   const auth = useAuthStore();
 
+  // Early gating: kitchen/bar/cashier rotalarına FREE planda giriş tamamen engellenir
+  try {
+    const routeName = String(to.name || "").toLowerCase();
+    const isKitchenBarCashier = routeName === "kitchen" || routeName === "bar" || routeName === "cashier";
+    if (isKitchenBarCashier) {
+      const raw = localStorage.getItem("qm_tenant_cfg");
+      const cfg = raw ? JSON.parse(raw) : null;
+      const plan = String(cfg?.plan || "").toUpperCase();
+      const isPaid = plan && plan !== "FREE";
+      if (!isPaid) {
+        const { useUiStore } = await import("@/stores/uiStore");
+        useUiStore().toast("Mutfak ve Bar panoları Standart/Pro planlarda mevcuttur.", "info");
+
+        // Auth durumuna ve mevcut ekrana göre davranış:
+        const currentFromName = String(from?.name || "");
+        const userRole = auth.user && auth.user.role ? String(auth.user.role).toLowerCase() : null;
+
+        if (!auth.user) {
+          // Giriş yapılmamışken kitchen/bar hedeflenirse: login ekranında kal.
+          if (currentFromName === "admin") return next(false); // mevcut login ekranından ayrılma
+          return next({ name: "admin" }); // değilse admin giriş ekranına götür
+        }
+
+        // Giriş yapılmışsa: admin kullanıcılarını güvenli sayfaya yönlendir, bar/kitchen kullanıcılarını çıkışa zorla.
+        if (userRole === "admin") {
+          return next("/admin/orders");
+        }
+        if (userRole === "kitchen" || userRole === "bar" || userRole === "cashier") {
+          try {
+            auth.logout();
+          } catch {
+            /* ignore */
+          }
+          return next({ name: "admin" }); // login ekranı
+        }
+
+        // Diğer roller için de admin girişine gönder
+        return next({ name: "admin" });
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+
   // capture table code from query if present and persist for order creation
   try {
     const t = to.query && (to.query.table || to.query.t);
@@ -220,13 +292,13 @@ router.beforeEach(async (to, from, next) => {
     if (!auth.user) return next({ name: "admin" });
   }
 
-  // requiresRole guard (meta.requiresRole = 'kitchen'|'bar'|'admin'|'superadmin')
+  // requiresRole guard (meta.requiresRole = 'kitchen'|'bar'|'cashier'|'admin'|'superadmin')
   const roleReq = to.matched.find((r) => r.meta && r.meta.requiresRole);
   if (roleReq) {
     const required = roleReq.meta.requiresRole;
     const actual = auth.user && auth.user.role ? String(auth.user.role).toLowerCase() : null;
     // For tenant-bound panels (admin/bar/kitchen), enforce tenant-only access via subdomain or /r/:tenant
-    if (["admin", "bar", "kitchen"].includes(String(required).toLowerCase())) {
+  if (["admin", "bar", "kitchen", "cashier"].includes(String(required).toLowerCase())) {
       // recompute detected tenant for this navigation
       let detected = null;
       try {
@@ -264,9 +336,16 @@ router.beforeEach(async (to, from, next) => {
       if (actual === "superadmin") return next({ name: "super-tenants" });
       if (actual === "bar") return next({ name: "bar" });
       if (actual === "kitchen") return next({ name: "kitchen" });
+      if (actual === "cashier") return next({ name: "cashier" });
       if (actual === "admin") return next("/admin/orders");
       return next({ name: "admin" });
     }
+
+    // Plan gating for tenant-bound roles and premium admin views
+    // kitchen/bar için plan kısıtı yukarıda (early gating) ele alınıyor
+    // Not: Raporlar ana sayfasını (Admin > Raporlar) FREE planda da erişilebilir bırakıyoruz
+    // ve içeride kart bazında kilit overlay'i gösteriyoruz. Alt rapor sayfaları eklenirse
+    // burada ayrıca engellenebilir.
   }
 
   next();

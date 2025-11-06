@@ -36,10 +36,14 @@ public class TableController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TableInsertRequest req) {
-        Optional<TableEntity> e = tableService.createForCurrentTenant(req);
-        if (e.isEmpty())
-            return ResponseEntity.badRequest().body("Invalid or duplicate table code");
-        return ResponseEntity.ok(TableDto.fromEntity(e.get()));
+        try {
+            Optional<TableEntity> e = tableService.createForCurrentTenant(req);
+            if (e.isEmpty())
+                return ResponseEntity.badRequest().body("Invalid or duplicate table code");
+            return ResponseEntity.ok(TableDto.fromEntity(e.get()));
+        } catch (com.qrmatik.server.service.PlanLimitExceededException ex) {
+            return ResponseEntity.status(402).body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

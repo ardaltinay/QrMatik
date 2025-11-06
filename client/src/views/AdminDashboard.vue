@@ -82,6 +82,29 @@
           >
             QR Kodları
           </button>
+          <button
+            v-if="isAdmin"
+            type="button"
+            :class="
+              navItemClass('/admin/branding') +
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
+            "
+            @click="navigateOrLogin('/admin/branding', 'admin')"
+          >
+            Marka
+          </button>
+          <div class="my-3 border-t"></div>
+          <button
+            v-if="isAdmin"
+            type="button"
+            :class="
+              navItemClass('/admin/upgrade') +
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg'
+            "
+            @click="navigateOrLogin('/admin/upgrade', 'admin')"
+          >
+            Planı Yükselt
+          </button>
         </nav>
       </aside>
 
@@ -147,6 +170,17 @@
       const username = ref("");
       const password = ref("");
       const isAdmin = computed(() => auth.user && auth.user.role === "admin");
+      const isPaidPlan = computed(() => {
+        try {
+          const raw = localStorage.getItem("qm_tenant_cfg");
+          if (!raw) return false;
+          const cfg = JSON.parse(raw);
+          const plan = String(cfg?.plan || "").toUpperCase();
+          return plan && plan !== "FREE";
+        } catch {
+          return false;
+        }
+      });
 
       async function login() {
         try {
@@ -213,6 +247,7 @@
             else if (role === "admin") router.push("/admin/orders");
             else if (role === "kitchen") router.push({ name: "kitchen" });
             else if (role === "bar") router.push({ name: "bar" });
+            else if (role === "cashier") router.push({ name: "cashier" });
             else router.push("/admin/orders");
             showLogin.value = false;
           }
@@ -227,7 +262,41 @@
           else if (role === "admin") router.push("/admin/orders");
           else if (role === "kitchen") router.push({ name: "kitchen" });
           else if (role === "bar") router.push({ name: "bar" });
+          else if (role === "cashier") router.push({ name: "cashier" });
           else router.push("/admin/orders");
+        }
+        // Show upgrade result toast once if present
+        try {
+          const q = route.query || {};
+          if (q.upgrade) {
+            // Eğer bu sayfa bir popup/new tab olarak açıldıysa, açanı bilgilendirip kendimizi kapatmayı deneyelim
+            try {
+              const status = q.upgrade === "success" ? "success" : "fail";
+              if (window.opener && !window.opener.closed) {
+                // Mesaj gönder (opener tarafında BillingCheckout dinliyor)
+                window.opener.postMessage({ type: "qm_upgrade", status }, "*");
+                try {
+                  // Ek bir emniyet: opener göremediyse localStorage ile de işaret bırak
+                  window.localStorage.setItem("qm_upgrade_result", status);
+                } catch (e) {
+                  // ignore storage errors
+                }
+                // Kendimizi kapatmayı deneyelim (yalnızca script ile açıldıysa kapanır)
+                window.close();
+              }
+            } catch (e) {
+              // ignore postMessage/close errors
+            }
+            import("@/stores/uiStore").then(({ useUiStore }) => {
+              const ui = useUiStore();
+              if (q.upgrade === "success") ui.toastSuccess("Plan yükseltme başarılı.");
+              else ui.toastError("Ödeme tamamlanamadı.");
+              // Remove the query param to avoid re-show
+              router.replace({ query: Object.assign({}, q, { upgrade: undefined }) });
+            });
+          }
+        } catch {
+          /* ignore */
         }
       });
 
@@ -246,6 +315,7 @@
         navigateOrLogin,
         navItemClass,
         isAdmin,
+        isPaidPlan,
         onLogout,
       };
     },

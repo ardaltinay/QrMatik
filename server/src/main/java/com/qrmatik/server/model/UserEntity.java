@@ -8,17 +8,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"tenant_id", "username"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserEntity extends AbstractEntity {
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")

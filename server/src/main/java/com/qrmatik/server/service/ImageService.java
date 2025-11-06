@@ -52,17 +52,14 @@ public class ImageService {
                 dir.toAbsolutePath());
         Files.createDirectories(dir);
 
-        // Save original as original.{ext} (use copy to avoid cross-FS move issues)
         Path original = dir.resolve("original." + ext);
         try (var in = file.getInputStream()) {
             Files.copy(in, original, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // Generate medium (max width 800)
         Path medium = dir.resolve("medium.jpg");
         Thumbnails.of(original.toFile()).size(800, 800).outputFormat("jpg").toFile(medium.toFile());
 
-        // Generate thumb (max width 200)
         Path thumb = dir.resolve("thumb.jpg");
         Thumbnails.of(original.toFile()).size(200, 200).outputFormat("jpg").toFile(thumb.toFile());
 

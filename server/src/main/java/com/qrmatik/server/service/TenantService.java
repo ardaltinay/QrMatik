@@ -25,15 +25,49 @@ public class TenantService {
         var t = repository.findByCode(key).or(() -> repository.findByCodeIgnoreCase(key))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found"));
 
-        // Build DTO map allowing nullable fields
         Map<String, Object> out = new HashMap<>();
-        out.put("code", t.getCode()); // required
-        out.put("primaryColor", t.getPrimaryColor()); // required by contract
-        out.put("accentColor", t.getAccentColor()); // required by contract
-        // optional fields: can be null
+        out.put("code", t.getCode());
+        out.put("primaryColor", t.getPrimaryColor());
+        out.put("accentColor", t.getAccentColor());
         out.put("name", t.getName());
         out.put("logoUrl", t.getLogoUrl());
         out.put("config", t.getConfigJson());
+        out.put("plan", t.getPlan() != null ? t.getPlan().name() : null);
+        out.put("billingPeriod", t.getBillingPeriod());
+        out.put("planPaidUntil", t.getPlanPaidUntil());
+        out.put("customDomain", t.getCustomDomain());
+        out.put("locale", t.getLocale() != null ? t.getLocale() : "tr-TR");
+        out.put("timeZone", t.getTimeZone() != null ? t.getTimeZone() : "Europe/Istanbul");
+        out.put("pendingPlan", t.getPendingPlan() != null ? t.getPendingPlan().name() : null);
+        out.put("pendingBillingPeriod", t.getPendingBillingPeriod());
+        out.put("pendingEffectiveDate", t.getPendingEffectiveDate());
+        return out;
+    }
+
+    public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor, String logoUrl) {
+        if (tenantCode == null || tenantCode.isBlank())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing tenant");
+        var t = repository.findByCode(tenantCode)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found"));
+        if (primaryColor != null && !primaryColor.isBlank()) t.setPrimaryColor(primaryColor.trim());
+        if (accentColor != null && !accentColor.isBlank()) t.setAccentColor(accentColor.trim());
+        if (logoUrl != null) {
+            String trimmed = logoUrl.trim();
+            if (trimmed.isEmpty()) {
+                t.setLogoUrl(null);
+            } else {
+                t.setLogoUrl(trimmed);
+            }
+        }
+        repository.save(t);
+        Map<String, Object> out = new HashMap<>();
+        out.put("code", t.getCode());
+        out.put("primaryColor", t.getPrimaryColor());
+        out.put("accentColor", t.getAccentColor());
+        out.put("logoUrl", t.getLogoUrl());
+        out.put("plan", t.getPlan() != null ? t.getPlan().name() : null);
+        out.put("locale", t.getLocale() != null ? t.getLocale() : "tr-TR");
+        out.put("timeZone", t.getTimeZone() != null ? t.getTimeZone() : "Europe/Istanbul");
         return out;
     }
 }

@@ -41,10 +41,14 @@ public class MenuController {
     }
 
     @PostMapping
-    public ResponseEntity<MenuItemDto> create(@RequestBody MenuItemEntity m) {
-        String tenant = TenantContext.getTenant();
-        MenuItemEntity saved = menuService.create(m, tenant);
-        return ResponseEntity.created(URI.create("/api/menu/" + saved.getId())).body(converter.toDto(saved));
+    public ResponseEntity<?> create(@RequestBody MenuItemEntity m) {
+        try {
+            String tenant = TenantContext.getTenant();
+            MenuItemEntity saved = menuService.create(m, tenant);
+            return ResponseEntity.created(URI.create("/api/menu/" + saved.getId())).body(converter.toDto(saved));
+        } catch (com.qrmatik.server.service.PlanLimitExceededException ex) {
+            return ResponseEntity.status(402).body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
@@ -63,7 +67,6 @@ public class MenuController {
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
-            // Kök nedeni çıkar ve logla
             Throwable root = e;
             while (root.getCause() != null && root.getCause() != root) {
                 root = root.getCause();

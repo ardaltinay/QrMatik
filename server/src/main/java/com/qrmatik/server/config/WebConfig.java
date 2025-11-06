@@ -31,8 +31,18 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                var mapping = registry.addMapping("/api/**").allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*").allowCredentials(true);
+                // 1) Callback first: make sure the specific rule wins over generic /api/** mapping
+                registry.addMapping("/api/public/iyzico/callback")
+                    .allowedMethods("GET", "POST", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowedOriginPatterns("*")
+                    .allowCredentials(false);
+
+                // 2) General CORS for application APIs (frontend <-> backend)
+                var mapping = registry.addMapping("/api/**")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
 
                 // Prefer patterns when provided (supports wildcards with credentials)
                 if (clientAllowedOriginPattern != null && !clientAllowedOriginPattern.isBlank()) {
@@ -40,7 +50,19 @@ public class WebConfig {
                     mapping.allowedOriginPatterns(patterns);
                 } else if (clientUrl != null && !clientUrl.isBlank()) {
                     mapping.allowedOrigins(clientUrl);
+                } else {
+                    // Safer dev fallback: restrict to common local dev origins instead of allowing all
+                    mapping.allowedOrigins(
+                        "http://localhost:5173",
+                        "http://127.0.0.1:5173"
+                    );
+                    // allow wildcard subdomains like http://{tenant}.localhost:5173
+                    mapping.allowedOriginPatterns(
+                        "http://*.localhost:5173",
+                        "http://*.localhost"
+                    );
                 }
+                // Note: callback mapping already configured above
             }
         };
     }

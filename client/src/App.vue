@@ -1,6 +1,7 @@
 <template>
   <div class="flex min-h-screen flex-col">
     <header class="relative bg-white shadow">
+      <div class="h-0.5 w-full bg-brand-gradient"></div>
       <div class="container mx-auto flex items-center justify-between px-6 py-4">
         <router-link to="/" class="flex items-center gap-3">
           <img src="@/assets/logo.svg" alt="QrMatik" class="h-10 w-10" />

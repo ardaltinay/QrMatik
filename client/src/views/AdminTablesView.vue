@@ -2,6 +2,12 @@
   <div>
     <h2 class="mb-4 text-lg font-semibold">Masalar</h2>
 
+    <div v-if="plan==='FREE' && tables.length >= nearLimitThreshold" class="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-800">
+      Ücretsiz planda masa limiti {{ tableLimit }}. Şu an {{ tables.length }}/{{ tableLimit }}.
+      Daha fazla masa eklemek için
+      <router-link to="/admin/upgrade" class="font-medium underline">planınızı yükseltin</router-link>.
+    </div>
+
     <div class="mb-6 rounded border bg-white p-4">
       <h3 class="mb-3 font-medium">Yeni Masa Ekle</h3>
       <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
@@ -11,11 +17,7 @@
           placeholder="Açıklama (opsiyonel)"
           class="rounded border p-2"
         />
-        <select v-model="form.status" class="rounded border p-2">
-          <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
+        <BaseSelect v-model="form.status" :options="statusOptions" />
         <button @click="createTable" class="rounded bg-brand-500 px-3 py-2 text-white">Ekle</button>
       </div>
     </div>
@@ -46,11 +48,7 @@
               <span v-else>{{ t.description }}</span>
             </td>
             <td class="p-2">
-              <select v-if="editId === t.id" v-model="edit.status" class="rounded border p-1">
-                <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
+              <BaseSelect v-if="editId === t.id" v-model="edit.status" :options="statusOptions" />
               <span v-else>{{ statusLabel(t.status) }}</span>
             </td>
             <td class="p-2">
@@ -84,13 +82,23 @@
 </template>
 
 <script>
-  import { ref, onMounted } from "vue";
+  import { ref, onMounted, computed } from "vue";
   import { fetchJson, apiFetch } from "@/utils/api";
+  import BaseSelect from "@/components/BaseSelect.vue";
 
   export default {
     name: "AdminTablesView",
+    components: { BaseSelect },
     setup() {
       const tables = ref([]);
+      const plan = ref(null);
+      const tableLimit = computed(() => {
+        const p = String(plan.value || 'FREE').toUpperCase();
+        if (p === 'PRO') return 999999;
+        if (p === 'STANDARD') return 50;
+        return 1; // FREE (test için 1'e çekildi)
+      });
+      const nearLimitThreshold = computed(() => Math.max(0, tableLimit.value - 2));
       const form = ref({ code: "", description: "", status: "AVAILABLE" });
       const editId = ref(null);
       const edit = ref({ code: "", description: "", status: "AVAILABLE" });
@@ -100,7 +108,10 @@
       ];
 
       function statusLabel(s) {
-        return String(s) === "UNAVAILABLE" ? "Kullanım Dışı" : "Uygun";
+        const v = String(s || '').toUpperCase();
+        if (v === 'UNAVAILABLE') return 'Kullanım Dışı';
+        if (v === 'BUSY') return 'Dolu';
+        return 'Uygun';
       }
 
       function buildTableUrl(code) {
@@ -121,6 +132,12 @@
       async function load() {
         tables.value = await fetchJson("/api/tables", { silentError: true });
         if (!Array.isArray(tables.value)) tables.value = [];
+        try {
+          const cfg = await fetchJson("/api/tenant/config", { silentError: true });
+          plan.value = (cfg && cfg.plan) ? String(cfg.plan) : null;
+        } catch {
+          plan.value = null;
+        }
       }
 
       function normalizeStatus(s) {
@@ -134,7 +151,12 @@
           status: normalizeStatus(form.value.status),
         };
         if (!payload.code) return;
-        await fetchJson("/api/tables", { method: "POST", body: JSON.stringify(payload) });
+        try {
+          await fetchJson("/api/tables", { method: "POST", body: JSON.stringify(payload) });
+        } catch (e) {
+          // Toast already shown in fetchJson; avoid unhandled promise error in console
+          return;
+        }
         form.value = { code: "", description: "", status: "AVAILABLE" };
         await load();
       }
@@ -174,6 +196,7 @@
 
       return {
         tables,
+        plan,
         form,
         editId,
         edit,
@@ -186,6 +209,8 @@
         qrSrc,
         statusLabel,
         statusOptions,
+        tableLimit,
+        nearLimitThreshold,
       };
     },
   };
