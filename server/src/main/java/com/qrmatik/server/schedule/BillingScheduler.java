@@ -1,4 +1,4 @@
-package com.qrmatik.server.config;
+package com.qrmatik.server.schedule;
 
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.TenantRepository;

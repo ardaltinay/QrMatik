@@ -1,4 +1,4 @@
-package com.qrmatik.server.config;
+package com.qrmatik.server.schedule;
 
 import com.qrmatik.server.service.OrderService;
 import org.slf4j.Logger;

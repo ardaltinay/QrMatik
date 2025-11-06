@@ -27,7 +27,7 @@
           },
           {
             q: "Ödemeler nasıl alınır?",
-            a: "Sistem üzerinden online ödeme modülleri entegre edilebilir; alternatif olarak masa hesabı kapama da desteklenir.",
+            a: "Tek tuşla masaya hesabı isteyin; Alternatif olarak sistem üzerinden online ödeme modülleri entegre edilebilir.",
           },
           {
             q: "Mutfak ve bar için ayrı panolar var mı?",

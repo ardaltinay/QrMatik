@@ -22,7 +22,7 @@
           <div class="mb-1 text-sm font-semibold text-indigo-600">Adım 3</div>
           <div class="mb-2 text-lg font-semibold">Takip & Ödeme</div>
           <p class="text-sm text-gray-600">
-            Hazırlık durumunu takip edin, iptal/tekrar verin ve ödemeyi tamamlayın.
+            Hazırlık durumunu takip edin, iptal/tekrar verin ve ödeme için görevli çağırın.
           </p>
         </li>
       </ol>

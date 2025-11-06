@@ -139,7 +139,7 @@
     try {
       const status = String(o.status || "").toLowerCase();
       if (status === "payment_completed" || status === "canceled") return false;
-      const created = new Date(o.createdAt);
+  const created = new Date(o.createdAt || o.createdTime);
       if (isNaN(created.getTime())) return false;
       const diffMs = Date.now() - created.getTime();
       return diffMs <= 2 * 60 * 1000; // 2 dakika
@@ -162,7 +162,7 @@
 
   function remainingMs(o) {
     try {
-      const created = new Date(o.createdAt);
+  const created = new Date(o.createdAt || o.createdTime);
       if (isNaN(created.getTime())) return 0;
       const elapsed = now.value - created.getTime();
       const left = 2 * 60 * 1000 - elapsed; // 2 dakika

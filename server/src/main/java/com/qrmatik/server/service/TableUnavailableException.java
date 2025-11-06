@@ -1,8 +1,0 @@
-package com.qrmatik.server.service;
-
-public class TableUnavailableException extends RuntimeException {
-    @Deprecated // moved to com.qrmatik.server.exception
-    public TableUnavailableException(String message) {
-        super(message);
-    }
-}

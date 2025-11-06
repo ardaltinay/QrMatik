@@ -126,10 +126,6 @@
             </div>
           </div>
           <div v-if="copied" class="mt-2 text-sm text-green-600">Link panoya kopyalandı.</div>
-          <div class="mt-2 text-sm text-gray-500">
-            Not: E-posta/SMS göndermek için gerçek sunucu entegrasyonu gerekir; butonlar varsayılan
-            uygulamayı açar.
-          </div>
         </div>
       </div>
     </div>

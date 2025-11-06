@@ -157,9 +157,10 @@
                         <includes>
                             <include>src/main/java/**/*.java</include>
                         </includes>
-                        <eclipse>
-                            <file>${project.basedir}/.spotless/eclipse-java-formatter.xml</file>
-                        </eclipse>
+                        <!-- Use google-java-format to avoid Eclipse JDT + Lombok patcher issues -->
+                        <googleJavaFormat>
+                            <version>1.17.0</version>
+                        </googleJavaFormat>
                         <removeUnusedImports/>
                         <importOrder/>
                     </java>

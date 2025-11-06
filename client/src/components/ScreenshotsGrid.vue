@@ -6,6 +6,18 @@
           <h2 class="text-2xl font-bold text-gray-900 md:text-3xl">Ekran Yapıları</h2>
           <p class="mt-1 text-gray-600">Basit, hızlı ve kullanışlı ekran yapıları</p>
         </div>
+        <div class="flex gap-2">
+          <button
+            class="rounded-md border px-3 py-1.5 text-sm"
+            :class="mode === 'web' ? 'bg-brand-500 text-white border-brand-500' : 'hover:bg-gray-100'"
+            @click="setMode('web')"
+          >Web</button>
+          <button
+            class="rounded-md border px-3 py-1.5 text-sm"
+            :class="mode === 'mobil' ? 'bg-brand-500 text-white border-brand-500' : 'hover:bg-gray-100'"
+            @click="setMode('mobil')"
+          >Mobil</button>
+        </div>
       </div>
 
       <!-- Mobile: horizontal snap carousel -->
@@ -114,20 +126,36 @@
 </template>
 
 <script>
-  import menu from "@/assets/screens/menu.svg";
-  import orders from "@/assets/screens/orders.svg";
-  import admin from "@/assets/screens/admin.svg";
-  import kitchen from "@/assets/screens/kitchen.svg";
+  // Real screenshots (web + mobil)
+  import menuw from "@/assets/screens/musteri_menusu_web.png";
+  import menum from "@/assets/screens/musteri_menusu_mobil.png";
+  import takipw from "@/assets/screens/siparis_takibi_web.png";
+  import takipm from "@/assets/screens/siparis_takibi_mobil.png";
+  import siplistw from "@/assets/screens/siparislerim_web.png";
+  import siplistm from "@/assets/screens/siparislerim_mobil.png";
+  import adminw from "@/assets/screens/admin_panel_web.png";
+  import adminm from "@/assets/screens/admin_paneli_mobil.png";
+  import kbw from "@/assets/screens/bar_mutfak_paneli_web.png";
+  import kbm from "@/assets/screens/bar_mutfak_paneli_mobil.png";
 
   export default {
     name: "ScreenshotsGrid",
     data() {
       return {
-        shots: [
-          { src: menu, alt: "Müşteri Menüsü" },
-          { src: orders, alt: "Sipariş Takibi" },
-          { src: admin, alt: "Admin Paneli" },
-          { src: kitchen, alt: "Mutfak/Bar Ekranı" },
+        mode: 'web',
+        webShots: [
+          { src: menuw, alt: "Müşteri Menüsü (Web)" },
+          { src: siplistw, alt: "Siparişlerim (Web)" },
+          { src: takipw, alt: "Sipariş Takibi (Web)" },
+          { src: adminw, alt: "Admin Paneli (Web)" },
+          { src: kbw, alt: "Mutfak/Bar Paneli (Web)" },
+        ],
+        mobileShots: [
+          { src: menum, alt: "Müşteri Menüsü (Mobil)" },
+          { src: siplistm, alt: "Siparişlerim (Mobil)" },
+          { src: takipm, alt: "Sipariş Takibi (Mobil)" },
+          { src: adminm, alt: "Admin Paneli (Mobil)" },
+          { src: kbm, alt: "Mutfak/Bar Paneli (Mobil)" },
         ],
         lightbox: {
           open: false,
@@ -136,12 +164,23 @@
       };
     },
     computed: {
+      shots() {
+        return this.mode === 'web' ? this.webShots : this.mobileShots;
+      },
       current() {
         const i = Math.min(Math.max(this.lightbox.index, 0), this.shots.length - 1);
         return this.shots[i] || { src: "", alt: "" };
       },
     },
     methods: {
+      setMode(m) {
+        if (m === this.mode) return;
+        this.mode = m;
+        // Reset index for new set
+        this.lightbox.index = 0;
+        // Close lightbox if open to avoid index mismatch
+        if (this.lightbox.open) this.lightbox.open = false;
+      },
       open(i = 0) {
         this.lightbox.index = i;
         this.lightbox.open = true;

@@ -6,6 +6,7 @@ import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.model.OrderItemEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +68,16 @@ public class OrderConverter {
         dto.setCreatedTime(e.getCreatedTime());
         try {
             if (e.getCreatedTime() != null) {
-                dto.setCreatedAt(e.getCreatedTime().atOffset(ZoneOffset.UTC));
+                // createdTime veritabanında LocalDateTime (zone bilgisiz) olarak tutuluyor ve
+                // uygulama sunucusunun yerel zaman diliminde (muhtemelen Europe/Istanbul) set ediliyor.
+                // İstemciye UTC doğru anı yansıtmak için önce sistem zone'a yerleştirip sonra UTC'ye çeviriyoruz.
+                var local = e.getCreatedTime();
+                var appZone = ZoneId.systemDefault();
+                var utcInstant = local.atZone(appZone).withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime();
+                dto.setCreatedAt(utcInstant);
             }
         } catch (Exception ignore) {
+            // fallback sessiz: createdTime zaten dto.setCreatedTime ile ham olarak taşınmış durumda
         }
         dto.setSessionExpiresAt(e.getSessionExpiresAt());
         dto.setLines(lines);

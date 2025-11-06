@@ -44,8 +44,8 @@
       iconSvg: makeIcon('<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>'),
     },
     {
-      title: "Online Ödeme",
-      desc: "Ödemeyi doğrudan sistem üzerinden güvenle tamamlayın.",
+      title: "Bildirim Sistemi",
+      desc: "Sipariş durumu güncellemeleri ve müşteri bildirimlerini anında görün.",
       iconSvg: makeIcon('<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>'),
     },
     {
