@@ -6,6 +6,7 @@ import com.qrmatik.server.dto.UserInsertRequest;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.service.TenantContext;
 import com.qrmatik.server.service.UserService;
+import com.qrmatik.server.exception.PlanFeatureUnavailableException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class UserController {
         try {
             UserEntity saved = userService.create(req, tenant);
             return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(converter.toDto(saved));
-        } catch (com.qrmatik.server.service.PlanFeatureUnavailableException ex) {
+        } catch (PlanFeatureUnavailableException ex) {
             return ResponseEntity.status(402).body(new UserDto());
         }
     }
@@ -56,7 +57,7 @@ public class UserController {
             Optional<UserEntity> updated = userService.update(id, req, tenant);
             return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))
                     .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (com.qrmatik.server.service.PlanFeatureUnavailableException ex) {
+        } catch (PlanFeatureUnavailableException ex) {
             return ResponseEntity.status(402).build();
         }
     }

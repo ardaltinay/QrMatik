@@ -1,9 +1,9 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.repository.TenantRepository;
-import org.springframework.http.HttpStatus;
+import com.qrmatik.server.exception.BadRequestException;
+import com.qrmatik.server.exception.NotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +21,10 @@ public class TenantService {
         if (resolved == null || resolved.isBlank())
             resolved = currentTenantOrNull;
         if (resolved == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found");
+            throw new NotFoundException("Tenant not found");
         String key = resolved.trim();
         var t = repository.findByCode(key).or(() -> repository.findByCodeIgnoreCase(key))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found"));
+                .orElseThrow(() -> new NotFoundException("Tenant not found"));
 
         Map<String, Object> out = new HashMap<>();
         out.put("code", t.getCode());
@@ -48,9 +48,9 @@ public class TenantService {
     public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor,
             String logoUrl) {
         if (tenantCode == null || tenantCode.isBlank())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing tenant");
+            throw new BadRequestException("Missing tenant");
         var t = repository.findByCode(tenantCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found"));
+                .orElseThrow(() -> new NotFoundException("Tenant not found"));
         if (primaryColor != null && !primaryColor.isBlank())
             t.setPrimaryColor(primaryColor.trim());
         if (accentColor != null && !accentColor.isBlank())

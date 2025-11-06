@@ -1,7 +1,6 @@
-package com.qrmatik.server.service;
+package com.qrmatik.server.exception;
 
 public class PlanLimitExceededException extends RuntimeException {
-    @Deprecated // moved to com.qrmatik.server.exception
     public PlanLimitExceededException(String message) {
         super(message);
     }

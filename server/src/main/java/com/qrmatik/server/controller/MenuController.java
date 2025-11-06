@@ -5,6 +5,7 @@ import com.qrmatik.server.dto.MenuItemDto;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.service.MenuService;
 import com.qrmatik.server.service.TenantContext;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class MenuController {
             String tenant = TenantContext.getTenant();
             MenuItemEntity saved = menuService.create(m, tenant);
             return ResponseEntity.created(URI.create("/api/menu/" + saved.getId())).body(converter.toDto(saved));
-        } catch (com.qrmatik.server.service.PlanLimitExceededException ex) {
+        } catch (PlanLimitExceededException ex) {
             return ResponseEntity.status(402).body(ex.getMessage());
         }
     }

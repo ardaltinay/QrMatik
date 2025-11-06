@@ -8,6 +8,7 @@ import com.qrmatik.server.model.OrderStatus;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.model.TenantEntity;
+import com.qrmatik.server.exception.TableUnavailableException;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;

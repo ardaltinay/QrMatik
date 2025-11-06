@@ -7,6 +7,7 @@ import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.RequestBillRequest;
 import com.qrmatik.server.dto.StatusUpdate;
 import com.qrmatik.server.model.OrderEntity;
+import com.qrmatik.server.exception.TableUnavailableException;
 import com.qrmatik.server.service.OrderService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.Valid;
@@ -95,7 +96,7 @@ public class OrderController {
             return ResponseEntity.created(URI.create("/api/orders/" + saved.getId()))
                     .header("X-Order-Session", saved.getSessionId()).header("X-Order-Expires", expIso)
                     .body(converter.toDto(saved));
-        } catch (com.qrmatik.server.service.TableUnavailableException ex) {
+        } catch (TableUnavailableException ex) {
             return ResponseEntity.status(423).body(Map.of("message", ex.getMessage()));
         }
     }

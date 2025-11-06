@@ -1,7 +1,7 @@
 package com.qrmatik.server.controller;
 
 import com.qrmatik.server.service.PlanGuard;
-import com.qrmatik.server.service.PlanLimitExceededException;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import com.qrmatik.server.service.TenantContext;
 import com.qrmatik.server.service.TenantService;
 import org.springframework.http.ResponseEntity;

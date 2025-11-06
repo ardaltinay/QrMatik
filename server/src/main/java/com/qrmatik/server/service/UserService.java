@@ -5,6 +5,7 @@ import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.model.UserRole;
+import com.qrmatik.server.exception.PlanFeatureUnavailableException;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

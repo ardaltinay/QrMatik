@@ -1,6 +1,7 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.model.PlanType;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.TableRepository;

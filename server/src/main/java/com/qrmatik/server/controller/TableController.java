@@ -4,6 +4,7 @@ import com.qrmatik.server.dto.TableDto;
 import com.qrmatik.server.dto.TableInsertRequest;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.service.TableService;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ public class TableController {
             if (e.isEmpty())
                 return ResponseEntity.badRequest().body("Invalid or duplicate table code");
             return ResponseEntity.ok(TableDto.fromEntity(e.get()));
-        } catch (com.qrmatik.server.service.PlanLimitExceededException ex) {
+        } catch (PlanLimitExceededException ex) {
             return ResponseEntity.status(402).body(ex.getMessage());
         }
     }
