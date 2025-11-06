@@ -75,9 +75,17 @@ export async function fetchJson(path, opts = {}) {
           if (j) {
             if (typeof j.message === "string" && j.message.trim()) candidate = j.message;
             else if (typeof j.detail === "string" && j.detail.trim()) candidate = j.detail;
-            else if (typeof j.error_description === "string" && j.error_description.trim()) candidate = j.error_description;
-            else if (typeof j.errorDescription === "string" && j.errorDescription.trim()) candidate = j.errorDescription;
-            else if (Array.isArray(j.errors) && j.errors.length && typeof j.errors[0]?.message === "string" && j.errors[0].message.trim()) candidate = j.errors[0].message;
+            else if (typeof j.error_description === "string" && j.error_description.trim())
+              candidate = j.error_description;
+            else if (typeof j.errorDescription === "string" && j.errorDescription.trim())
+              candidate = j.errorDescription;
+            else if (
+              Array.isArray(j.errors) &&
+              j.errors.length &&
+              typeof j.errors[0]?.message === "string" &&
+              j.errors[0].message.trim()
+            )
+              candidate = j.errors[0].message;
             else if (typeof j.title === "string" && j.title.trim()) candidate = j.title;
             else if (typeof j.error === "string" && j.error.trim()) candidate = j.error;
             else if (typeof j === "string" && j.trim()) candidate = j;
@@ -94,8 +102,7 @@ export async function fetchJson(path, opts = {}) {
     // Upgrade hint for plan limits — keep backend msg if present, otherwise default
     if (res.status === 402) {
       const base = msg && msg.trim() ? msg : "Plan limiti aşıldı";
-      msg = base +
-        " — planınızı Yükselt sayfasından artırabilirsiniz (Admin > Planı Yükselt).";
+      msg = base + " — planınızı Yükselt sayfasından artırabilirsiniz (Admin > Planı Yükselt).";
     }
     // Final fallback if still empty
     if (!msg || !msg.trim()) {

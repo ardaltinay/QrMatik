@@ -130,7 +130,8 @@ const routes = [
   {
     path: "/billing/checkout",
     name: "billing-checkout",
-    component: () => import(/* webpackChunkName: "billing-checkout" */ "../views/BillingCheckout.vue"),
+    component: () =>
+      import(/* webpackChunkName: "billing-checkout" */ "../views/BillingCheckout.vue"),
   },
 ];
 
@@ -230,7 +231,8 @@ router.beforeEach(async (to, from, next) => {
   // Early gating: kitchen/bar/cashier rotalarına FREE planda giriş tamamen engellenir
   try {
     const routeName = String(to.name || "").toLowerCase();
-    const isKitchenBarCashier = routeName === "kitchen" || routeName === "bar" || routeName === "cashier";
+    const isKitchenBarCashier =
+      routeName === "kitchen" || routeName === "bar" || routeName === "cashier";
     if (isKitchenBarCashier) {
       const raw = localStorage.getItem("qm_tenant_cfg");
       const cfg = raw ? JSON.parse(raw) : null;
@@ -298,7 +300,7 @@ router.beforeEach(async (to, from, next) => {
     const required = roleReq.meta.requiresRole;
     const actual = auth.user && auth.user.role ? String(auth.user.role).toLowerCase() : null;
     // For tenant-bound panels (admin/bar/kitchen), enforce tenant-only access via subdomain or /r/:tenant
-  if (["admin", "bar", "kitchen", "cashier"].includes(String(required).toLowerCase())) {
+    if (["admin", "bar", "kitchen", "cashier"].includes(String(required).toLowerCase())) {
       // recompute detected tenant for this navigation
       let detected = null;
       try {

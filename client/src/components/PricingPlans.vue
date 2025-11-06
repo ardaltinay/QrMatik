@@ -3,7 +3,9 @@
     <div class="container mx-auto">
       <h2 class="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">Fiyatlandırma</h2>
       <!-- Yalnızca yıllık faturalama -->
-      <div class="mb-6 inline-flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm shadow-sm">
+      <div
+        class="mb-6 inline-flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm shadow-sm"
+      >
         <span>Faturalama:</span>
         <strong>Yıllık</strong>
       </div>
@@ -28,7 +30,6 @@
       <p v-if="note" class="mt-4 text-sm text-gray-600">{{ note }}</p>
     </div>
   </section>
-
 </template>
 
 <script>

@@ -8,7 +8,9 @@
           <div>
             <div class="text-sm text-gray-500">Sipariş No</div>
             <div class="text-xl font-medium">#{{ orderCodeFromId(order.id) }}</div>
-            <div class="text-sm text-gray-500">{{ formatDateTz(order.createdAt || order.createdTime) }}</div>
+            <div class="text-sm text-gray-500">
+              {{ formatDateTz(order.createdAt || order.createdTime) }}
+            </div>
           </div>
           <div class="text-right">
             <div class="text-sm text-gray-500">Masa / Yer</div>
@@ -73,9 +75,7 @@
         v-if="order && order.status === 'served' && !isExpired"
         class="mt-4 rounded border bg-blue-50 p-3 text-blue-900"
       >
-        <div class="mb-2">
-          Siparişiniz servis edildi. Kasadan hesabınızı isteyebilirsiniz.
-        </div>
+        <div class="mb-2">Siparişiniz servis edildi. Kasadan hesabınızı isteyebilirsiniz.</div>
         <button @click="requestBill" class="btn btn-primary">Hesabı İste</button>
       </div>
       <div
@@ -185,14 +185,17 @@
         if (status === "preparing")
           return `${Math.max(1, baseMinutes - 2)} - ${baseMinutes + 2} dk içinde`;
         if (status === "ready") return "Çok yakında (paspas hazır)";
-        if (status === "payment_completed" || status === "canceled" || status === "bill_requested") return "";
+        if (status === "payment_completed" || status === "canceled" || status === "bill_requested")
+          return "";
         return "";
       });
 
       const showEta = computed(() => {
         if (!order.value) return false;
         const s = order.value.status;
-        return s !== "served" && s !== "payment_completed" && s !== "canceled" && s !== "bill_requested";
+        return (
+          s !== "served" && s !== "payment_completed" && s !== "canceled" && s !== "bill_requested"
+        );
       });
 
       const isExpired = computed(() => {
@@ -212,7 +215,7 @@
         return i ? i.name : "Unknown";
       }
 
-  // Tarih gösterimleri için formatDateTz kullanılır
+      // Tarih gösterimleri için formatDateTz kullanılır
 
       // share / QR
       // Include session id for privacy-aware deep link
@@ -345,7 +348,7 @@
         currentIdx,
         etaText,
         showEta,
-  isExpired,
+        isExpired,
 
         formatDateTz,
         orderCodeFromId,

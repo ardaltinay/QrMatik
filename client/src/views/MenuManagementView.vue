@@ -50,7 +50,7 @@
                 <input
                   v-model="drafts[it.id].subcategory"
                   placeholder="Alt kategori"
-                  class="rounded border p-2 w-full"
+                  class="w-full rounded border p-2"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@
         categoryOptions.value.map((c) => ({ value: c, label: primaryLabel(c) })),
       );
 
-  function addItem() {
+      function addItem() {
         if (!name.value) return;
         if (!category.value) {
           statuses["_new"] = "Kategori seçin";

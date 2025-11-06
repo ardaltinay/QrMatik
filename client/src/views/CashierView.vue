@@ -104,9 +104,21 @@
         await refresh();
         intervalId = setInterval(refresh, 8000);
       });
-      onBeforeUnmount(() => { if (intervalId) clearInterval(intervalId); });
+      onBeforeUnmount(() => {
+        if (intervalId) clearInterval(intervalId);
+      });
 
-      return { requests, markPaid, formatMoney, formatDateTz, orderCodeFromId, onLogout, selected, openDetail, refresh };
+      return {
+        requests,
+        markPaid,
+        formatMoney,
+        formatDateTz,
+        orderCodeFromId,
+        onLogout,
+        selected,
+        openDetail,
+        refresh,
+      };
     },
   };
 </script>

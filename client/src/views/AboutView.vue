@@ -21,7 +21,8 @@
         <div class="mb-2 font-semibold">Hikayemiz</div>
         <p class="text-sm leading-6 text-gray-600">
           QrMatik, restoranlarda beklemeyi azaltmak ve hataları en aza indirmek amacıyla doğdu.
-          Bugün onlarca işletmenin her gün binlerce siparişi hızlı ve hatasız yönetmesine yardımcı oluyoruz.
+          Bugün onlarca işletmenin her gün binlerce siparişi hızlı ve hatasız yönetmesine yardımcı
+          oluyoruz.
         </p>
       </div>
 
@@ -42,13 +43,14 @@
         <ul class="list-disc space-y-1 pl-5 text-sm leading-6 text-gray-600">
           <li>Hafta içi 09:00–18:00 destek</li>
           <li>Ortalama ilk yanıt: 30 dakikanın altında</li>
-          <li>E-posta: <a class="text-brand-600 hover:underline" href="mailto:support@qrmatik.cloud">support@qrmatik.cloud</a></li>
+          <li>
+            E-posta:
+            <a class="text-brand-600 hover:underline" href="mailto:support@qrmatik.cloud"
+              >support@qrmatik.cloud</a
+            >
+          </li>
         </ul>
       </div>
-
-
-
-
     </div>
   </div>
 </template>

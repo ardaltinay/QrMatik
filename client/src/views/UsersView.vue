@@ -15,7 +15,7 @@
             { value: 'staff', label: 'Görevli' },
             { value: 'kitchen', label: 'Mutfak' },
             { value: 'bar', label: 'Bar' },
-              { value: 'cashier', label: 'Kasa' },
+            { value: 'cashier', label: 'Kasa' },
           ]"
         />
       </div>

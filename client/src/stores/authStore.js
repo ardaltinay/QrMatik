@@ -13,19 +13,25 @@ export const useAuthStore = defineStore("auth", () => {
   let expiryTimer = null;
 
   function clearExpiryTimer() {
-    try { if (expiryTimer) clearTimeout(expiryTimer); } catch { /* ignore */ }
+    try {
+      if (expiryTimer) clearTimeout(expiryTimer);
+    } catch {
+      /* ignore */
+    }
     expiryTimer = null;
   }
 
   function decodeJwtExp(tkn) {
     try {
-      const parts = String(tkn || '').split('.');
+      const parts = String(tkn || "").split(".");
       if (parts.length < 2) return null;
-      const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
       const json = atob(b64);
       const obj = JSON.parse(json);
-      if (obj && typeof obj.exp === 'number') return obj.exp; // seconds since epoch
-    } catch { /* ignore */ }
+      if (obj && typeof obj.exp === "number") return obj.exp; // seconds since epoch
+    } catch {
+      /* ignore */
+    }
     return null;
   }
 
@@ -42,7 +48,9 @@ export const useAuthStore = defineStore("auth", () => {
         router.replace({ name: "admin" });
         const { useUiStore } = await import("@/stores/uiStore");
         useUiStore().toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       return;
     }
     expiryTimer = setTimeout(async () => {
@@ -52,7 +60,9 @@ export const useAuthStore = defineStore("auth", () => {
         router.replace({ name: "admin" });
         const { useUiStore } = await import("@/stores/uiStore");
         useUiStore().toastError("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }, ms);
   }
 
@@ -145,7 +155,9 @@ export const useAuthStore = defineStore("auth", () => {
       window.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") scheduleAutoLogout();
       });
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   return { user, token, login, logout, isAdmin, isSuperAdmin, hasRole };

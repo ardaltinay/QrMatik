@@ -11,7 +11,7 @@
           <div>
             <div class="mb-2 flex items-center gap-3" v-if="tenantLogo && hasTenant">
               <img :src="tenantLogo" alt="Logo" class="h-10 w-10 rounded" />
-              <div class="text-sm text-gray-600">{{ tenantName || 'Restoran' }}</div>
+              <div class="text-sm text-gray-600">{{ tenantName || "Restoran" }}</div>
             </div>
             <h1 class="mb-3 text-4xl font-bold text-gray-900 sm:text-5xl">{{ heroTitle }}</h1>
             <p class="mb-4 text-gray-600">
@@ -130,7 +130,7 @@
 
     <FAQAccordion v-if="!hasTenant" />
     <PricingPlans v-if="!hasTenant" />
-  <ContactUs v-if="!hasTenant" />
+    <ContactUs v-if="!hasTenant" />
     <!-- Sticky CTA (mobile only, apex) -->
     <div
       v-if="!hasTenant"
@@ -173,12 +173,12 @@
       ScreenshotsGrid,
       FAQAccordion,
       PricingPlans,
-  ContactUs,
+      ContactUs,
     },
     setup() {
-  const orderSession = ref(null);
+      const orderSession = ref(null);
       const tenantLogo = ref(null);
-  const tenantName = ref(null);
+      const tenantName = ref(null);
       const heroTitle = ref("QrMatik — Mobil Sipariş ve Yönetim");
       const showMyOrders = ref(false);
       const sessionCheckDone = ref(false);

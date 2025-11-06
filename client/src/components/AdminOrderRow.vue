@@ -18,9 +18,7 @@
       <div class="rounded-full px-3 py-1 text-sm font-medium" :class="statusColor">
         {{ statusLabel }}
       </div>
-      <button @click="$emit('open', order)" class="btn btn-secondary">
-        Detay
-      </button>
+      <button @click="$emit('open', order)" class="btn btn-secondary">Detay</button>
     </div>
   </div>
 </template>

@@ -4,7 +4,9 @@
       <div class="flex items-center justify-between border-b p-4">
         <div>
           <h3 class="font-semibold">Sipariş #{{ order.id }}</h3>
-          <div class="text-sm text-gray-500">{{ formatDateTz(order.createdAt || order.createdTime) }}</div>
+          <div class="text-sm text-gray-500">
+            {{ formatDateTz(order.createdAt || order.createdTime) }}
+          </div>
         </div>
         <button @click="$emit('close')" class="rounded p-2 hover:bg-gray-100">✕</button>
       </div>
@@ -114,7 +116,15 @@
         }
       }
 
-      return { menuName, localStatus, applyStatus, formatMoney, formatDateTz, canCancel, cancelOrder };
+      return {
+        menuName,
+        localStatus,
+        applyStatus,
+        formatMoney,
+        formatDateTz,
+        canCancel,
+        cancelOrder,
+      };
     },
   };
 </script>

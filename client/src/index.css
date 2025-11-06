@@ -125,10 +125,14 @@ html {
     var(--brand-accent-soft) 100%
   );
 }
-.btn-primary:hover { opacity: 0.95; }
+.btn-primary:hover {
+  opacity: 0.95;
+}
 .btn-secondary {
   border: 1px solid #d1d5db; /* gray-300 */
   background: #fff;
   color: #1f2937; /* gray-800 */
 }
-.btn-secondary:hover { background: #f9fafb; } /* gray-50 */
+.btn-secondary:hover {
+  background: #f9fafb;
+} /* gray-50 */

@@ -96,10 +96,18 @@ export function formatDateTz(input, locale = undefined, timeZone = undefined) {
   try {
     // Read defaults from tenant config if available
     if (!locale) {
-      try { locale = localStorage.getItem("qm_locale") || "tr-TR"; } catch { locale = "tr-TR"; }
+      try {
+        locale = localStorage.getItem("qm_locale") || "tr-TR";
+      } catch {
+        locale = "tr-TR";
+      }
     }
     if (!timeZone) {
-      try { timeZone = localStorage.getItem("qm_tz") || "Europe/Istanbul"; } catch { timeZone = "Europe/Istanbul"; }
+      try {
+        timeZone = localStorage.getItem("qm_tz") || "Europe/Istanbul";
+      } catch {
+        timeZone = "Europe/Istanbul";
+      }
     }
     const d = parseBestDate(input);
     if (!d) return String(input || "-");

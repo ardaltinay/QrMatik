@@ -25,11 +25,11 @@
           <span
             class="rounded-full border px-2 py-0.5 text-xs"
             :class="{
-              'border-gray-300 text-gray-600': (t.plan||'FREE')==='FREE',
-              'border-amber-400 text-amber-700': t.plan==='STANDARD',
-              'border-emerald-400 text-emerald-700': t.plan==='PRO',
+              'border-gray-300 text-gray-600': (t.plan || 'FREE') === 'FREE',
+              'border-amber-400 text-amber-700': t.plan === 'STANDARD',
+              'border-emerald-400 text-emerald-700': t.plan === 'PRO',
             }"
-            >{{ (t.plan || 'FREE') }}</span
+            >{{ t.plan || "FREE" }}</span
           >
           <button class="rounded border px-2 py-1 text-sm" @click="openBootstrap(t)">
             Kullanıcıları Oluştur

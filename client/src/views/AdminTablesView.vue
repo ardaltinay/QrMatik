@@ -2,10 +2,15 @@
   <div>
     <h2 class="mb-4 text-lg font-semibold">Masalar</h2>
 
-    <div v-if="plan==='FREE' && tables.length >= nearLimitThreshold" class="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-800">
-      Ücretsiz planda masa limiti {{ tableLimit }}. Şu an {{ tables.length }}/{{ tableLimit }}.
-      Daha fazla masa eklemek için
-      <router-link to="/admin/upgrade" class="font-medium underline">planınızı yükseltin</router-link>.
+    <div
+      v-if="plan === 'FREE' && tables.length >= nearLimitThreshold"
+      class="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-800"
+    >
+      Ücretsiz planda masa limiti {{ tableLimit }}. Şu an {{ tables.length }}/{{ tableLimit }}. Daha
+      fazla masa eklemek için
+      <router-link to="/admin/upgrade" class="font-medium underline"
+        >planınızı yükseltin</router-link
+      >.
     </div>
 
     <div class="mb-6 rounded border bg-white p-4">
@@ -93,9 +98,9 @@
       const tables = ref([]);
       const plan = ref(null);
       const tableLimit = computed(() => {
-        const p = String(plan.value || 'FREE').toUpperCase();
-        if (p === 'PRO') return 999999;
-        if (p === 'STANDARD') return 50;
+        const p = String(plan.value || "FREE").toUpperCase();
+        if (p === "PRO") return 999999;
+        if (p === "STANDARD") return 50;
         return 1; // FREE (test için 1'e çekildi)
       });
       const nearLimitThreshold = computed(() => Math.max(0, tableLimit.value - 2));
@@ -108,10 +113,10 @@
       ];
 
       function statusLabel(s) {
-        const v = String(s || '').toUpperCase();
-        if (v === 'UNAVAILABLE') return 'Kullanım Dışı';
-        if (v === 'BUSY') return 'Dolu';
-        return 'Uygun';
+        const v = String(s || "").toUpperCase();
+        if (v === "UNAVAILABLE") return "Kullanım Dışı";
+        if (v === "BUSY") return "Dolu";
+        return "Uygun";
       }
 
       function buildTableUrl(code) {
@@ -134,7 +139,7 @@
         if (!Array.isArray(tables.value)) tables.value = [];
         try {
           const cfg = await fetchJson("/api/tenant/config", { silentError: true });
-          plan.value = (cfg && cfg.plan) ? String(cfg.plan) : null;
+          plan.value = cfg && cfg.plan ? String(cfg.plan) : null;
         } catch {
           plan.value = null;
         }

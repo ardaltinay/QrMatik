@@ -291,22 +291,22 @@
 
   const adminSubdomainUrl = computed(() => {
     try {
-      const code = done.value && done.value.code ? String(done.value.code).trim() : '';
-      if (!code) return '';
-      const loc = typeof window !== 'undefined' ? window.location : null;
-      const hostname = loc && loc.hostname ? loc.hostname : 'qrmatik.cloud';
-      const protocol = loc && loc.protocol ? loc.protocol : 'https:';
-      const port = loc && loc.port ? ':' + loc.port : '';
-      let baseDomain = 'qrmatik.cloud';
-      if (hostname === 'localhost' || hostname.endsWith('.localhost')) {
-        baseDomain = 'localhost';
+      const code = done.value && done.value.code ? String(done.value.code).trim() : "";
+      if (!code) return "";
+      const loc = typeof window !== "undefined" ? window.location : null;
+      const hostname = loc && loc.hostname ? loc.hostname : "qrmatik.cloud";
+      const protocol = loc && loc.protocol ? loc.protocol : "https:";
+      const port = loc && loc.port ? ":" + loc.port : "";
+      let baseDomain = "qrmatik.cloud";
+      if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+        baseDomain = "localhost";
       } else {
-        const parts = hostname.split('.');
-        if (parts.length >= 2) baseDomain = parts.slice(-2).join('.');
+        const parts = hostname.split(".");
+        if (parts.length >= 2) baseDomain = parts.slice(-2).join(".");
       }
       return `${protocol}//${code}.${baseDomain}${port}/admin`;
     } catch {
-      return '';
+      return "";
     }
   });
 

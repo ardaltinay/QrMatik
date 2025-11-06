@@ -22,7 +22,9 @@
           <div>
             <div class="text-sm text-gray-500">Sipariş No</div>
             <div class="text-xl font-medium">#{{ orderCodeFromId(o.id) }}</div>
-            <div class="text-sm text-gray-500">{{ formatDateTz(o.createdAt || o.createdTime) }}</div>
+            <div class="text-sm text-gray-500">
+              {{ formatDateTz(o.createdAt || o.createdTime) }}
+            </div>
           </div>
           <div class="text-right">
             <div class="text-sm text-gray-500">Durum</div>
