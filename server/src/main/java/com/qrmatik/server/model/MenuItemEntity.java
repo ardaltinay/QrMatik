@@ -6,13 +6,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "menu_items")
@@ -22,19 +21,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class MenuItemEntity extends AbstractEntity {
-    private String name;
+  private String name;
 
-    private BigDecimal price;
+  private BigDecimal price;
 
-    private String category;
+  private String category;
 
-    // Alt kategori (ör. pizza, salad, soda)
-    @Column(name = "sub")
-    private String subcategory;
+  // Alt kategori (ör. pizza, salad, soda)
+  @Column(name = "sub")
+  private String subcategory;
 
-    private String image;
+  private String image;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id")
-    private TenantEntity tenant;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "tenant_id")
+  private TenantEntity tenant;
 }

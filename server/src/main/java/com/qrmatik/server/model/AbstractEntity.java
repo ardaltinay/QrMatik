@@ -9,14 +9,13 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Version;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @MappedSuperclass
 @Getter
@@ -24,34 +23,31 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Version
-    private Long version;
+  @Version private Long version;
 
-    @Column(name = "created_time")
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime createdTime;
+  @Column(name = "created_time")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+  private LocalDateTime createdTime;
 
-    @Column(name = "updated_time")
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime updatedTime;
+  @Column(name = "updated_time")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+  private LocalDateTime updatedTime;
 
-    @PrePersist
-    private void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdTime = now;
-        this.updatedTime = now;
-        if (this.version == null)
-            this.version = 0L;
-    }
+  @PrePersist
+  private void onCreate() {
+    LocalDateTime now = LocalDateTime.now();
+    this.createdTime = now;
+    this.updatedTime = now;
+    if (this.version == null) this.version = 0L;
+  }
 
-    @PreUpdate
-    private void onUpdate() {
-        this.updatedTime = LocalDateTime.now();
-        if (this.version == null)
-            this.version = 0L;
-    }
+  @PreUpdate
+  private void onUpdate() {
+    this.updatedTime = LocalDateTime.now();
+    if (this.version == null) this.version = 0L;
+  }
 }

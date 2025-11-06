@@ -12,15 +12,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TenantDto {
-    private String id;
-    private String code;
-    private String name;
-    private String ownerName;
-    private String ownerEmail;
-    private String logoUrl;
-    private String primaryColor;
-    private String accentColor;
-    private String config; // raw JSON string
-    private String plan; // FREE | STANDARD | PRO
-    private String customDomain; // optional, PRO only
+  private String id;
+  private String code;
+  private String name;
+  private String ownerName;
+  private String ownerEmail;
+  private String logoUrl;
+  private String primaryColor;
+  private String accentColor;
+  private String config; // raw JSON string
+  private String plan; // FREE | STANDARD | PRO
+  private String customDomain; // optional, PRO only
 }

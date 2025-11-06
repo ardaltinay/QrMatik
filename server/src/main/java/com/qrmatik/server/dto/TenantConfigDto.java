@@ -12,12 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TenantConfigDto {
-    private String code;
-    private String name;
-    private String plan;
-    private String customDomain;
-    private String primaryColor;
-    private String accentColor;
-    private String locale; // e.g., tr-TR
-    private String timeZone; // e.g., Europe/Istanbul
+  private String code;
+  private String name;
+  private String plan;
+  private String customDomain;
+  private String primaryColor;
+  private String accentColor;
+  private String locale; // e.g., tr-TR
+  private String timeZone; // e.g., Europe/Istanbul
 }
