@@ -11,31 +11,31 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(IyzicoOptionsConfig.IyzicoProperties.class)
 public class IyzicoOptionsConfig {
 
-  @Bean
-  public Options iyzicoOptions(IyzicoProperties props) {
-    Options options = new Options();
-    options.setApiKey(props.getApiKey());
-    options.setSecretKey(props.getSecretKey());
-    options.setBaseUrl(props.getBaseUrl());
-    return options;
-  }
+    @Bean
+    public Options iyzicoOptions(IyzicoProperties props) {
+        Options options = new Options();
+        options.setApiKey(props.getApiKey());
+        options.setSecretKey(props.getSecretKey());
+        options.setBaseUrl(props.getBaseUrl());
+        return options;
+    }
 
-  @Data
-  @ConfigurationProperties(prefix = "iyzico")
-  public static class IyzicoProperties {
-    /** API key from iyzico dashboard */
-    private String apiKey = "";
+    @Data
+    @ConfigurationProperties(prefix = "iyzico")
+    public static class IyzicoProperties {
+        /** API key from iyzico dashboard */
+        private String apiKey = "";
 
-    /** Secret key from iyzico dashboard */
-    private String secretKey = "";
+        /** Secret key from iyzico dashboard */
+        private String secretKey = "";
 
-    /** Base URL, use https://sandbox-api.iyzipay.com for sandbox */
-    private String baseUrl = "https://sandbox-api.iyzipay.com";
+        /** Base URL, use https://sandbox-api.iyzipay.com for sandbox */
+        private String baseUrl = "https://sandbox-api.iyzipay.com";
 
-    /** Enable/disable payments feature without removing code */
-    private boolean enabled = false;
+        /** Enable/disable payments feature without removing code */
+        private boolean enabled = false;
 
-    /** Public callback base URL of this app (e.g., https://app.yourdomain.com) */
-    private String callbackBaseUrl = "";
-  }
+        /** Public callback base URL of this app (e.g., https://app.yourdomain.com) */
+        private String callbackBaseUrl = "";
+    }
 }

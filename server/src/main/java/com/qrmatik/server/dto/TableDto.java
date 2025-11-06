@@ -15,18 +15,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TableDto {
-  private UUID id;
-  private String code;
-  private String description;
-  private TableStatus status;
+    private UUID id;
+    private String code;
+    private String description;
+    private TableStatus status;
 
-  public static TableDto fromEntity(TableEntity e) {
-    if (e == null) return null;
-    return TableDto.builder()
-        .id(e.getId())
-        .code(e.getCode())
-        .description(e.getDescription())
-        .status(e.getStatus())
-        .build();
-  }
+    public static TableDto fromEntity(TableEntity e) {
+        if (e == null)
+            return null;
+        return TableDto.builder().id(e.getId()).code(e.getCode()).description(e.getDescription()).status(e.getStatus())
+                .build();
+    }
 }

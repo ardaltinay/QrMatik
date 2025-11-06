@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StatusUpdate {
-  private String status;
+    private String status;
 }

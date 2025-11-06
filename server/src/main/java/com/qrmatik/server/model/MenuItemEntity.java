@@ -21,19 +21,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class MenuItemEntity extends AbstractEntity {
-  private String name;
+    private String name;
 
-  private BigDecimal price;
+    private BigDecimal price;
 
-  private String category;
+    private String category;
 
-  // Alt kategori (ör. pizza, salad, soda)
-  @Column(name = "sub")
-  private String subcategory;
+    // Alt kategori (ör. pizza, salad, soda)
+    @Column(name = "sub")
+    private String subcategory;
 
-  private String image;
+    private String image;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "tenant_id")
-  private TenantEntity tenant;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id")
+    private TenantEntity tenant;
 }

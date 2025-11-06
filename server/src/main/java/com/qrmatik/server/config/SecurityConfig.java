@@ -19,88 +19,68 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  private final JwtAuthFilter jwtAuthFilter;
-  private final TenantFilter tenantFilter;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final TenantFilter tenantFilter;
 
-  // Removed custom client origin wiring for callback per user's request
+    // Removed custom client origin wiring for callback per user's request
 
-  public SecurityConfig(JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter) {
-    this.jwtAuthFilter = jwtAuthFilter;
-    this.tenantFilter = tenantFilter;
-  }
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.tenantFilter = tenantFilter;
+    }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable);
-    // Keep default CORS handling; WebMvcConfigurer governs app CORS. Callback
-    // returns 302 redirect, no CORS needed.
-    http.cors(c -> {});
-    // Allow framing from same origin (needed for certain PSP callbacks/embeds)
-    http.headers(h -> h.frameOptions(f -> f.sameOrigin()));
-    http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    http.authorizeHttpRequests(
-        auth ->
-            auth
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
+        // Keep default CORS handling; WebMvcConfigurer governs app CORS. Callback
+        // returns 302 redirect, no CORS needed.
+        http.cors(c -> {
+        });
+        // Allow framing from same origin (needed for certain PSP callbacks/embeds)
+        http.headers(h -> h.frameOptions(f -> f.sameOrigin()));
+        http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.authorizeHttpRequests(auth -> auth
                 // Allow CORS preflight requests universally
-                .requestMatchers(HttpMethod.OPTIONS, "/**")
-                .permitAll()
-                .requestMatchers(
-                    "/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/menu/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/orders/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*")
-                .permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
                 // Müşteri iptali ve hesap isteği için özel uç noktalar: sessionId doğrulaması
                 // ile
-                .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/orders/*/request-bill")
-                .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/orders/*/request-bill").permitAll()
                 // QR image endpoint publicly accessible for customer tracking
-                .requestMatchers(HttpMethod.GET, "/api/qr/image")
-                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
                 // Sipariş durum güncellemeleri sadece yetkili personel:
                 // admin/kitchen/bar/cashier
                 .requestMatchers(HttpMethod.PUT, "/api/orders/*/status")
                 .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER")
                 // superadmin-only endpoints
-                .requestMatchers("/api/tenants/**")
-                .hasRole("SUPERADMIN")
+                .requestMatchers("/api/tenants/**").hasRole("SUPERADMIN")
                 // admin area: ADMIN only
-                .requestMatchers("/api/users/**", "/api/qr/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/tables/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/tables/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/menu/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/**")
-                .hasRole("ADMIN")
-                .anyRequest()
-                .authenticated());
-    // Resolve tenant context early (from Host/X-Tenant/path) before JWT processing
-    http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
-    http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-    return http.build();
-  }
+                .requestMatchers("/api/users/**", "/api/qr/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/tables/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/tables/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/menu/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN").anyRequest().authenticated());
+        // Resolve tenant context early (from Host/X-Tenant/path) before JWT processing
+        http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
-  // Removed explicit CorsConfigurationSource per user's request; relying on
-  // existing WebMvcConfigurer.
+    // Removed explicit CorsConfigurationSource per user's request; relying on
+    // existing WebMvcConfigurer.
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
-    return config.getAuthenticationManager();
-  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }

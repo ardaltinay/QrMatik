@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class PricingDto {
-  private String currency; // e.g., TRY
-  private String note; // optional marketing note
-  private List<PricingTierDto> tiers;
+    private String currency; // e.g., TRY
+    private String note; // optional marketing note
+    private List<PricingTierDto> tiers;
 }

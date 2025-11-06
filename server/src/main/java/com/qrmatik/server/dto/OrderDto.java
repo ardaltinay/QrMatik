@@ -15,16 +15,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
-  private UUID id;
-  private String tableCode;
-  private String sessionId;
-  private String tenantCode;
-  private String customerName;
-  private String status;
-  private BigDecimal total;
-  private LocalDateTime createdTime;
-  // Zone-aware timestamp for clients; prefer this over createdTime when available
-  private OffsetDateTime createdAt;
-  private LocalDateTime sessionExpiresAt;
-  private List<OrderLineDto> lines;
+    private UUID id;
+    private String tableCode;
+    private String sessionId;
+    private String tenantCode;
+    private String customerName;
+    private String status;
+    private BigDecimal total;
+    private LocalDateTime createdTime;
+    // Zone-aware timestamp for clients; prefer this over createdTime when available
+    private OffsetDateTime createdAt;
+    private LocalDateTime sessionExpiresAt;
+    private List<OrderLineDto> lines;
 }

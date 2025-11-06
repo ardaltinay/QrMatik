@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CheckoutInitRequest {
-  @NotBlank private String plan; // STANDARD | PRO
-  @NotBlank private String billingPeriod; // MONTHLY | YEARLY
+    @NotBlank
+    private String plan; // STANDARD | PRO
+    @NotBlank
+    private String billingPeriod; // MONTHLY | YEARLY
 }

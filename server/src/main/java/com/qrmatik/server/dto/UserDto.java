@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-  private UUID id;
-  private String username;
-  private String role;
+    private UUID id;
+    private String username;
+    private String role;
 }

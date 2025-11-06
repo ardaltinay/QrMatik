@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TenantBootstrapUsersRequest {
-  private String adminUsername;
-  private String adminPassword;
-  private String kitchenUsername;
-  private String kitchenPassword;
-  private String barUsername;
-  private String barPassword;
+    private String adminUsername;
+    private String adminPassword;
+    private String kitchenUsername;
+    private String kitchenPassword;
+    private String barUsername;
+    private String barPassword;
 }

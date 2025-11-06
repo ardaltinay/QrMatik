@@ -13,8 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class PricingTierDto {
-  private String name; // e.g., Ücretsiz, Standart, Pro
-  private Integer monthly; // TRY per month
-  private Integer yearly; // TRY per year (optional)
-  private List<String> features;
+    private String name; // e.g., Ücretsiz, Standart, Pro
+    private Integer monthly; // TRY per month
+    private Integer yearly; // TRY per year (optional)
+    private List<String> features;
 }

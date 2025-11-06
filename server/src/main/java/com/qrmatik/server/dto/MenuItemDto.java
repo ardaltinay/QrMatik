@@ -12,10 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuItemDto {
-  private UUID id;
-  private String name;
-  private BigDecimal price;
-  private String category;
-  private String subcategory;
-  private String image;
+    private UUID id;
+    private String name;
+    private BigDecimal price;
+    private String category;
+    private String subcategory;
+    private String image;
 }

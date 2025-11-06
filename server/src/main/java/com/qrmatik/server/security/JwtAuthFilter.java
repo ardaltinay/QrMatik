@@ -17,39 +17,34 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-  public JwtAuthFilter(JwtUtil jwtUtil) {
-    this.jwtUtil = jwtUtil;
-  }
-
-  @Override
-  protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    String auth = request.getHeader("Authorization");
-    if (auth != null && auth.startsWith("Bearer ")) {
-      String token = auth.substring(7);
-      try {
-        Claims claims = jwtUtil.parseToken(token);
-        String username = claims.getSubject();
-        Object roleObj = claims.get("role");
-        String role = roleObj instanceof String ? (String) roleObj : String.valueOf(roleObj);
-        Object tenantObj = claims.get("tenant");
-        String tenant = tenantObj instanceof String ? (String) tenantObj : null;
-        if (tenant != null && !tenant.trim().isEmpty()) {
-          TenantContext.setTenant(tenant.trim());
-        }
-        var authToken =
-            new UsernamePasswordAuthenticationToken(
-                username,
-                null,
-                Collections.singletonList(
-                    new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-      } catch (Exception ignored) {
-      }
+    public JwtAuthFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
-    filterChain.doFilter(request, response);
-  }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String auth = request.getHeader("Authorization");
+        if (auth != null && auth.startsWith("Bearer ")) {
+            String token = auth.substring(7);
+            try {
+                Claims claims = jwtUtil.parseToken(token);
+                String username = claims.getSubject();
+                Object roleObj = claims.get("role");
+                String role = roleObj instanceof String ? (String) roleObj : String.valueOf(roleObj);
+                Object tenantObj = claims.get("tenant");
+                String tenant = tenantObj instanceof String ? (String) tenantObj : null;
+                if (tenant != null && !tenant.trim().isEmpty()) {
+                    TenantContext.setTenant(tenant.trim());
+                }
+                var authToken = new UsernamePasswordAuthenticationToken(username, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } catch (Exception ignored) {
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
 }

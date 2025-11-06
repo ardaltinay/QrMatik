@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CancelRequest {
-  private String sessionId;
+    private String sessionId;
 }

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TableRepository extends JpaRepository<TableEntity, UUID> {
-  Optional<TableEntity> findByCode(String code);
+    Optional<TableEntity> findByCode(String code);
 
-  Optional<TableEntity> findByCodeAndTenant_Code(String code, String tenantCode);
+    Optional<TableEntity> findByCodeAndTenant_Code(String code, String tenantCode);
 
-  List<TableEntity> findByTenant_Code(String tenantCode);
+    List<TableEntity> findByTenant_Code(String tenantCode);
 
-  long countByTenant_Code(String tenantCode);
+    long countByTenant_Code(String tenantCode);
 }

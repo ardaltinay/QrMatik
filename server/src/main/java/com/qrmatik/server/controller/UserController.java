@@ -24,50 +24,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
 
-  private final UserService userService;
-  private final UserConverter converter;
+    private final UserService userService;
+    private final UserConverter converter;
 
-  public UserController(UserService userService, UserConverter converter) {
-    this.userService = userService;
-    this.converter = converter;
-  }
-
-  @GetMapping
-  public List<UserDto> list() {
-    String tenant = TenantContext.getTenant();
-    return userService.listForTenant(tenant).stream().map(converter::toDto).toList();
-  }
-
-  @PostMapping
-  public ResponseEntity<UserDto> create(@RequestBody UserInsertRequest req) {
-    String tenant = TenantContext.getTenant();
-    try {
-      UserEntity saved = userService.create(req, tenant);
-      return ResponseEntity.created(URI.create("/api/users/" + saved.getId()))
-          .body(converter.toDto(saved));
-    } catch (PlanFeatureUnavailableException ex) {
-      return ResponseEntity.status(402).body(new UserDto());
+    public UserController(UserService userService, UserConverter converter) {
+        this.userService = userService;
+        this.converter = converter;
     }
-  }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<UserDto> update(
-      @PathVariable String id, @RequestBody UserInsertRequest req) {
-    String tenant = TenantContext.getTenant();
-    try {
-      Optional<UserEntity> updated = userService.update(id, req, tenant);
-      return updated
-          .map(u -> ResponseEntity.ok(converter.toDto(u)))
-          .orElseGet(() -> ResponseEntity.notFound().build());
-    } catch (PlanFeatureUnavailableException ex) {
-      return ResponseEntity.status(402).build();
+    @GetMapping
+    public List<UserDto> list() {
+        String tenant = TenantContext.getTenant();
+        return userService.listForTenant(tenant).stream().map(converter::toDto).toList();
     }
-  }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable String id) {
-    String tenant = TenantContext.getTenant();
-    boolean ok = userService.delete(id, tenant);
-    return ok ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-  }
+    @PostMapping
+    public ResponseEntity<UserDto> create(@RequestBody UserInsertRequest req) {
+        String tenant = TenantContext.getTenant();
+        try {
+            UserEntity saved = userService.create(req, tenant);
+            return ResponseEntity.created(URI.create("/api/users/" + saved.getId())).body(converter.toDto(saved));
+        } catch (PlanFeatureUnavailableException ex) {
+            return ResponseEntity.status(402).body(new UserDto());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserInsertRequest req) {
+        String tenant = TenantContext.getTenant();
+        try {
+            Optional<UserEntity> updated = userService.update(id, req, tenant);
+            return updated.map(u -> ResponseEntity.ok(converter.toDto(u)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (PlanFeatureUnavailableException ex) {
+            return ResponseEntity.status(402).build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        String tenant = TenantContext.getTenant();
+        boolean ok = userService.delete(id, tenant);
+        return ok ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

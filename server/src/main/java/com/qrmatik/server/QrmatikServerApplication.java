@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class QrmatikServerApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(QrmatikServerApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(QrmatikServerApplication.class, args);
+    }
 }

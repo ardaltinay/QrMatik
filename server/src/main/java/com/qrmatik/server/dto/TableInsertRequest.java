@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TableInsertRequest {
-  private String code;
-  private String description;
-  private TableStatus status;
+    private String code;
+    private String description;
+    private TableStatus status;
 }

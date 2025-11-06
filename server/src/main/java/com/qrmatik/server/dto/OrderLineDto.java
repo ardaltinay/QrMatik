@@ -12,12 +12,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderLineDto {
-  private UUID itemId;
-  private String name;
-  private BigDecimal price;
-  private Integer quantity;
-  private String image;
-  private String category;
-  private String subcategory;
-  private String note;
+    private UUID itemId;
+    private String name;
+    private BigDecimal price;
+    private Integer quantity;
+    private String image;
+    private String category;
+    private String subcategory;
+    private String note;
 }

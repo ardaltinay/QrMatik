@@ -9,18 +9,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateOrderRequest {
-  private String tableCode; // optional
-  private String sessionId; // optional, server can create if missing
-  private String status; // optional, default NEW
-  private List<CreateOrderLine> lines; // required at least 1
+    private String tableCode; // optional
+    private String sessionId; // optional, server can create if missing
+    private String status; // optional, default NEW
+    private List<CreateOrderLine> lines; // required at least 1
 
-  @Getter
-  @Setter
-  public static class CreateOrderLine {
-    private UUID itemId; // preferred
-    private Integer quantity; // defaults to 1
-    private BigDecimal price; // optional, fallback to MenuItem.price
-    private String name; // optional, fallback to MenuItem.name
-    private String note; // optional, customer note per line
-  }
+    @Getter
+    @Setter
+    public static class CreateOrderLine {
+        private UUID itemId; // preferred
+        private Integer quantity; // defaults to 1
+        private BigDecimal price; // optional, fallback to MenuItem.price
+        private String name; // optional, fallback to MenuItem.name
+        private String note; // optional, customer note per line
+    }
 }

@@ -8,14 +8,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TenantInsertRequest {
-  private String code;
-  private String name;
-  private String ownerName;
-  private String ownerEmail;
-  private String logoUrl;
-  private String primaryColor;
-  private String accentColor;
-  private String config; // raw JSON string (optional)
-  private String plan; // optional: FREE | STANDARD | PRO (admin-only)
-  private String customDomain; // optional: PRO only
+    private String code;
+    private String name;
+    private String ownerName;
+    private String ownerEmail;
+    private String logoUrl;
+    private String primaryColor;
+    private String accentColor;
+    private String config; // raw JSON string (optional)
+    private String plan; // optional: FREE | STANDARD | PRO (admin-only)
+    private String customDomain; // optional: PRO only
 }

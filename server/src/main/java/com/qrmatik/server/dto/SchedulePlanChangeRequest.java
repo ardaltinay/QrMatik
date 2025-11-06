@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SchedulePlanChangeRequest {
-  @NotBlank private String plan; // target plan
-  @NotBlank private String billingPeriod; // MONTHLY | YEARLY
+    @NotBlank
+    private String plan; // target plan
+    @NotBlank
+    private String billingPeriod; // MONTHLY | YEARLY
 }

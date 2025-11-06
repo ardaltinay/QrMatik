@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/public")
 public class PublicPricingController {
 
-  private final PricingService pricingService;
+    private final PricingService pricingService;
 
-  public PublicPricingController(PricingService pricingService) {
-    this.pricingService = pricingService;
-  }
+    public PublicPricingController(PricingService pricingService) {
+        this.pricingService = pricingService;
+    }
 
-  @GetMapping("/pricing")
-  public ResponseEntity<PricingDto> pricing() {
-    return ResponseEntity.ok(pricingService.currentPricing());
-  }
+    @GetMapping("/pricing")
+    public ResponseEntity<PricingDto> pricing() {
+        return ResponseEntity.ok(pricingService.currentPricing());
+    }
 }

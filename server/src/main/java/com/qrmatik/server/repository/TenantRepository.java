@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TenantRepository extends JpaRepository<TenantEntity, UUID> {
-  Optional<TenantEntity> findByCode(String code);
+    Optional<TenantEntity> findByCode(String code);
 
-  Optional<TenantEntity> findByCodeIgnoreCase(String code);
+    Optional<TenantEntity> findByCodeIgnoreCase(String code);
 
-  Optional<TenantEntity> findByCustomDomain(String customDomain);
+    Optional<TenantEntity> findByCustomDomain(String customDomain);
 
-  List<TenantEntity> findByPendingEffectiveDateLessThanEqual(LocalDate date);
+    List<TenantEntity> findByPendingEffectiveDateLessThanEqual(LocalDate date);
 }

@@ -23,41 +23,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/tables")
 public class TableController {
 
-  private final TableService tableService;
+    private final TableService tableService;
 
-  public TableController(TableService tableService) {
-    this.tableService = tableService;
-  }
-
-  @GetMapping
-  public ResponseEntity<List<TableDto>> list() {
-    List<TableEntity> list = tableService.listForCurrentTenant();
-    return ResponseEntity.ok(list.stream().map(TableDto::fromEntity).collect(Collectors.toList()));
-  }
-
-  @PostMapping
-  public ResponseEntity<?> create(@RequestBody TableInsertRequest req) {
-    try {
-      Optional<TableEntity> e = tableService.createForCurrentTenant(req);
-      if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid or duplicate table code");
-      return ResponseEntity.ok(TableDto.fromEntity(e.get()));
-    } catch (PlanLimitExceededException ex) {
-      return ResponseEntity.status(402).body(ex.getMessage());
+    public TableController(TableService tableService) {
+        this.tableService = tableService;
     }
-  }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<?> update(
-      @PathVariable("id") UUID id, @RequestBody TableInsertRequest req) {
-    Optional<TableEntity> e = tableService.updateForCurrentTenant(id, req);
-    if (e.isEmpty()) return ResponseEntity.badRequest().body("Invalid table or duplicate code");
-    return ResponseEntity.ok(TableDto.fromEntity(e.get()));
-  }
+    @GetMapping
+    public ResponseEntity<List<TableDto>> list() {
+        List<TableEntity> list = tableService.listForCurrentTenant();
+        return ResponseEntity.ok(list.stream().map(TableDto::fromEntity).collect(Collectors.toList()));
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable("id") UUID id) {
-    boolean ok = tableService.deleteForCurrentTenant(id);
-    if (!ok) return ResponseEntity.badRequest().body("Invalid table");
-    return ResponseEntity.noContent().build();
-  }
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody TableInsertRequest req) {
+        try {
+            Optional<TableEntity> e = tableService.createForCurrentTenant(req);
+            if (e.isEmpty())
+                return ResponseEntity.badRequest().body("Invalid or duplicate table code");
+            return ResponseEntity.ok(TableDto.fromEntity(e.get()));
+        } catch (PlanLimitExceededException ex) {
+            return ResponseEntity.status(402).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody TableInsertRequest req) {
+        Optional<TableEntity> e = tableService.updateForCurrentTenant(id, req);
+        if (e.isEmpty())
+            return ResponseEntity.badRequest().body("Invalid table or duplicate code");
+        return ResponseEntity.ok(TableDto.fromEntity(e.get()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") UUID id) {
+        boolean ok = tableService.deleteForCurrentTenant(id);
+        if (!ok)
+            return ResponseEntity.badRequest().body("Invalid table");
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -23,31 +23,34 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractEntity implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-  @Version private Long version;
+    @Version
+    private Long version;
 
-  @Column(name = "created_time")
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-  private LocalDateTime createdTime;
+    @Column(name = "created_time")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime createdTime;
 
-  @Column(name = "updated_time")
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-  private LocalDateTime updatedTime;
+    @Column(name = "updated_time")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime updatedTime;
 
-  @PrePersist
-  private void onCreate() {
-    LocalDateTime now = LocalDateTime.now();
-    this.createdTime = now;
-    this.updatedTime = now;
-    if (this.version == null) this.version = 0L;
-  }
+    @PrePersist
+    private void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdTime = now;
+        this.updatedTime = now;
+        if (this.version == null)
+            this.version = 0L;
+    }
 
-  @PreUpdate
-  private void onUpdate() {
-    this.updatedTime = LocalDateTime.now();
-    if (this.version == null) this.version = 0L;
-  }
+    @PreUpdate
+    private void onUpdate() {
+        this.updatedTime = LocalDateTime.now();
+        if (this.version == null)
+            this.version = 0L;
+    }
 }

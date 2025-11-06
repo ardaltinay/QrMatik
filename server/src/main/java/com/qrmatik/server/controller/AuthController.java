@@ -14,23 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  private final AuthService authService;
+    private final AuthService authService;
 
-  public AuthController(AuthService authService) {
-    this.authService = authService;
-  }
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
-  public record LoginRequest(@NotBlank String username, @NotBlank String password) {}
+    public record LoginRequest(@NotBlank String username, @NotBlank String password) {
+    }
 
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-    String tenant = TenantContext.getTenant();
-    return authService
-        .login(req.username(), req.password(), tenant)
-        .map(ResponseEntity::ok)
-        .orElseGet(
-            () ->
-                ResponseEntity.status(401)
-                    .body(Map.of("error", "Hatalı kullanıcı adı veya parola")));
-  }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+        String tenant = TenantContext.getTenant();
+        return authService.login(req.username(), req.password(), tenant).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "Hatalı kullanıcı adı veya parola")));
+    }
 }
