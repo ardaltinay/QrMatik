@@ -1,11 +1,12 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.repository.TenantRepository;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TenantService {
@@ -44,13 +45,16 @@ public class TenantService {
         return out;
     }
 
-    public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor, String logoUrl) {
+    public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor,
+            String logoUrl) {
         if (tenantCode == null || tenantCode.isBlank())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing tenant");
         var t = repository.findByCode(tenantCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tenant not found"));
-        if (primaryColor != null && !primaryColor.isBlank()) t.setPrimaryColor(primaryColor.trim());
-        if (accentColor != null && !accentColor.isBlank()) t.setAccentColor(accentColor.trim());
+        if (primaryColor != null && !primaryColor.isBlank())
+            t.setPrimaryColor(primaryColor.trim());
+        if (accentColor != null && !accentColor.isBlank())
+            t.setAccentColor(accentColor.trim());
         if (logoUrl != null) {
             String trimmed = logoUrl.trim();
             if (trimmed.isEmpty()) {

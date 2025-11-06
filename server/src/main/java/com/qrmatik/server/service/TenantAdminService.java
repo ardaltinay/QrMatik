@@ -8,19 +8,20 @@ import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.model.UserRole;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TenantAdminService {
     private static final Pattern CODE_RE = Pattern.compile("^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
     private static final Pattern DOMAIN_RE = Pattern
-        .compile("^(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\\.(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))+$");
+            .compile("^(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\\.(?i:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))+$");
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -54,10 +55,10 @@ public class TenantAdminService {
         if (tenantRepository.findByCode(code).isPresent())
             return Optional.empty();
         PlanType plan = PlanType.fromString(req.getPlan());
-    TenantEntity e = TenantEntity.builder().code(code).name(req.getName()).ownerName(req.getOwnerName())
-        .ownerEmail(req.getOwnerEmail()).logoUrl(req.getLogoUrl()).primaryColor(req.getPrimaryColor())
-        .accentColor(req.getAccentColor()).configJson(req.getConfig())
-        .plan(plan != null ? plan : PlanType.FREE).build();
+        TenantEntity e = TenantEntity.builder().code(code).name(req.getName()).ownerName(req.getOwnerName())
+                .ownerEmail(req.getOwnerEmail()).logoUrl(req.getLogoUrl()).primaryColor(req.getPrimaryColor())
+                .accentColor(req.getAccentColor()).configJson(req.getConfig()).plan(plan != null ? plan : PlanType.FREE)
+                .build();
         // Custom domain only for PRO; validate and ensure uniqueness
         String cd = req.getCustomDomain();
         if (cd != null && !cd.isBlank() && (plan == PlanType.PRO)) {
@@ -149,10 +150,11 @@ public class TenantAdminService {
     }
 
     private void insertUser(TenantEntity tenant, String username, String role, String rawPassword) {
-    var existing = userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tenant.getCode());
+        var existing = userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tenant.getCode());
         UserEntity u = existing.orElseGet(() -> UserEntity.builder().username(username).tenant(tenant).build());
         var er = UserRole.fromString(role);
-        if (er == null) er = UserRole.STAFF;
+        if (er == null)
+            er = UserRole.STAFF;
         u.setRole(er);
         if (rawPassword != null && !rawPassword.isBlank()) {
             u.setPasswordHash(passwordEncoder.encode(rawPassword));

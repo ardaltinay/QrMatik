@@ -2,13 +2,14 @@ package com.qrmatik.server.config;
 
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.TenantRepository;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 
 @Component
 public class BillingScheduler {
@@ -27,14 +28,18 @@ public class BillingScheduler {
     public void applyScheduledPlanChanges() {
         LocalDate today = LocalDate.now(appZoneId);
         List<TenantEntity> due = tenantRepository.findByPendingEffectiveDateLessThanEqual(today);
-        if (due.isEmpty()) return;
+        if (due.isEmpty())
+            return;
         int count = 0;
         for (TenantEntity t : due) {
             try {
-                if (t.getPendingPlan() == null && t.getPendingBillingPeriod() == null) continue;
+                if (t.getPendingPlan() == null && t.getPendingBillingPeriod() == null)
+                    continue;
                 // apply scheduled change
-                if (t.getPendingPlan() != null) t.setPlan(t.getPendingPlan());
-                if (t.getPendingBillingPeriod() != null) t.setBillingPeriod(t.getPendingBillingPeriod());
+                if (t.getPendingPlan() != null)
+                    t.setPlan(t.getPendingPlan());
+                if (t.getPendingBillingPeriod() != null)
+                    t.setBillingPeriod(t.getPendingBillingPeriod());
                 // After period end, there is no paid period active
                 t.setPlanPaidUntil(null);
                 t.setPendingPlan(null);

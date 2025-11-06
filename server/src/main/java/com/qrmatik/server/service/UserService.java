@@ -7,11 +7,12 @@ import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.model.UserRole;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -50,7 +51,8 @@ public class UserService {
             if ("kitchen".equals(r) || "bar".equals(r)) {
                 TenantEntity t = tenantRepository.findByCode(tenant).orElse(null);
                 if (t != null && (t.getPlan() == null || t.getPlan() == PlanType.FREE)) {
-                    throw new PlanFeatureUnavailableException("Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
+                    throw new PlanFeatureUnavailableException(
+                            "Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
                 }
             }
         }
@@ -93,12 +95,14 @@ public class UserService {
                 if ("kitchen".equals(r) || "bar".equals(r)) {
                     TenantEntity t = tenantRepository.findByCode(tenant).orElse(null);
                     if (t != null && (t.getPlan() == null || t.getPlan() == PlanType.FREE)) {
-                        throw new PlanFeatureUnavailableException("Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
+                        throw new PlanFeatureUnavailableException(
+                                "Mutfak ve Bar desteği Standart veya Pro planlarda mevcuttur.");
                     }
                 }
             }
             var er = UserRole.fromString(req.getRole());
-            if (er == null) er = UserRole.STAFF;
+            if (er == null)
+                er = UserRole.STAFF;
             u.setRole(er);
         }
         if (req.getPassword() != null && !req.getPassword().isBlank()) {

@@ -8,13 +8,14 @@ import com.qrmatik.server.service.BillingService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 public class BillingController {
@@ -39,17 +40,23 @@ public class BillingController {
             return ResponseEntity.badRequest().body("Tenant bulunamadı");
         }
         String scheme = http.getHeader("X-Forwarded-Proto");
-        if (scheme == null || scheme.isBlank()) scheme = http.getScheme();
+        if (scheme == null || scheme.isBlank())
+            scheme = http.getScheme();
         String host = http.getHeader("X-Forwarded-Host");
-        if (host == null || host.isBlank()) host = http.getServerName() + (http.getServerPort() != 80 && http.getServerPort() != 443 ? (":" + http.getServerPort()) : "");
+        if (host == null || host.isBlank())
+            host = http.getServerName()
+                    + (http.getServerPort() != 80 && http.getServerPort() != 443 ? (":" + http.getServerPort()) : "");
         String baseUrl = scheme + "://" + host;
 
         try {
-            var init = billingService.initializeHostedCheckout(tOpt.get(), req.getPlan(), req.getBillingPeriod(), baseUrl);
-            return ResponseEntity.ok().body(new java.util.HashMap<String, Object>() {{
-                put("token", init.token());
-                put("checkoutFormContent", init.checkoutFormContent());
-            }});
+            var init = billingService.initializeHostedCheckout(tOpt.get(), req.getPlan(), req.getBillingPeriod(),
+                    baseUrl);
+            return ResponseEntity.ok().body(new java.util.HashMap<String, Object>() {
+                {
+                    put("token", init.token());
+                    put("checkoutFormContent", init.checkoutFormContent());
+                }
+            });
         } catch (IllegalArgumentException | IllegalStateException ex) {
             return ResponseEntity.badRequest().body(java.util.Map.of("message", ex.getMessage()));
         }
@@ -59,9 +66,11 @@ public class BillingController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> scheduleDowngrade(@Valid @RequestBody SchedulePlanChangeRequest req) {
         String tenant = TenantContext.getTenant();
-        if (tenant == null || tenant.isBlank()) return ResponseEntity.status(401).body(Map.of("message", "Tenant bulunamadı"));
+        if (tenant == null || tenant.isBlank())
+            return ResponseEntity.status(401).body(Map.of("message", "Tenant bulunamadı"));
         var tOpt = tenantRepository.findByCode(tenant);
-        if (tOpt.isEmpty()) return ResponseEntity.status(404).body(Map.of("message", "Tenant bulunamadı"));
+        if (tOpt.isEmpty())
+            return ResponseEntity.status(404).body(Map.of("message", "Tenant bulunamadı"));
         var t = tOpt.get();
         PlanType currentPlan = t.getPlan() == null ? PlanType.FREE : t.getPlan();
         PlanType targetPlan = PlanType.fromString(req.getPlan());
@@ -69,7 +78,8 @@ public class BillingController {
         if (targetPeriod != null && !"YEARLY".equalsIgnoreCase(targetPeriod)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Sadece yıllık faturalama desteklenmektedir"));
         }
-        if (targetPlan == null) return ResponseEntity.badRequest().body(Map.of("message", "Geçersiz plan"));
+        if (targetPlan == null)
+            return ResponseEntity.badRequest().body(Map.of("message", "Geçersiz plan"));
         int rank = planRank(currentPlan) - planRank(targetPlan);
         boolean planDown = rank > 0;
         if (!planDown) {

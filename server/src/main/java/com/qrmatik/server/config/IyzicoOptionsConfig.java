@@ -1,13 +1,11 @@
 package com.qrmatik.server.config;
 
+import com.iyzipay.Options;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.iyzipay.Options;
-
-import lombok.Data;
 
 @Configuration
 @EnableConfigurationProperties(IyzicoOptionsConfig.IyzicoProperties.class)

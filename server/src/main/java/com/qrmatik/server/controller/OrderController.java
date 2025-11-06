@@ -4,19 +4,12 @@ import com.qrmatik.server.converter.OrderConverter;
 import com.qrmatik.server.dto.CancelRequest;
 import com.qrmatik.server.dto.CreateOrderRequest;
 import com.qrmatik.server.dto.OrderDto;
-import com.qrmatik.server.dto.StatusUpdate;
 import com.qrmatik.server.dto.RequestBillRequest;
+import com.qrmatik.server.dto.StatusUpdate;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.service.OrderService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.Valid;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +21,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -84,15 +85,15 @@ public class OrderController {
             String expIso = "";
             if (saved.getSessionExpiresAt() != null) {
                 try {
-                    // Serialize expiry as UTC instant (ISO 8601 with Z) to avoid timezone ambiguity on clients
+                    // Serialize expiry as UTC instant (ISO 8601 with Z) to avoid timezone ambiguity
+                    // on clients
                     expIso = saved.getSessionExpiresAt().atZone(appZoneId).toInstant().toString();
                 } catch (Exception ignore) {
                     expIso = String.valueOf(saved.getSessionExpiresAt());
                 }
             }
             return ResponseEntity.created(URI.create("/api/orders/" + saved.getId()))
-                    .header("X-Order-Session", saved.getSessionId())
-                    .header("X-Order-Expires", expIso)
+                    .header("X-Order-Session", saved.getSessionId()).header("X-Order-Expires", expIso)
                     .body(converter.toDto(saved));
         } catch (com.qrmatik.server.service.TableUnavailableException ex) {
             return ResponseEntity.status(423).body(Map.of("message", ex.getMessage()));
@@ -122,7 +123,7 @@ public class OrderController {
         // This ensures canceling a single order (which sets its sessionExpiresAt to
         // now)
         // doesn't hide other active orders from the same session.
-    LocalDateTime now = LocalDateTime.now(appZoneId);
+        LocalDateTime now = LocalDateTime.now(appZoneId);
         boolean anyNonExpired = false;
         for (OrderEntity e : entities) {
             boolean isExpired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));

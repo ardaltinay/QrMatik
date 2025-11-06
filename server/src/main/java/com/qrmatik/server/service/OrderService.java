@@ -12,16 +12,17 @@ import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
@@ -112,7 +113,8 @@ public class OrderService {
         }
         OrderEntity saved = orderRepository.save(order);
         // Sipariş durumuna göre masanın uygunluğunu güncelle
-        if (parsed == OrderStatus.PAYMENT_COMPLETED || parsed == OrderStatus.CANCELED || parsed == OrderStatus.EXPIRED) {
+        if (parsed == OrderStatus.PAYMENT_COMPLETED || parsed == OrderStatus.CANCELED
+                || parsed == OrderStatus.EXPIRED) {
             try {
                 updateTableAvailabilityForTable(saved.getTable(), tenant);
             } catch (Exception ignore) {
@@ -461,7 +463,8 @@ public class OrderService {
         }
     }
 
-    // Masa uygunluğunu güncelle: aktif (süresi dolmamış) sipariş varsa BUSY, yoksa AVAILABLE
+    // Masa uygunluğunu güncelle: aktif (süresi dolmamış) sipariş varsa BUSY, yoksa
+    // AVAILABLE
     private void updateTableAvailabilityForTable(TableEntity table, String tenant) {
         if (table == null)
             return;

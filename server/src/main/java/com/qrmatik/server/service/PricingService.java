@@ -1,12 +1,11 @@
 package com.qrmatik.server.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.qrmatik.server.config.PricingProperties.Props;
 import com.qrmatik.server.dto.PricingDto;
 import com.qrmatik.server.dto.PricingTierDto;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Central source of truth for pricing used by both public API and billing.
@@ -22,9 +21,7 @@ public class PricingService {
     }
 
     public PricingDto currentPricing() {
-        return PricingDto.builder()
-                .currency(props.getCurrency())
-                .note(props.getNote())
+        return PricingDto.builder().currency(props.getCurrency()).note(props.getNote())
                 .tiers(List.of(
                         PricingTierDto.builder().name("Ücretsiz").monthly(0).yearly(0)
                                 .features(List.of("10 masa", "50 ürün", "QR menü ve temel sipariş",
@@ -35,8 +32,7 @@ public class PricingService {
                                 .features(List.of("50 masa", "500 ürün", "Mutfak & Bar panoları",
                                         "Popüler ürünler ve raporlar", "Öncelikli e-posta desteği"))
                                 .build(),
-                        PricingTierDto.builder().name("Pro").monthly(props.getProMonthly())
-                                .yearly(props.getProYearly())
+                        PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
                                 .features(List.of("Sınırsız masa ve ürün", "Gelişmiş raporlar",
                                         "İsteğe bağlı özel alan adı (CNAME)", "Öncelikli destek"))
                                 .build()))

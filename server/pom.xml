@@ -153,12 +153,10 @@
                 <version>2.43.0</version>
                 <configuration>
                     <java>
-                        <target>
-                            <includes>
-                                <!-- Limit Spotless to main sources to avoid Lombok/JDT issues in tests -->
-                                <include>src/main/java/**/*.java</include>
-                            </includes>
-                        </target>
+                        <!-- Limit Spotless to main sources to avoid Lombok/JDT issues in tests -->
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                        </includes>
                         <eclipse>
                             <file>${project.basedir}/.spotless/eclipse-java-formatter.xml</file>
                         </eclipse>

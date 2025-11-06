@@ -2,12 +2,13 @@ package com.qrmatik.server.dto;
 
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.model.TableStatus;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter

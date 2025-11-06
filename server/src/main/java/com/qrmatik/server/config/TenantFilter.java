@@ -6,9 +6,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
@@ -63,12 +64,15 @@ public class TenantFilter extends OncePerRequestFilter {
         if (host != null) {
             String[] hostParts = host.split("\\.");
             // e.g. foo.bar.example.com -> foo
-            if (hostParts.length > 2) return hostParts[0];
+            if (hostParts.length > 2)
+                return hostParts[0];
             // Dev convenience: test.localhost -> test
-            if (hostParts.length == 2 && "localhost".equalsIgnoreCase(hostParts[1])) return hostParts[0];
+            if (hostParts.length == 2 && "localhost".equalsIgnoreCase(hostParts[1]))
+                return hostParts[0];
             // custom domain mapping (e.g., menu.mybistro.com, mybistro.com)
             var tOpt = tenantRepository.findByCustomDomain(host.toLowerCase());
-            if (tOpt.isPresent()) return tOpt.get().getCode();
+            if (tOpt.isPresent())
+                return tOpt.get().getCode();
         }
         return null;
     }
