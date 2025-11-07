@@ -9,14 +9,22 @@
         <div class="flex gap-2">
           <button
             class="rounded-md border px-3 py-1.5 text-sm"
-            :class="mode === 'web' ? 'bg-brand-500 text-white border-brand-500' : 'hover:bg-gray-100'"
+            :class="
+              mode === 'web' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
+            "
             @click="setMode('web')"
-          >Web</button>
+          >
+            Web
+          </button>
           <button
             class="rounded-md border px-3 py-1.5 text-sm"
-            :class="mode === 'mobil' ? 'bg-brand-500 text-white border-brand-500' : 'hover:bg-gray-100'"
+            :class="
+              mode === 'mobil' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
+            "
             @click="setMode('mobil')"
-          >Mobil</button>
+          >
+            Mobil
+          </button>
         </div>
       </div>
 
@@ -39,7 +47,9 @@
                   loading="lazy"
                 />
               </div>
-              <span class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white">
+              <span
+                class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white"
+              >
                 {{ modeLabel }}
               </span>
             </div>
@@ -64,13 +74,15 @@
               :alt="s.alt"
               :class="[
                 mode === 'mobil'
-                  ? 'h-56 w-full object-contain bg-gray-50'
+                  ? 'h-56 w-full bg-gray-50 object-contain'
                   : 'h-40 w-full object-cover',
-                'transition-transform duration-200 group-hover:scale-[1.02]'
+                'transition-transform duration-200 group-hover:scale-[1.02]',
               ]"
               loading="lazy"
             />
-            <span class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white">
+            <span
+              class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white"
+            >
               {{ modeLabel }}
             </span>
           </div>
@@ -164,7 +176,7 @@
     name: "ScreenshotsGrid",
     data() {
       return {
-        mode: 'web',
+        mode: "web",
         webShots: [
           { src: menuw, alt: "Müşteri Menüsü (Web)" },
           { src: siplistw, alt: "Siparişlerim (Web)" },
@@ -187,10 +199,10 @@
     },
     computed: {
       shots() {
-        return this.mode === 'web' ? this.webShots : this.mobileShots;
+        return this.mode === "web" ? this.webShots : this.mobileShots;
       },
       modeLabel() {
-        return this.mode === 'web' ? 'Web' : 'Mobil';
+        return this.mode === "web" ? "Web" : "Mobil";
       },
       current() {
         const i = Math.min(Math.max(this.lightbox.index, 0), this.shots.length - 1);

@@ -3,7 +3,10 @@
     <header class="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
       <h1 class="text-2xl font-semibold">İşletme Yönetimi (Süper Admin)</h1>
       <div class="flex flex-col gap-2 sm:flex-row sm:gap-2">
-        <button class="w-full rounded bg-brand-500 px-3 py-2 text-white sm:w-auto" @click="openCreate()">
+        <button
+          class="w-full rounded bg-brand-500 px-3 py-2 text-white sm:w-auto"
+          @click="openCreate()"
+        >
           Yeni İşletme
         </button>
         <button class="w-full rounded border px-3 py-2 sm:w-auto" @click="onLogout">Çıkış</button>
@@ -18,25 +21,28 @@
       >
         <!-- Sol blok: avatar + isim + paket badge + kod -->
         <div class="flex items-start gap-4 md:items-center">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm">
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm"
+          >
             {{ t.code?.slice(0, 2)?.toUpperCase() }}
           </div>
-            <div class="min-w-0 space-y-1">
-              <div class="flex items-center gap-2">
-                <div class="truncate font-medium max-w-[60vw] md:max-w-xs" :title="t.name || t.code">
-                  {{ t.name || t.code }}
-                </div>
-                <span
-                  class="rounded-full border px-2 py-0.5 text-xs"
-                  :class="{
-                    'border-gray-300 text-gray-600': (t.plan || 'FREE') === 'FREE',
-                    'border-amber-400 text-amber-700': t.plan === 'STANDARD',
-                    'border-emerald-400 text-emerald-700': t.plan === 'PRO',
-                  }"
-                >{{ t.plan || 'FREE' }}</span>
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="max-w-[60vw] truncate font-medium md:max-w-xs" :title="t.name || t.code">
+                {{ t.name || t.code }}
               </div>
-              <div class="text-xs text-gray-500 break-all">{{ t.code }}</div>
+              <span
+                class="rounded-full border px-2 py-0.5 text-xs"
+                :class="{
+                  'border-gray-300 text-gray-600': (t.plan || 'FREE') === 'FREE',
+                  'border-amber-400 text-amber-700': t.plan === 'STANDARD',
+                  'border-emerald-400 text-emerald-700': t.plan === 'PRO',
+                }"
+                >{{ t.plan || "FREE" }}</span
+              >
             </div>
+            <div class="break-all text-xs text-gray-500">{{ t.code }}</div>
+          </div>
         </div>
         <!-- Sağ blok / Alt blok (mobilde): aksiyon butonları -->
         <div class="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
@@ -77,8 +83,11 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3">
-      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 sm:p-6 shadow">
+    <div
+      v-if="showForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3"
+    >
+      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 shadow sm:p-6">
         <h3 class="text-lg font-semibold">{{ form.id ? "İşletme Düzenle" : "Yeni İşletme" }}</h3>
         <div class="grid grid-cols-1 gap-3">
           <label class="block">
@@ -173,8 +182,11 @@
     </div>
 
     <!-- Bootstrap Users Modal -->
-    <div v-if="showBootstrap" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3">
-      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 sm:p-6 shadow">
+    <div
+      v-if="showBootstrap"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3"
+    >
+      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 shadow sm:p-6">
         <h3 class="text-lg font-semibold">Kullanıcıları Oluştur ({{ selected?.code }})</h3>
         <div class="grid grid-cols-1 gap-3">
           <div class="grid grid-cols-2 gap-3">

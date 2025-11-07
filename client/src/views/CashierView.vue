@@ -18,7 +18,9 @@
             type="button"
             @click="toggleSound"
             class="rounded-md border px-3 py-1.5 text-sm shadow-sm transition hover:bg-gray-50"
-            :class="soundEnabled ? 'border-green-300 text-green-700' : 'border-gray-300 text-gray-600'"
+            :class="
+              soundEnabled ? 'border-green-300 text-green-700' : 'border-gray-300 text-gray-600'
+            "
           >
             <span v-if="soundEnabled">🔔 Ses Açık</span>
             <span v-else>🔕 Ses Kapalı</span>
@@ -63,8 +65,13 @@
       <p class="text-gray-500">Bekleyen hesap isteği yok.</p>
     </div>
 
-  <!-- onlyPayment: kasa ekranında sadece ödeme tamamlandı durumuna izin ver -->
-  <OrderDetailDrawer :order="selected" :onlyPayment="true" @close="selected = null" @updated="refresh" />
+    <!-- onlyPayment: kasa ekranında sadece ödeme tamamlandı durumuna izin ver -->
+    <OrderDetailDrawer
+      :order="selected"
+      :onlyPayment="true"
+      @close="selected = null"
+      @updated="refresh"
+    />
   </div>
 </template>
 
@@ -81,10 +88,10 @@
     name: "CashierView",
     components: { OrderDetailDrawer },
     setup() {
-    const store = useOrderStore();
+      const store = useOrderStore();
       const auth = useAuthStore();
       const router = useRouter();
-  const ui = useUiStore();
+      const ui = useUiStore();
       const orders = computed(() => store.orders);
       const selected = ref(null);
 

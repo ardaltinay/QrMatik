@@ -28,10 +28,7 @@
         <div class="mt-4">
           <label class="mb-1 block text-sm text-gray-600">Durum</label>
           <div>
-            <BaseSelect
-              v-model="localStatus"
-              :options="statusOptions"
-            />
+            <BaseSelect v-model="localStatus" :options="statusOptions" />
           </div>
         </div>
 
@@ -63,7 +60,10 @@
   export default {
     name: "OrderDetailDrawer",
     components: { BaseSelect },
-    props: { order: { type: Object, default: null }, onlyPayment: { type: Boolean, default: false } },
+    props: {
+      order: { type: Object, default: null },
+      onlyPayment: { type: Boolean, default: false },
+    },
     setup(props, { emit }) {
       const store = useOrderStore();
       const ui = useUiStore();

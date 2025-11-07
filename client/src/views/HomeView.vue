@@ -71,13 +71,13 @@
               <router-link
                 v-if="showOrdersButton"
                 :to="orderDetailLink"
-                class="w-full sm:min-w-0 sm:flex-1 rounded-md bg-yellow-500 px-3 py-2 text-center text-sm text-white shadow hover:bg-yellow-600 sm:px-4 sm:py-3 sm:text-base"
+                class="w-full rounded-md bg-yellow-500 px-3 py-2 text-center text-sm text-white shadow hover:bg-yellow-600 sm:min-w-0 sm:flex-1 sm:px-4 sm:py-3 sm:text-base"
                 >Siparişlerimi Gör</router-link
               >
               <router-link
                 v-if="isAdmin || isSuperAdmin"
                 to="/admin"
-                class="w-full sm:min-w-0 sm:flex-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-center text-sm text-gray-800 shadow hover:bg-gray-50 sm:px-4 sm:py-3 sm:text-base"
+                class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-center text-sm text-gray-800 shadow hover:bg-gray-50 sm:min-w-0 sm:flex-1 sm:px-4 sm:py-3 sm:text-base"
                 >Admin Panel</router-link
               >
             </div>
