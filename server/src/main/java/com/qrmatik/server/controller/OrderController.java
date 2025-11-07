@@ -11,6 +11,13 @@ import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.service.OrderService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,16 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -55,7 +54,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> get(@PathVariable String id,
-        @RequestParam(name = "sid", required = false) String sid) {
+            @RequestParam(name = "sid", required = false) String sid) {
         Optional<OrderEntity> o = orderService.getById(id);
         if (o.isEmpty())
             return ResponseEntity.notFound().build();

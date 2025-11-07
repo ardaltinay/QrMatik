@@ -6,10 +6,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
@@ -54,7 +53,8 @@ public class TenantFilter extends OncePerRequestFilter {
     private String resolveTenantAuthenticated(HttpServletRequest request) {
         // Header öncelikli: yalnızca doğrulanmış isteklerde kabul et
         String t = request.getHeader("X-Tenant");
-        if (t != null && !t.isBlank()) return t.trim();
+        if (t != null && !t.isBlank())
+            return t.trim();
         return resolveTenantByPathOrHost(request);
     }
 

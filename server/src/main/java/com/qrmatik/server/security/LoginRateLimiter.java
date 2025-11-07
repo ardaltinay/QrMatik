@@ -1,10 +1,9 @@
 package com.qrmatik.server.security;
 
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
 
 @Component
 public class LoginRateLimiter {
@@ -24,8 +23,10 @@ public class LoginRateLimiter {
 
     public boolean isBlocked(String key) {
         Attempt a = attempts.get(key);
-        if (a == null) return false;
-        if (a.blockedUntil == null) return false;
+        if (a == null)
+            return false;
+        if (a.blockedUntil == null)
+            return false;
         return Instant.now().isBefore(a.blockedUntil);
     }
 

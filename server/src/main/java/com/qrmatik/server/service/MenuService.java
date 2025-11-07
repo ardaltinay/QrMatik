@@ -1,15 +1,12 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.model.MenuItemEntity;
+import com.qrmatik.server.model.OrderStatus;
 import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderItemRepository;
 import com.qrmatik.server.repository.TenantRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import com.qrmatik.server.model.OrderStatus;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MenuService {
@@ -127,7 +126,8 @@ public class MenuService {
         } catch (Exception ignored) {
         }
         int lim = (limit <= 0 ? 4 : Math.min(limit, 50));
-    List<Object[]> rows = orderItemRepository.topMenuItemCounts(tenant, OrderStatus.CANCELED, PageRequest.of(0, lim));
+        List<Object[]> rows = orderItemRepository.topMenuItemCounts(tenant, OrderStatus.CANCELED,
+                PageRequest.of(0, lim));
         if (rows == null || rows.isEmpty())
             return Collections.emptyList();
         List<UUID> ids = new ArrayList<>();

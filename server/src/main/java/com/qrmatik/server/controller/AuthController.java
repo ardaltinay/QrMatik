@@ -4,6 +4,8 @@ import com.qrmatik.server.security.LoginRateLimiter;
 import com.qrmatik.server.service.AuthService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.constraints.NotBlank;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,13 +35,12 @@ public class AuthController {
         String tenant = TenantContext.getTenant();
         String ip = "unknown";
         try {
-            ip = Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                    .flatMap(a -> {
-                        if (a instanceof ServletRequestAttributes s) {
-                            return Optional.ofNullable(s.getRequest().getRemoteAddr());
-                        }
-                        return Optional.empty();
-                    }).orElse("unknown");
+            ip = Optional.ofNullable(RequestContextHolder.getRequestAttributes()).flatMap(a -> {
+                if (a instanceof ServletRequestAttributes s) {
+                    return Optional.ofNullable(s.getRequest().getRemoteAddr());
+                }
+                return Optional.empty();
+            }).orElse("unknown");
         } catch (Exception ignored) {
         }
         String key = (tenant == null ? "_" : tenant) + "|" + req.username().toLowerCase() + "|" + ip;
