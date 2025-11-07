@@ -2,8 +2,9 @@ package com.qrmatik.server.converter;
 
 import com.qrmatik.server.dto.TenantDto;
 import com.qrmatik.server.model.TenantEntity;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class TenantConverter {

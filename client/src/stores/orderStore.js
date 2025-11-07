@@ -61,6 +61,15 @@ export const useOrderStore = defineStore("order", () => {
       cookie += "; Max-Age=" + String(eff);
       const base = getBaseDomain();
       if (base && base.includes(".")) cookie += "; Domain=." + base;
+      // Cookie güvenliği: SameSite ve mümkünse Secure
+      try {
+        cookie += "; SameSite=Lax";
+        if (window.location && window.location.protocol === "https:") {
+          cookie += "; Secure";
+        }
+      } catch {
+        /* ignore */
+      }
       document.cookie = cookie;
     } catch {
       /* ignore */

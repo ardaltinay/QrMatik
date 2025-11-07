@@ -3,9 +3,10 @@ package com.qrmatik.server.service;
 import com.qrmatik.server.exception.BadRequestException;
 import com.qrmatik.server.exception.NotFoundException;
 import com.qrmatik.server.repository.TenantRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TenantService {

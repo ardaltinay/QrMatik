@@ -6,10 +6,6 @@ import com.qrmatik.server.exception.PlanLimitExceededException;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.service.MenuService;
 import com.qrmatik.server.service.TenantContext;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/menu")
@@ -70,6 +71,21 @@ public class MenuController {
     @PostMapping(path = "/{id}/image", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
+            // Basit güvenlik/doğrulama kontrolleri
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Boş dosya"));
+            }
+            // Boyut limiti (örnek: 2 MB)
+            final long MAX_BYTES = 2 * 1024 * 1024;
+            if (file.getSize() > MAX_BYTES) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Dosya çok büyük (max 2MB)"));
+            }
+            String contentType = file.getContentType();
+            if (contentType == null || (!contentType.equalsIgnoreCase("image/jpeg")
+                    && !contentType.equalsIgnoreCase("image/png") && !contentType.equalsIgnoreCase("image/webp")
+                    && !contentType.equalsIgnoreCase("image/gif"))) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Desteklenmeyen içerik türü"));
+            }
             String tenant = TenantContext.getTenant();
             Map<String, Object> result = menuService.uploadImage(id, file, tenant);
             if (result == null)

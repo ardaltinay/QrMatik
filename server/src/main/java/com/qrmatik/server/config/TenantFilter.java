@@ -6,9 +6,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
@@ -28,12 +29,17 @@ public class TenantFilter extends OncePerRequestFilter {
             boolean hasJwt = auth != null && auth.startsWith("Bearer ");
 
             if (!hasJwt) {
-                // Yalnızca JWT yoksa header/path/host'tan tenant çöz ve henüz set edilmemişse
-                // ata
+                // Anonim isteklerde X-Tenant header'ını görmezden gel (spoofing engeli).
                 if (TenantContext.getTenant() == null) {
-                    String tenant = resolveTenant(request);
-                    // Default 'default' tenant fallback removed to enforce explicit tenant
-                    // resolution
+                    String tenant = resolveTenantAnonymous(request);
+                    if (tenant != null && !tenant.isBlank()) {
+                        TenantContext.setTenant(tenant);
+                    }
+                }
+            } else {
+                // JWT doğrulanmışsa header/path/host çözümüne izin ver (header öncelikli)
+                if (TenantContext.getTenant() == null) {
+                    String tenant = resolveTenantAuthenticated(request);
                     if (tenant != null && !tenant.isBlank()) {
                         TenantContext.setTenant(tenant);
                     }
@@ -45,11 +51,19 @@ public class TenantFilter extends OncePerRequestFilter {
         }
     }
 
-    private String resolveTenant(HttpServletRequest request) {
-        // header override
+    private String resolveTenantAuthenticated(HttpServletRequest request) {
+        // Header öncelikli: yalnızca doğrulanmış isteklerde kabul et
         String t = request.getHeader("X-Tenant");
-        if (t != null && !t.isBlank())
-            return t.trim();
+        if (t != null && !t.isBlank()) return t.trim();
+        return resolveTenantByPathOrHost(request);
+    }
+
+    private String resolveTenantAnonymous(HttpServletRequest request) {
+        // Anonim: header'ı görmezden gel, sadece path/host
+        return resolveTenantByPathOrHost(request);
+    }
+
+    private String resolveTenantByPathOrHost(HttpServletRequest request) {
         // path style: /r/{tenant}/...
         String uri = request.getRequestURI();
         if (uri != null) {

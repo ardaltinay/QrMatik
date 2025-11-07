@@ -4,13 +4,14 @@ import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.OrderLineDto;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.model.OrderItemEntity;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class OrderConverter {

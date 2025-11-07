@@ -6,11 +6,12 @@ import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TableService {

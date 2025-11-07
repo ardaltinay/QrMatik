@@ -44,12 +44,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
-                // Müşteri iptali ve hesap isteği için özel uç noktalar: sessionId doğrulaması
-                // ile
+                // Customer flows (anonymous allowed)
+                .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/request-bill").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
+                // Staff-only POSTs under /api/orders (e.g., close-table)
+                .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER")
                 // QR image endpoint publicly accessible for customer tracking
                 .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
                 // Sipariş durum güncellemeleri sadece yetkili personel:

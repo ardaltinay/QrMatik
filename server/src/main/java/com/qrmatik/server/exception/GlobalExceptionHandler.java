@@ -1,8 +1,6 @@
 package com.qrmatik.server.exception;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,8 +9,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final Environment env;
+
+    public GlobalExceptionHandler(Environment env) {
+        this.env = env;
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, WebRequest req) {
@@ -65,7 +73,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, WebRequest req) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "internal_error", req, null);
+        boolean prod = isProd();
+        String msg = prod ? "Beklenmeyen bir hata oluştu." : ex.getMessage();
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, msg, "internal_error", req, null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message, String code, WebRequest req,
@@ -73,5 +83,15 @@ public class GlobalExceptionHandler {
         ApiError body = new ApiError(OffsetDateTime.now(), status.value(), status.getReasonPhrase(), message,
                 req.getDescription(false), code, details == null ? Collections.emptyList() : details);
         return ResponseEntity.status(status).body(body);
+    }
+
+    private boolean isProd() {
+        try {
+            for (String p : env.getActiveProfiles()) {
+                if (p != null && p.toLowerCase().contains("prod")) return true;
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 }

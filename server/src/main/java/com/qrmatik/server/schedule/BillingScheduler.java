@@ -2,13 +2,14 @@ package com.qrmatik.server.schedule;
 
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.TenantRepository;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 
 @Component
 public class BillingScheduler {
