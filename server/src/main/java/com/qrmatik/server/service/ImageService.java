@@ -23,16 +23,7 @@ public class ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
-    public static class SavedImages {
-        public final String originalUrl;
-        public final String mediumUrl;
-        public final String thumbUrl;
-
-        public SavedImages(String originalUrl, String mediumUrl, String thumbUrl) {
-            this.originalUrl = originalUrl;
-            this.mediumUrl = mediumUrl;
-            this.thumbUrl = thumbUrl;
-        }
+    public record SavedImages(String originalUrl, String mediumUrl, String thumbUrl) {
     }
 
     public SavedImages saveMenuItemImage(String tenantCode, UUID menuItemId, MultipartFile file) throws IOException {

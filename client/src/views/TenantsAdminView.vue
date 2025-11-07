@@ -1,41 +1,73 @@
 <template>
   <div class="space-y-6">
-    <header class="flex items-center justify-between">
+    <header class="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
       <h1 class="text-2xl font-semibold">İşletme Yönetimi (Süper Admin)</h1>
-      <div class="flex gap-2">
-        <button class="rounded bg-brand-500 px-3 py-2 text-white" @click="openCreate()">
+      <div class="flex flex-col gap-2 sm:flex-row sm:gap-2">
+        <button class="w-full rounded bg-brand-500 px-3 py-2 text-white sm:w-auto" @click="openCreate()">
           Yeni İşletme
         </button>
-        <button class="rounded border px-3 py-2" @click="onLogout">Çıkış</button>
+        <button class="w-full rounded border px-3 py-2 sm:w-auto" @click="onLogout">Çıkış</button>
       </div>
     </header>
 
     <div class="divide-y rounded-lg bg-white shadow">
-      <div v-for="t in tenants" :key="t.id" class="flex items-center justify-between p-4">
-        <div class="flex items-center gap-4">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-sm">
+      <div
+        v-for="t in tenants"
+        :key="t.id"
+        class="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
+      >
+        <!-- Sol blok: avatar + isim + paket badge + kod -->
+        <div class="flex items-start gap-4 md:items-center">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm">
             {{ t.code?.slice(0, 2)?.toUpperCase() }}
           </div>
-          <div>
-            <div class="font-medium">{{ t.name || t.code }}</div>
-            <div class="text-xs text-gray-500">{{ t.code }}</div>
-          </div>
+            <div class="min-w-0 space-y-1">
+              <div class="flex items-center gap-2">
+                <div class="truncate font-medium max-w-[60vw] md:max-w-xs" :title="t.name || t.code">
+                  {{ t.name || t.code }}
+                </div>
+                <span
+                  class="rounded-full border px-2 py-0.5 text-xs"
+                  :class="{
+                    'border-gray-300 text-gray-600': (t.plan || 'FREE') === 'FREE',
+                    'border-amber-400 text-amber-700': t.plan === 'STANDARD',
+                    'border-emerald-400 text-emerald-700': t.plan === 'PRO',
+                  }"
+                >{{ t.plan || 'FREE' }}</span>
+              </div>
+              <div class="text-xs text-gray-500 break-all">{{ t.code }}</div>
+            </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span
-            class="rounded-full border px-2 py-0.5 text-xs"
-            :class="{
-              'border-gray-300 text-gray-600': (t.plan || 'FREE') === 'FREE',
-              'border-amber-400 text-amber-700': t.plan === 'STANDARD',
-              'border-emerald-400 text-emerald-700': t.plan === 'PRO',
-            }"
-            >{{ t.plan || "FREE" }}</span
+        <!-- Sağ blok / Alt blok (mobilde): aksiyon butonları -->
+        <div class="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
+          <button
+            class="flex w-full items-center justify-center gap-2 rounded border px-3 py-2 text-sm hover:bg-gray-50 md:w-auto"
+            @click="openBootstrap(t)"
           >
-          <button class="rounded border px-2 py-1 text-sm" @click="openBootstrap(t)">
-            Kullanıcıları Oluştur
+            <!-- user-plus icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path
+                d="M15 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0ZM3 20a6 6 0 0 1 12 0v1H3v-1Zm16-9h-2v2a1 1 0 1 1-2 0v-2h-2a1 1 0 1 1 0-2h2V7a1 1 0 1 1 2 0v2h2a1 1 0 1 1 0 2Z"
+              />
+            </svg>
+            <span>Kullanıcıları Oluştur</span>
           </button>
-          <button class="rounded border px-2 py-1 text-sm" @click="openEdit(t)">Düzenle</button>
-          <button class="rounded border px-2 py-1 text-sm text-red-600" @click="remove(t)">
+          <button
+            class="w-full rounded border px-3 py-2 text-sm hover:bg-gray-50 md:w-auto"
+            @click="openEdit(t)"
+          >
+            Düzenle
+          </button>
+          <button
+            class="w-full rounded border px-3 py-2 text-sm text-red-600 hover:bg-red-50 md:w-auto"
+            @click="remove(t)"
+          >
             Sil
           </button>
         </div>
@@ -45,8 +77,8 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-6 shadow">
+    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3">
+      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 sm:p-6 shadow">
         <h3 class="text-lg font-semibold">{{ form.id ? "İşletme Düzenle" : "Yeni İşletme" }}</h3>
         <div class="grid grid-cols-1 gap-3">
           <label class="block">
@@ -141,11 +173,8 @@
     </div>
 
     <!-- Bootstrap Users Modal -->
-    <div
-      v-if="showBootstrap"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-    >
-      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-6 shadow">
+    <div v-if="showBootstrap" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3">
+      <div class="w-full max-w-lg space-y-4 rounded-xl bg-white p-4 sm:p-6 shadow">
         <h3 class="text-lg font-semibold">Kullanıcıları Oluştur ({{ selected?.code }})</h3>
         <div class="grid grid-cols-1 gap-3">
           <div class="grid grid-cols-2 gap-3">

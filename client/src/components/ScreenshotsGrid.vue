@@ -26,35 +26,57 @@
           <figure
             v-for="(s, i) in shots"
             :key="s.alt"
-            class="min-w-[80%] cursor-pointer snap-center overflow-hidden rounded-xl border bg-white shadow-sm"
+            class="min-w-[78%] shrink-0 cursor-pointer snap-center overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
             @click="open(i)"
           >
-            <img :src="s.src" :alt="s.alt" class="h-48 w-full object-cover" loading="lazy" />
-            <figcaption class="px-3 py-2 text-sm text-gray-600">{{ s.alt }}</figcaption>
+            <div class="relative w-full">
+              <!-- Mobile: contain + letterbox so görsel kırpılmadan görünür -->
+              <div class="flex h-56 items-center justify-center bg-gray-50">
+                <img
+                  :src="s.src"
+                  :alt="s.alt"
+                  class="max-h-full w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <span class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white">
+                {{ modeLabel }}
+              </span>
+            </div>
+            <figcaption class="h-10 px-3 py-2 text-sm text-gray-700">
+              <span class="block truncate">{{ s.alt }}</span>
+            </figcaption>
           </figure>
         </div>
       </div>
 
       <!-- Desktop: 4-column grid with hover -->
-      <div class="hidden gap-6 sm:grid-cols-2 md:grid lg:grid-cols-4">
+      <div class="hidden gap-6 md:grid md:grid-cols-3 lg:grid-cols-4">
         <figure
           v-for="(s, i) in shots"
           :key="s.alt"
-          class="group cursor-pointer overflow-hidden rounded-xl border bg-white shadow-sm"
+          class="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
           @click="open(i)"
         >
           <div class="relative">
             <img
               :src="s.src"
               :alt="s.alt"
-              class="h-40 w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+              :class="[
+                mode === 'mobil'
+                  ? 'h-56 w-full object-contain bg-gray-50'
+                  : 'h-40 w-full object-cover',
+                'transition-transform duration-200 group-hover:scale-[1.02]'
+              ]"
               loading="lazy"
             />
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
-            ></div>
+            <span class="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-xs font-medium text-white">
+              {{ modeLabel }}
+            </span>
           </div>
-          <figcaption class="px-3 py-2 text-sm text-gray-600">{{ s.alt }}</figcaption>
+          <figcaption class="h-10 px-3 py-2 text-sm text-gray-700">
+            <span class="block truncate">{{ s.alt }}</span>
+          </figcaption>
         </figure>
       </div>
 
@@ -166,6 +188,9 @@
     computed: {
       shots() {
         return this.mode === 'web' ? this.webShots : this.mobileShots;
+      },
+      modeLabel() {
+        return this.mode === 'web' ? 'Web' : 'Mobil';
       },
       current() {
         const i = Math.min(Math.max(this.lightbox.index, 0), this.shots.length - 1);

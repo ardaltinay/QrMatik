@@ -56,14 +56,14 @@
                 >Çoklu İşletme Desteği</span
               >
             </div>
-            <!-- Tenant görünümleri için butonlar -->
-            <div v-if="hasTenant" class="flex gap-3">
+            <!-- Tenant görünümleri için butonlar: mobilde dikey, sm+ yatay -->
+            <div v-if="hasTenant" class="flex flex-col gap-3 sm:flex-row">
               <!-- Menüyü Görüntüle: tek ise tam genişlik, ikili ise yarım genişlik -->
               <router-link
                 to="/menu"
                 :class="[
                   'rounded-md bg-indigo-600 px-3 py-2 text-center text-sm text-white shadow hover:bg-indigo-700 sm:px-4 sm:py-3 sm:text-base',
-                  showOrdersButton ? 'min-w-0 flex-1' : 'w-full',
+                  showOrdersButton ? 'w-full sm:min-w-0 sm:flex-1' : 'w-full',
                 ]"
                 >Menüyü Görüntüle</router-link
               >
@@ -71,8 +71,14 @@
               <router-link
                 v-if="showOrdersButton"
                 :to="orderDetailLink"
-                class="min-w-0 flex-1 rounded-md bg-yellow-500 px-3 py-2 text-center text-sm text-white shadow hover:bg-yellow-600 sm:px-4 sm:py-3 sm:text-base"
+                class="w-full sm:min-w-0 sm:flex-1 rounded-md bg-yellow-500 px-3 py-2 text-center text-sm text-white shadow hover:bg-yellow-600 sm:px-4 sm:py-3 sm:text-base"
                 >Siparişlerimi Gör</router-link
+              >
+              <router-link
+                v-if="isAdmin || isSuperAdmin"
+                to="/admin"
+                class="w-full sm:min-w-0 sm:flex-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-center text-sm text-gray-800 shadow hover:bg-gray-50 sm:px-4 sm:py-3 sm:text-base"
+                >Admin Panel</router-link
               >
             </div>
 
@@ -91,18 +97,11 @@
                 >Dijital QR menüyü keşfedin</router-link
               >
             </div>
-            <div v-if="isAdmin && hasTenant" class="mt-3">
-              <router-link
-                to="/admin"
-                class="block w-full rounded-md border border-gray-200 px-3 py-2 text-center text-sm hover:bg-gray-50 sm:px-4 sm:py-3 sm:text-base"
-                >Admin Panel</router-link
-              >
-            </div>
-            <div v-else-if="isSuperAdmin" class="mt-3">
+            <div v-if="isSuperAdmin && !hasTenant" class="mt-3">
               <router-link
                 to="/super/tenants"
                 class="block w-full rounded-md border border-gray-200 px-3 py-2 text-center text-sm hover:bg-gray-50 sm:px-4 sm:py-3 sm:text-base"
-                >Admin</router-link
+                >Tenant Yönetimi</router-link
               >
             </div>
           </div>

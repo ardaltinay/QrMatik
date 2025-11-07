@@ -30,14 +30,7 @@
           <div>
             <BaseSelect
               v-model="localStatus"
-              :options="[
-                { value: 'new', label: 'Yeni' },
-                { value: 'preparing', label: 'Hazırlanıyor' },
-                { value: 'ready', label: 'Hazır' },
-                { value: 'served', label: 'Servis Edildi' },
-                { value: 'payment_completed', label: 'Ödeme Tamamlandı' },
-                { value: 'canceled', label: 'İptal Edildi' },
-              ]"
+              :options="statusOptions"
             />
           </div>
         </div>
@@ -61,7 +54,7 @@
 </template>
 
 <script>
-  import { ref, computed } from "vue";
+  import { ref, computed, watch } from "vue";
   import { useOrderStore } from "@/stores/orderStore";
   import BaseSelect from "@/components/BaseSelect.vue";
   import { formatMoney, formatDateTz } from "@/utils/format";
@@ -70,14 +63,41 @@
   export default {
     name: "OrderDetailDrawer",
     components: { BaseSelect },
-    props: { order: { type: Object, default: null } },
+    props: { order: { type: Object, default: null }, onlyPayment: { type: Boolean, default: false } },
     setup(props, { emit }) {
       const store = useOrderStore();
       const ui = useUiStore();
       const localStatus = ref(props.order ? props.order.status : "new");
       const canCancel = computed(() => {
         const s = String((props.order && props.order.status) || "").toLowerCase();
-        return s === "new" || s === "preparing" || s === "ready";
+        // Temel iptal koşulları
+        if (s === "new" || s === "preparing" || s === "ready") return true;
+        // Kasa ekranı (onlyPayment) için hesap isteği durumunda da iptale izin ver
+        if (props.onlyPayment && s === "bill_requested") return true;
+        return false;
+      });
+
+      // keep localStatus in sync when order changes
+      watch(
+        () => props.order,
+        (o) => {
+          if (o && o.status) localStatus.value = o.status;
+        },
+      );
+
+      const statusOptions = computed(() => {
+        const all = [
+          { value: "new", label: "Yeni" },
+          { value: "preparing", label: "Hazırlanıyor" },
+          { value: "ready", label: "Hazır" },
+          { value: "served", label: "Servis Edildi" },
+          { value: "payment_completed", label: "Ödeme Tamamlandı" },
+          { value: "canceled", label: "İptal Edildi" },
+        ];
+        if (props.onlyPayment) {
+          return all.filter((o) => o.value === "payment_completed");
+        }
+        return all;
       });
 
       function menuName(id) {
@@ -89,6 +109,14 @@
 
       async function applyStatus() {
         if (!props.order) return;
+        if (props.onlyPayment && localStatus.value !== "payment_completed") {
+          try {
+            ui.toastError("Kasa ekranında yalnızca 'Ödeme Tamamlandı' güncellemesi yapılabilir.");
+          } catch {
+            /* ignore */
+          }
+          return;
+        }
         try {
           await store.updateOrderStatus(props.order.id, localStatus.value);
           ui.toastSuccess("Durum güncellendi");
@@ -124,6 +152,7 @@
         formatDateTz,
         canCancel,
         cancelOrder,
+        statusOptions,
       };
     },
   };

@@ -93,9 +93,9 @@ public class MenuService {
             tenant = (item.getTenant() != null ? item.getTenant().getCode() : null);
         }
         ImageService.SavedImages saved = imageService.saveMenuItemImage(tenant, id, file);
-        item.setImage(saved.mediumUrl);
+        item.setImage(saved.mediumUrl());
         repository.save(item);
-        return Map.of("original", saved.originalUrl, "medium", saved.mediumUrl, "thumb", saved.thumbUrl, "image",
+        return Map.of("original", saved.originalUrl(), "medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image",
                 item.getImage());
     }
 

@@ -317,6 +317,19 @@
           if (loadedOrder.value && String(loadedOrder.value.id) === String(order.value.id)) {
             loadedOrder.value = { ...loadedOrder.value, status: "bill_requested" };
           }
+          // Store içindeki kaydı da anında güncelle (sayfa yenilemeden bilgi görünsün)
+          try {
+            const key = String(order.value.id);
+            if (store.ordersById && store.ordersById[key]) {
+              store.ordersById[key].status = "bill_requested";
+            }
+            if (Array.isArray(store.orders)) {
+              const o = store.orders.find((x) => String(x.id) === key);
+              if (o) o.status = "bill_requested";
+            }
+          } catch {
+            /* ignore */
+          }
           ui.toast("Hesap isteğiniz gönderildi.", "info");
         } catch {
           /* toast fetchJson tarafından gösterilir */
