@@ -18,8 +18,6 @@
           </div>
         </div>
 
-
-
         <!-- stepper: two-column grid on mobile, horizontal on md+ -->
         <div class="mt-4">
           <ol class="grid grid-cols-2 gap-3 md:flex md:items-center md:space-x-4">

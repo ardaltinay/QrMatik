@@ -31,20 +31,28 @@
       </div>
 
       <!-- Desktop/tablet: tablo -->
-      <div class="overflow-x-auto hidden md:block">
+      <div class="hidden overflow-x-auto md:block">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
                 Ürün
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
                 Kategori
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
                 Stok Aktif
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
                 Miktar
               </th>
               <th class="px-3 py-2"></th>
@@ -62,7 +70,7 @@
                   />
                   <div>
                     <div class="font-medium">{{ it.name }}</div>
-                    <div class="text-xs text-gray-500">{{ it.subcategory || '' }}</div>
+                    <div class="text-xs text-gray-500">{{ it.subcategory || "" }}</div>
                   </div>
                 </div>
               </td>
@@ -92,12 +100,8 @@
       </div>
 
       <!-- Mobil: kart listesi -->
-      <div class="md:hidden space-y-3">
-        <div
-          v-for="it in items"
-          :key="it.id"
-          class="rounded-lg border bg-white p-3 shadow-sm"
-        >
+      <div class="space-y-3 md:hidden">
+        <div v-for="it in items" :key="it.id" class="rounded-lg border bg-white p-3 shadow-sm">
           <div class="flex items-center gap-3">
             <img v-if="it.image" :src="it.image" class="h-12 w-12 rounded object-cover" alt="" />
             <div>
@@ -123,7 +127,9 @@
               />
             </div>
           </div>
-          <div class="mt-1 text-right text-xs text-gray-400" v-if="saving[it.id]">Kaydediliyor…</div>
+          <div class="mt-1 text-right text-xs text-gray-400" v-if="saving[it.id]">
+            Kaydediliyor…
+          </div>
         </div>
       </div>
 

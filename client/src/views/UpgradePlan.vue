@@ -20,7 +20,9 @@
       >
         <div class="flex items-center justify-center gap-2">
           <span class="font-medium">Standart</span>
-          <span v-if="prices.standard" class="text-xs text-gray-600">{{ prices.standard }}/yıl</span>
+          <span v-if="prices.standard" class="text-xs text-gray-600"
+            >{{ prices.standard }}/yıl</span
+          >
         </div>
       </button>
       <button
@@ -87,9 +89,9 @@
     setup() {
       const router = useRouter();
       const route = useRoute();
-  const sel = reactive({ plan: "STANDARD", billing: "YEARLY" });
+      const sel = reactive({ plan: "STANDARD", billing: "YEARLY" });
       const current = reactive({ plan: null, billing: null, paidUntil: null });
-  const prices = reactive({ standard: "", pro: "" });
+      const prices = reactive({ standard: "", pro: "" });
       const ui = useUiStore();
       const loading = ref(false);
 
@@ -121,7 +123,9 @@
       }
 
       function normalizeName(name) {
-        return String(name || "").trim().toUpperCase();
+        return String(name || "")
+          .trim()
+          .toUpperCase();
       }
 
       function findTier(tiers, keys, fallbackPrefix) {

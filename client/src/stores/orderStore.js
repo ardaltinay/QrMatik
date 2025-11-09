@@ -56,7 +56,8 @@ export const useOrderStore = defineStore("order", () => {
       let cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Path=/";
       // Enforce minimum 3 hours for order session persistence across subdomains
       const MIN_SECONDS = 3 * 60 * 60; // 3 hours
-      const eff = typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
+      const eff =
+        typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
       cookie += "; Max-Age=" + String(eff);
       const base = getBaseDomain();
       if (base && base.includes(".")) cookie += "; Domain=." + base;
@@ -142,7 +143,8 @@ export const useOrderStore = defineStore("order", () => {
               stockQuantity: typeof it.stockQuantity === "number" ? it.stockQuantity : null,
             }));
             menu.value = mapped.filter(
-              (m) => !(m.stockEnabled && typeof m.stockQuantity === "number" && m.stockQuantity <= 0),
+              (m) =>
+                !(m.stockEnabled && typeof m.stockQuantity === "number" && m.stockQuantity <= 0),
             );
             // update cache
             try {
@@ -439,8 +441,10 @@ export const useOrderStore = defineStore("order", () => {
                       const j = JSON.parse(text);
                       let candidate = "";
                       if (j) {
-                        if (typeof j.message === "string" && j.message.trim()) candidate = j.message;
-                        else if (typeof j.detail === "string" && j.detail.trim()) candidate = j.detail;
+                        if (typeof j.message === "string" && j.message.trim())
+                          candidate = j.message;
+                        else if (typeof j.detail === "string" && j.detail.trim())
+                          candidate = j.detail;
                         else if (
                           Array.isArray(j.errors) &&
                           j.errors.length &&

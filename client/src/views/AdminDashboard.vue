@@ -64,7 +64,10 @@
             @click="navigateOrLogin('/admin/stock', 'admin')"
           >
             Stok Kontrolü
-            <span v-if="!isProPlan" class="ml-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+            <span
+              v-if="!isProPlan"
+              class="ml-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"
+            >
               Pro gerekli
             </span>
           </button>
@@ -202,24 +205,24 @@
       });
       const isProPlan = computed(() => {
         try {
-          const raw = localStorage.getItem('qm_tenant_cfg');
+          const raw = localStorage.getItem("qm_tenant_cfg");
           if (!raw) return false;
           const cfg = JSON.parse(raw);
-          const plan = String(cfg?.plan || '').toUpperCase();
-          return plan === 'PRO';
+          const plan = String(cfg?.plan || "").toUpperCase();
+          return plan === "PRO";
         } catch {
           return false;
         }
       });
 
       function roleLabel(role) {
-        const r = String(role || '').toLowerCase();
-        if (r === 'admin') return 'admin';
-        if (r === 'kitchen') return 'mutfak';
-        if (r === 'bar') return 'bar';
-        if (r === 'cashier') return 'kasiyer';
-        if (r === 'superadmin') return 'süper admin';
-        return r || 'kullanıcı';
+        const r = String(role || "").toLowerCase();
+        if (r === "admin") return "admin";
+        if (r === "kitchen") return "mutfak";
+        if (r === "bar") return "bar";
+        if (r === "cashier") return "kasiyer";
+        if (r === "superadmin") return "süper admin";
+        return r || "kullanıcı";
       }
 
       async function login() {
@@ -356,7 +359,7 @@
         navItemClass,
         isAdmin,
         isPaidPlan,
-  isProPlan,
+        isProPlan,
         onLogout,
         roleLabel,
       };

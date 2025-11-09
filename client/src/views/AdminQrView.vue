@@ -1,7 +1,9 @@
 <template>
   <div>
     <h2 class="mb-3 text-lg font-semibold">QR Kodları</h2>
-    <div class="mb-2 text-sm text-gray-600">İşletme (tenant) kodu — yalnızca kendi işletmenizin QR kodlarını indirebilirsiniz:</div>
+    <div class="mb-2 text-sm text-gray-600">
+      İşletme (tenant) kodu — yalnızca kendi işletmenizin QR kodlarını indirebilirsiniz:
+    </div>
     <input
       v-model="qrTenant"
       placeholder="işletme kodu"
@@ -12,8 +14,12 @@
       <button @click="fillFromContext" type="button" class="rounded border px-3 py-2">
         İşletme kodumu bul
       </button>
-      <button @click="downloadQrs" :disabled="loading" class="rounded bg-brand-500 px-3 py-2 text-white disabled:opacity-50">
-        {{ loading ? 'İndiriliyor...' : 'PDF İndir' }}
+      <button
+        @click="downloadQrs"
+        :disabled="loading"
+        class="rounded bg-brand-500 px-3 py-2 text-white disabled:opacity-50"
+      >
+        {{ loading ? "İndiriliyor..." : "PDF İndir" }}
       </button>
     </div>
     <div v-if="qrStatus" class="mt-2 text-sm text-gray-600">{{ qrStatus }}</div>
@@ -54,10 +60,10 @@
           const path = window.location.pathname || "";
           const pParts = path.split("/");
           const rIdx = pParts.indexOf("r");
-            if (rIdx >= 0 && pParts.length > rIdx + 1) {
-              const t = pParts[rIdx + 1];
-              if (t) return t;
-            }
+          if (rIdx >= 0 && pParts.length > rIdx + 1) {
+            const t = pParts[rIdx + 1];
+            if (t) return t;
+          }
         } catch {
           /* ignore */
         }
@@ -65,7 +71,9 @@
         try {
           const ls = localStorage.getItem("qm_tenant");
           if (ls) return ls;
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
         return null;
       }
 
@@ -101,7 +109,9 @@
         try {
           const tenant = qrTenant.value.trim();
           // Backend will derive tenant from context; do not allow omission; pass param for clarity if needed.
-          const resp = await apiFetch(`/api/qr/bulk?tenant=${encodeURIComponent(tenant)}`, { method: "GET" });
+          const resp = await apiFetch(`/api/qr/bulk?tenant=${encodeURIComponent(tenant)}`, {
+            method: "GET",
+          });
           if (!resp.ok) {
             let msg = "Sunucudan PDF alınamadı";
             try {
@@ -114,7 +124,9 @@
                   msg = text || msg;
                 }
               }
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
             throw new Error(msg);
           }
           const blob = await resp.blob();
