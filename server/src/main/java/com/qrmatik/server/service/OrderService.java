@@ -7,14 +7,19 @@ import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.model.OrderItemEntity;
 import com.qrmatik.server.model.OrderStatus;
+import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.model.TenantEntity;
-import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,10 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {

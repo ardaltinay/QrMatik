@@ -2,7 +2,6 @@ package com.qrmatik.server.controller;
 
 import com.qrmatik.server.service.QrService;
 import com.qrmatik.server.service.TenantContext;
-import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/qr")
