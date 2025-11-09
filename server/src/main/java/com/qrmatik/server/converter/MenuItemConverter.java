@@ -17,6 +17,8 @@ public class MenuItemConverter {
         d.setCategory(e.getCategory());
         d.setSubcategory(e.getSubcategory());
         d.setImage(normalizeImage(e.getImage()));
+        d.setStockEnabled(e.getStockEnabled());
+        d.setStockQuantity(e.getStockQuantity());
         return d;
     }
 

@@ -14,8 +14,8 @@ public class PricingProperties {
         private String currency = "TRY";
         private String note = "Yıllık ödemede avantajlı fiyatlar sunulur.";
         private int standardMonthly = 249;
-        private int standardYearly = 2000;
+        private int standardYearly = 2499;
         private int proMonthly = 549;
-        private int proYearly = 5000;
+        private int proYearly = 4999;
     }
 }

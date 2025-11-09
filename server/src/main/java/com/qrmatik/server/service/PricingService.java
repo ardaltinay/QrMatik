@@ -33,7 +33,7 @@ public class PricingService {
                                 .build(),
                         PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
                                 .features(List.of("Sınırsız masa ve ürün", "Gelişmiş raporlar",
-                                        "İsteğe bağlı özel alan adı (CNAME)", "Öncelikli destek"))
+                                        "İsteğe bağlı özel alan adı (CNAME)", "Gelişmiş stok kontrolü", "Öncelikli destek"))
                                 .build()))
                 .build();
     }

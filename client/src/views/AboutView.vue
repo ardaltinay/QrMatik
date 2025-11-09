@@ -11,6 +11,7 @@
         <ul class="list-disc space-y-1 pl-5 text-sm text-gray-600">
           <li>QR ile hızlı başlangıç</li>
           <li>Menü yönetimi ve raporlar</li>
+          <li>Gelişmiş stok yönetimi</li>
           <li>Mutfak ve bar ekranları</li>
           <li>Sipariş takibi, iptal ve ödeme</li>
         </ul>
@@ -45,8 +46,8 @@
           <li>Ortalama ilk yanıt: 30 dakikanın altında</li>
           <li>
             E-posta:
-            <a class="text-brand-600 hover:underline" href="mailto:support@qrmatik.cloud"
-              >support@qrmatik.cloud</a
+            <a class="text-brand-600 hover:underline" href="mailto:qrmatik.cloud@gmail.com"
+              >qrmatik.cloud@gmail.com</a
             >
           </li>
         </ul>

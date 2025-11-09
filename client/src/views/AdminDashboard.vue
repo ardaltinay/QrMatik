@@ -1,12 +1,17 @@
 <template>
   <div>
-    <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-semibold">Admin Paneli</h1>
-      <div v-if="isAdmin">
-        <template v-if="auth.user">
-          <span class="mr-4 text-sm text-gray-600">Merhaba, {{ auth.user.username }}</span>
-          <button @click="onLogout" class="rounded border px-3 py-1">Çıkış</button>
-        </template>
+    <div class="mb-6">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-2xl font-semibold">Admin Paneli</h1>
+        <!-- Merhaba + Çıkış: mobilde de aynı satırda -->
+        <div v-if="isAdmin" class="flex flex-row flex-wrap items-center gap-2">
+          <template v-if="auth.user">
+            <span class="text-sm text-gray-600">Merhaba, {{ roleLabel(auth.user.role) }}</span>
+            <button @click="onLogout" class="rounded border px-3 py-1 text-sm hover:bg-gray-50">
+              Çıkış
+            </button>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -48,6 +53,20 @@
             @click="navigateOrLogin('/admin/menu-management', 'admin')"
           >
             Menü Yönetimi
+          </button>
+          <button
+            v-if="isAdmin"
+            type="button"
+            :class="
+              navItemClass('/admin/stock') +
+              ' block w-full shadow-sm transition-shadow hover:shadow-lg '
+            "
+            @click="navigateOrLogin('/admin/stock', 'admin')"
+          >
+            Stok Kontrolü
+            <span v-if="!isProPlan" class="ml-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+              Pro gerekli
+            </span>
           </button>
           <button
             v-if="isAdmin"
@@ -181,6 +200,27 @@
           return false;
         }
       });
+      const isProPlan = computed(() => {
+        try {
+          const raw = localStorage.getItem('qm_tenant_cfg');
+          if (!raw) return false;
+          const cfg = JSON.parse(raw);
+          const plan = String(cfg?.plan || '').toUpperCase();
+          return plan === 'PRO';
+        } catch {
+          return false;
+        }
+      });
+
+      function roleLabel(role) {
+        const r = String(role || '').toLowerCase();
+        if (r === 'admin') return 'admin';
+        if (r === 'kitchen') return 'mutfak';
+        if (r === 'bar') return 'bar';
+        if (r === 'cashier') return 'kasiyer';
+        if (r === 'superadmin') return 'süper admin';
+        return r || 'kullanıcı';
+      }
 
       async function login() {
         try {
@@ -316,7 +356,9 @@
         navItemClass,
         isAdmin,
         isPaidPlan,
+  isProPlan,
         onLogout,
+        roleLabel,
       };
     },
   };

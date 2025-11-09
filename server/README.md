@@ -30,6 +30,18 @@ Plans and limits
     - POST /api/tenants (body can include `plan`)
     - PUT /api/tenants/{id} (body can include `plan`)
 
+Inventory (Pro)
+
+- Inventory management is available only on PRO plan.
+- Entity fields:
+    - `MenuItemEntity.stockEnabled` (Boolean)
+    - `MenuItemEntity.stockQuantity` (Integer)
+- Endpoints (tenant admin):
+    - GET `/api/stock/items` → List menu items with stock fields (HTTP 402 if plan is not PRO)
+    - PUT `/api/stock/items/{id}` (body: `{ stockEnabled: boolean, stockQuantity: number|null }`)
+        → Updates only stock fields (HTTP 402 if plan is not PRO)
+    - Public menu payloads also include these fields; client can choose to hide items with zero stock.
+
 Custom domains (Pro)
 
 - `TenantEntity.customDomain` alanı ile bir özel alan adı tanımlanabilir (yalnızca PRO plan).
@@ -41,4 +53,5 @@ Notes
 
 - This skeleton uses Lombok; your IDE should have Lombok support enabled.
 - For production you should harden CORS, security, and consider connection pooling and migrations (Flyway/Liquibase).
- - Add DB migration for adding `plan` column if you do not use `spring.jpa.hibernate.ddl-auto=update`.
+    - With `spring.jpa.hibernate.ddl-auto=update` (current default), schema changes are auto-applied in dev.
+    - For managed DBs, add a migration for new columns: `menu_items.stock_enabled` (BOOLEAN) and `menu_items.stock_qty` (INT).

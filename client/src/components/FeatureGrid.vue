@@ -71,7 +71,7 @@
     },
     {
       title: "Admin Paneli",
-      desc: "Menü yönetimi, fiyat güncelleme ve raporlara tek yerden erişin.",
+      desc: "Menü yönetimi, stok yönetimi ve raporlar gibi alanlara tek yerden erişin.",
       icon: makeIcon([{ d: "M12 6v6l4 2" }, { tag: "circle", cx: "12", cy: "12", r: "9" }]),
     },
     {

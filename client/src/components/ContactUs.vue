@@ -21,7 +21,7 @@
     name: "ContactUs",
     data() {
       return {
-        mailto: "mailto:ardaltinay48@gmail.com?subject=QrMatik%20İletişim",
+        mailto: "mailto:qrmatik.cloud@gmail.com?subject=QrMatik%20İletişim",
       };
     },
   };

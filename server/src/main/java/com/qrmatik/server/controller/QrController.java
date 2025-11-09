@@ -1,6 +1,7 @@
 package com.qrmatik.server.controller;
 
 import com.qrmatik.server.service.QrService;
+import com.qrmatik.server.service.TenantContext;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +24,15 @@ public class QrController {
     @GetMapping(value = "/bulk", produces = "application/pdf")
     public ResponseEntity<byte[]> getBulkQrPdf(@RequestParam(value = "tenant", required = false) String tenant) {
         try {
-            byte[] pdf = qrService.generateQrPdfForTenant(tenant);
+            String ctxTenant = TenantContext.getTenant();
+            if (ctxTenant == null || ctxTenant.isBlank()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (tenant != null && !tenant.isBlank() && !ctxTenant.equals(tenant)) {
+                // Do not allow generating for another tenant
+                return ResponseEntity.status(403).build();
+            }
+            byte[] pdf = qrService.generateQrPdfForTenant(ctxTenant);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "qr-codes.pdf");

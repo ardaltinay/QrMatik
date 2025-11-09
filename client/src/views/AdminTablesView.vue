@@ -23,7 +23,12 @@
           class="rounded border p-2"
         />
         <BaseSelect v-model="form.status" :options="statusOptions" />
-        <button @click="createTable" class="rounded bg-brand-500 px-3 py-2 text-white">Ekle</button>
+        <button
+          @click="createTable"
+          class="w-full rounded bg-brand-500 px-3 py-2 text-white md:w-auto"
+        >
+          Ekle
+        </button>
       </div>
     </div>
 
@@ -60,18 +65,30 @@
               <img :src="qrSrc(t.code)" :alt="'QR ' + t.code" class="h-16 w-16 object-contain" />
             </td>
             <td class="p-2 text-right">
-              <template v-if="editId === t.id">
-                <button @click="saveEdit(t)" class="mr-2 rounded bg-green-600 px-2 py-1 text-white">
-                  Kaydet
-                </button>
-                <button @click="cancelEdit" class="rounded border px-2 py-1">Vazgeç</button>
-              </template>
-              <template v-else>
-                <button @click="startEdit(t)" class="mr-2 rounded border px-2 py-1">Düzenle</button>
-                <button @click="removeTable(t)" class="rounded bg-red-600 px-2 py-1 text-white">
-                  Sil
-                </button>
-              </template>
+              <div class="flex flex-col items-stretch gap-2 sm:flex-row sm:justify-end">
+                <template v-if="editId === t.id">
+                  <button
+                    @click="saveEdit(t)"
+                    class="w-full rounded bg-green-600 px-3 py-1.5 text-white sm:w-auto"
+                  >
+                    Kaydet
+                  </button>
+                  <button @click="cancelEdit" class="w-full rounded border px-3 py-1.5 sm:w-auto">
+                    Vazgeç
+                  </button>
+                </template>
+                <template v-else>
+                  <button @click="startEdit(t)" class="w-full rounded border px-3 py-1.5 sm:w-auto">
+                    Düzenle
+                  </button>
+                  <button
+                    @click="removeTable(t)"
+                    class="w-full rounded bg-red-600 px-3 py-1.5 text-white sm:w-auto"
+                  >
+                    Sil
+                  </button>
+                </template>
+              </div>
             </td>
           </tr>
         </tbody>

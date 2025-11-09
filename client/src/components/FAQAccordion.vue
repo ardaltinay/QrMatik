@@ -31,7 +31,7 @@
           },
           {
             q: "Mutfak ve bar için ayrı panolar var mı?",
-            a: "Evet, sipariş akışını hızlandırmak için mutfak ve bar özel ekranları bulunur.",
+            a: "Evet, sipariş akışını hızlandırmak için mutfak, bar ve kasa için özel ekranlar bulunur.",
           },
           {
             q: "Dijital menü ve QR sipariş bize ne kazandırır?",

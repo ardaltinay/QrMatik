@@ -18,13 +18,19 @@
         :class="sel.plan === 'STANDARD' ? selClass(true) : selClass(false)"
         @click="sel.plan = 'STANDARD'"
       >
-        Standart
+        <div class="flex items-center justify-center gap-2">
+          <span class="font-medium">Standart</span>
+          <span v-if="prices.standard" class="text-xs text-gray-600">{{ prices.standard }}/yıl</span>
+        </div>
       </button>
       <button
         :class="sel.plan === 'PRO' ? selClass(true) : selClass(false)"
         @click="sel.plan = 'PRO'"
       >
-        Pro
+        <div class="flex items-center justify-center gap-2">
+          <span class="font-medium">Pro</span>
+          <span v-if="prices.pro" class="text-xs text-gray-600">{{ prices.pro }}/yıl</span>
+        </div>
       </button>
     </div>
 
@@ -81,8 +87,9 @@
     setup() {
       const router = useRouter();
       const route = useRoute();
-      const sel = reactive({ plan: "STANDARD", billing: "YEARLY" });
+  const sel = reactive({ plan: "STANDARD", billing: "YEARLY" });
       const current = reactive({ plan: null, billing: null, paidUntil: null });
+  const prices = reactive({ standard: "", pro: "" });
       const ui = useUiStore();
       const loading = ref(false);
 
@@ -105,6 +112,52 @@
         return "Yıllık";
       }
 
+      function formatTRY(n) {
+        try {
+          return new Intl.NumberFormat("tr-TR").format(Number(n || 0)) + "₺";
+        } catch {
+          return (n || 0) + "₺";
+        }
+      }
+
+      function normalizeName(name) {
+        return String(name || "").trim().toUpperCase();
+      }
+
+      function findTier(tiers, keys, fallbackPrefix) {
+        if (!Array.isArray(tiers)) return null;
+        const upperKeys = (keys || []).map((k) => String(k || "").toUpperCase());
+        let hit = tiers.find((t) => upperKeys.includes(normalizeName(t?.name)));
+        if (!hit && fallbackPrefix) {
+          const pref = String(fallbackPrefix).toUpperCase();
+          hit = tiers.find((t) => normalizeName(t?.name).startsWith(pref));
+        }
+        return hit || null;
+      }
+
+      function readCachedPricing() {
+        try {
+          const raw = localStorage.getItem("qm_pricing_cache");
+          if (!raw) return null;
+          const obj = JSON.parse(raw);
+          if (!obj || !obj.tiers || !obj.ts) return null;
+          const ttlMs = 60 * 60 * 1000; // 1 saat TTL
+          if (Date.now() - Number(obj.ts || 0) > ttlMs) return null;
+          return obj;
+        } catch {
+          return null;
+        }
+      }
+
+      function writeCachedPricing(data) {
+        try {
+          const toStore = { tiers: data?.tiers || [], ts: Date.now() };
+          localStorage.setItem("qm_pricing_cache", JSON.stringify(toStore));
+        } catch {
+          /* ignore */
+        }
+      }
+
       async function loadCurrent() {
         try {
           const cfg = await fetchJson("/api/tenant/config", { silentError: true });
@@ -121,6 +174,26 @@
           }
         } catch {
           /* ignore */
+        }
+        // Fiyatları cache'den oku; yoksa fetch et ve cache'le
+        let pricing = readCachedPricing();
+        if (!pricing) {
+          try {
+            const data = await fetchJson("/api/public/pricing", { silentError: true });
+            if (data && Array.isArray(data.tiers)) {
+              pricing = { tiers: data.tiers, ts: Date.now() };
+              writeCachedPricing(pricing);
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+        if (pricing && Array.isArray(pricing.tiers)) {
+          const tiers = pricing.tiers;
+          const std = findTier(tiers, ["STANDARD", "STANDART", "STD"], "STAND");
+          const pro = findTier(tiers, ["PRO", "PROFESSIONAL"], "PRO");
+          prices.standard = std && std.yearly != null ? formatTRY(std.yearly) : "";
+          prices.pro = pro && pro.yearly != null ? formatTRY(pro.yearly) : "";
         }
         // Eğer checkout iptal ile dönüldüyse kullanıcıyı bilgilendir
         try {
@@ -183,7 +256,7 @@
       }
       onMounted(loadCurrent);
 
-      return { sel, current, loading, selClass, goCheckout, planLabel, billingLabel };
+      return { sel, current, prices, loading, selClass, goCheckout, planLabel, billingLabel };
     },
   };
 </script>

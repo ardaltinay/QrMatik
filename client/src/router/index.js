@@ -62,6 +62,11 @@ const routes = [
         meta: { requiresAuth: true, requiresRole: "admin" },
       },
       {
+        path: "stock",
+        component: () => import(/* webpackChunkName: "stock" */ "../views/StockControl.vue"),
+        meta: { requiresAuth: true, requiresRole: "admin" },
+      },
+      {
         path: "tables",
         component: () => import(/* webpackChunkName: "tables" */ "../views/AdminTablesView.vue"),
         meta: { requiresAuth: true, requiresRole: "admin" },

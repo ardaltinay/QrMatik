@@ -56,8 +56,7 @@ export const useOrderStore = defineStore("order", () => {
       let cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Path=/";
       // Enforce minimum 3 hours for order session persistence across subdomains
       const MIN_SECONDS = 3 * 60 * 60; // 3 hours
-      const eff =
-        typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
+      const eff = typeof maxAgeSeconds === "number" ? Math.max(maxAgeSeconds, MIN_SECONDS) : MIN_SECONDS;
       cookie += "; Max-Age=" + String(eff);
       const base = getBaseDomain();
       if (base && base.includes(".")) cookie += "; Domain=." + base;
@@ -92,7 +91,6 @@ export const useOrderStore = defineStore("order", () => {
       for (const p of parts) {
         if (p.startsWith(n)) return decodeURIComponent(p.substring(n.length));
       }
-      return null;
     } catch {
       return null;
     }
@@ -127,7 +125,7 @@ export const useOrderStore = defineStore("order", () => {
         menuLoading = (async () => {
           try {
             const data = await fetchJson("/api/menu");
-            const fresh = (Array.isArray(data) ? data : []).map((it) => ({
+            const mapped = (Array.isArray(data) ? data : []).map((it) => ({
               id: it.id,
               name: it.name,
               price: typeof it.price === "number" ? it.price : Number(it.price || 0),
@@ -140,8 +138,12 @@ export const useOrderStore = defineStore("order", () => {
               image:
                 it.image ||
                 "https://picsum.photos/seed/menu" + (it.id || Math.random()) + "/400/240",
+              stockEnabled: it.stockEnabled === true,
+              stockQuantity: typeof it.stockQuantity === "number" ? it.stockQuantity : null,
             }));
-            menu.value = fresh;
+            menu.value = mapped.filter(
+              (m) => !(m.stockEnabled && typeof m.stockQuantity === "number" && m.stockQuantity <= 0),
+            );
             // update cache
             try {
               const tenant =
@@ -175,7 +177,7 @@ export const useOrderStore = defineStore("order", () => {
     menuLoading = (async () => {
       try {
         const data = await fetchJson("/api/menu");
-        menu.value = (Array.isArray(data) ? data : []).map((it) => ({
+        const mapped = (Array.isArray(data) ? data : []).map((it) => ({
           id: it.id,
           name: it.name,
           price: typeof it.price === "number" ? it.price : Number(it.price || 0),
@@ -187,7 +189,12 @@ export const useOrderStore = defineStore("order", () => {
           sub: it.sub || it.subcategory || "main",
           image:
             it.image || "https://picsum.photos/seed/menu" + (it.id || Math.random()) + "/400/240",
+          stockEnabled: it.stockEnabled === true,
+          stockQuantity: typeof it.stockQuantity === "number" ? it.stockQuantity : null,
         }));
+        menu.value = mapped.filter(
+          (m) => !(m.stockEnabled && typeof m.stockQuantity === "number" && m.stockQuantity <= 0),
+        );
         menuLoaded.value = true;
         // persist normalized menu per tenant (only if tenant resolved)
         try {
@@ -402,7 +409,7 @@ export const useOrderStore = defineStore("order", () => {
       })
         .then(async (r) => {
           if (!r.ok) {
-            // Show a clear message for cross-tenant session attempts and generic for others
+            // Show a clear message for cross-tenant session attempts; otherwise prefer backend error message
             try {
               const ui = useUiStore();
               const currentTenant =
@@ -423,7 +430,39 @@ export const useOrderStore = defineStore("order", () => {
                   6000,
                 );
               } else {
-                ui.toastError("Sipariş gönderilemedi. Lütfen tekrar deneyin.");
+                // Try to extract detailed error message from backend (e.g., yetersiz stok)
+                let msg = "";
+                try {
+                  const text = await r.text();
+                  if (text) {
+                    try {
+                      const j = JSON.parse(text);
+                      let candidate = "";
+                      if (j) {
+                        if (typeof j.message === "string" && j.message.trim()) candidate = j.message;
+                        else if (typeof j.detail === "string" && j.detail.trim()) candidate = j.detail;
+                        else if (
+                          Array.isArray(j.errors) &&
+                          j.errors.length &&
+                          typeof j.errors[0]?.message === "string" &&
+                          j.errors[0].message.trim()
+                        )
+                          candidate = j.errors[0].message;
+                        else if (typeof j.error === "string" && j.error.trim()) candidate = j.error;
+                        else if (typeof j.title === "string" && j.title.trim()) candidate = j.title;
+                        else if (typeof j === "string" && j.trim()) candidate = j;
+                      }
+                      msg = typeof candidate === "string" ? candidate : "";
+                    } catch {
+                      // Not JSON -> use raw text
+                      msg = text;
+                    }
+                  }
+                } catch {
+                  /* ignore */
+                }
+                if (!msg || !msg.trim()) msg = "Sipariş gönderilemedi. Lütfen tekrar deneyin.";
+                ui.toastError(msg);
               }
             } catch {
               /* ignore */

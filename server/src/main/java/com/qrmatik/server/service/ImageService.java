@@ -23,7 +23,7 @@ public class ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
-    public record SavedImages(String originalUrl, String mediumUrl, String thumbUrl) {
+    public record SavedImages(String mediumUrl, String thumbUrl) {
     }
 
     public SavedImages saveMenuItemImage(String tenantCode, UUID menuItemId, MultipartFile file) throws IOException {
@@ -55,13 +55,13 @@ public class ImageService {
         Path thumb = dir.resolve("thumb.jpg");
         Thumbnails.of(original.toFile()).size(200, 200).outputFormat("jpg").toFile(thumb.toFile());
 
-        if (!Files.exists(original) || !Files.exists(medium) || !Files.exists(thumb)) {
-            log.error("Image generation incomplete. Exists? original={}, medium={}, thumb={}", Files.exists(original),
+        if (!Files.exists(medium) || !Files.exists(thumb)) {
+            log.error("Image generation incomplete. Exists? medium={}, thumb={}",
                     Files.exists(medium), Files.exists(thumb));
         }
 
         String baseUrl = "/files/tenants/" + safe(tenantCode) + "/menu/" + String.valueOf(menuItemId) + "/";
-        return new SavedImages(baseUrl + "original." + ext, baseUrl + "medium.jpg", baseUrl + "thumb.jpg");
+        return new SavedImages(baseUrl + "medium.jpg", baseUrl + "thumb.jpg");
     }
 
     private Path resolveUploadBase() {

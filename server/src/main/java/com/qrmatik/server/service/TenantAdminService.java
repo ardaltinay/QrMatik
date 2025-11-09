@@ -7,6 +7,7 @@ import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.model.UserRole;
 import com.qrmatik.server.repository.TenantRepository;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import com.qrmatik.server.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -151,6 +152,17 @@ public class TenantAdminService {
     private void insertUser(TenantEntity tenant, String username, String role, String rawPassword) {
         var existing = userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tenant.getCode());
         UserEntity u = existing.orElseGet(() -> UserEntity.builder().username(username).tenant(tenant).build());
+        // If creating a new user (not updating) enforce FREE tenant limit
+        if (existing.isEmpty()) {
+            PlanType plan = tenant.getPlan() == null ? PlanType.FREE : tenant.getPlan();
+            if (plan == PlanType.FREE) {
+                long cur = userRepository.countByTenant_Code(tenant.getCode());
+                    if (cur >= 3L) {
+                        throw new PlanLimitExceededException(
+                                "Ücretsiz sürüm için maksimum 3 kullanıcı oluşturabilirsiniz.");
+                }
+            }
+        }
         var er = UserRole.fromString(role);
         if (er == null)
             er = UserRole.STAFF;

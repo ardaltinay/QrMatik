@@ -2,6 +2,7 @@ package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.UserInsertRequest;
 import com.qrmatik.server.exception.PlanFeatureUnavailableException;
+import com.qrmatik.server.exception.PlanLimitExceededException;
 import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.model.UserEntity;
@@ -56,6 +57,21 @@ public class UserService {
                 }
             }
         }
+        // Enforce FREE plan user limit: max 3 users
+        if (tenant != null) {
+            TenantEntity t = tenantRepository.findByCode(tenant).orElse(null);
+            if (t != null) {
+                PlanType plan = t.getPlan() == null ? PlanType.FREE : t.getPlan();
+                if (plan == PlanType.FREE) {
+                    long cur = repository.countByTenant_Code(tenant);
+                    if (cur >= 3L) {
+                        throw new PlanLimitExceededException(
+                                "Ücretsiz sürüm için maksimum 3 kullanıcı oluşturabilirsiniz.");
+                    }
+                }
+            }
+        }
+
         UserEntity u = new UserEntity();
         u.setUsername(req.getUsername());
         {

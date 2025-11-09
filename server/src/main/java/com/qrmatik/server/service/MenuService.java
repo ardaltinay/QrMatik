@@ -82,10 +82,38 @@ public class MenuService {
             e.setSubcategory(patch.getSubcategory());
         if (patch.getImage() != null)
             e.setImage(patch.getImage());
+        // Stock-related fields require plan check
+        if (patch.getStockEnabled() != null || patch.getStockQuantity() != null) {
+            // will throw PlanFeatureUnavailableException when not allowed
+            if (tenant != null) {
+                planGuard.assertStockFeature(tenant);
+            } else if (e.getTenant() != null && e.getTenant().getCode() != null) {
+                planGuard.assertStockFeature(e.getTenant().getCode());
+            }
+            if (patch.getStockEnabled() != null)
+                e.setStockEnabled(patch.getStockEnabled());
+            if (patch.getStockQuantity() != null)
+                e.setStockQuantity(patch.getStockQuantity());
+        }
         return Optional.of(repository.save(e));
     }
 
     public Map<String, Object> uploadImage(UUID id, MultipartFile file, String tenant) throws IOException {
+        // Basic validation moved to service layer for reusability
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Boş dosya");
+        }
+        final long MAX_BYTES = 2 * 1024 * 1024;
+        if (file.getSize() > MAX_BYTES) {
+            throw new IllegalArgumentException("Dosya çok büyük (max 2MB)");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.equalsIgnoreCase("image/jpeg")
+                && !contentType.equalsIgnoreCase("image/png") && !contentType.equalsIgnoreCase("image/webp")
+                && !contentType.equalsIgnoreCase("image/gif"))) {
+            throw new IllegalArgumentException("Desteklenmeyen içerik türü");
+        }
+
         Optional<MenuItemEntity> opt = repository.findById(id);
         if (opt.isEmpty())
             return null;
@@ -96,8 +124,7 @@ public class MenuService {
         ImageService.SavedImages saved = imageService.saveMenuItemImage(tenant, id, file);
         item.setImage(saved.mediumUrl());
         repository.save(item);
-        return Map.of("original", saved.originalUrl(), "medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image",
-                item.getImage());
+    return Map.of("medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image", item.getImage());
     }
 
     public boolean delete(UUID id, String tenant) {
@@ -158,5 +185,12 @@ public class MenuService {
                 out.add(x);
         }
         return out;
+    }
+
+    public List<MenuItemEntity> listForStock(String tenant) {
+        if (tenant != null) {
+            planGuard.assertStockFeature(tenant);
+        }
+        return listForTenant(tenant);
     }
 }

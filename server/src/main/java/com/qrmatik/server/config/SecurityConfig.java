@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
+                // Stok API sadece admin (PRO kontrolu controller icinde ayrica yapiliyor)
+                .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")
                 // Customer flows (anonymous allowed)
                 .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()

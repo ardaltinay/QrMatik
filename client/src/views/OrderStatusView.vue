@@ -18,10 +18,7 @@
           </div>
         </div>
 
-        <div class="mt-4" v-if="showEta">
-          <div class="mb-2 text-sm text-gray-600">Tahmini Süre</div>
-          <div class="text-lg font-semibold">{{ etaText }}</div>
-        </div>
+
 
         <!-- stepper: two-column grid on mobile, horizontal on md+ -->
         <div class="mt-4">
@@ -170,28 +167,6 @@
         if (st === "payment_completed" || st === "bill_requested") return steps.length - 1;
         if (st === "canceled") return -1; // iptal için hiçbir adım tamamlanmış görünmesin
         return 0;
-      });
-
-      // naive ETA calculation (example heuristics)
-      const etaText = computed(() => {
-        if (!order.value) return "-";
-        const baseMinutes = 5; // baseline per new order
-        const status = order.value.status;
-        if (status === "new") return `${baseMinutes} - ${baseMinutes + 5} dk içinde`;
-        if (status === "preparing")
-          return `${Math.max(1, baseMinutes - 2)} - ${baseMinutes + 2} dk içinde`;
-        if (status === "ready") return "Çok yakında (paspas hazır)";
-        if (status === "payment_completed" || status === "canceled" || status === "bill_requested")
-          return "";
-        return "";
-      });
-
-      const showEta = computed(() => {
-        if (!order.value) return false;
-        const s = order.value.status;
-        return (
-          s !== "served" && s !== "payment_completed" && s !== "canceled" && s !== "bill_requested"
-        );
       });
 
       const isExpired = computed(() => {
@@ -355,8 +330,7 @@
         menuItemName,
         steps,
         currentIdx,
-        etaText,
-        showEta,
+
         isExpired,
 
         formatDateTz,

@@ -6,13 +6,13 @@ import com.qrmatik.server.dto.CreateOrderRequest;
 import com.qrmatik.server.dto.OrderDto;
 import com.qrmatik.server.dto.RequestBillRequest;
 import com.qrmatik.server.dto.StatusUpdate;
+import com.qrmatik.server.exception.BadRequestException;
 import com.qrmatik.server.exception.TableUnavailableException;
 import com.qrmatik.server.model.OrderEntity;
 import com.qrmatik.server.service.OrderService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
@@ -55,24 +55,12 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> get(@PathVariable String id,
             @RequestParam(name = "sid", required = false) String sid) {
-        Optional<OrderEntity> o = orderService.getById(id);
-        if (o.isEmpty())
-            return ResponseEntity.notFound().build();
-        OrderEntity e = o.get();
-        // If unauthenticated, require valid session id to view order details
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticated = auth != null && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
-        if (!authenticated) {
-            if (sid == null || sid.isBlank()) {
-                return ResponseEntity.notFound().build();
-            }
-            String realSid = e.getSessionId();
-            if (realSid == null || !realSid.equals(sid)) {
-                return ResponseEntity.notFound().build();
-            }
-        }
-        return ResponseEntity.ok(converter.toDto(e));
+        Optional<OrderEntity> o = orderService.getIfViewable(id, sid, authenticated);
+        return o.map(orderEntity -> ResponseEntity.ok(converter.toDto(orderEntity)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -98,6 +86,8 @@ public class OrderController {
                     .body(converter.toDto(saved));
         } catch (TableUnavailableException ex) {
             return ResponseEntity.status(423).body(Map.of("message", ex.getMessage()));
+        } catch (BadRequestException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
         }
     }
 
@@ -119,24 +109,11 @@ public class OrderController {
     @GetMapping("/session/{sessionId}")
     public ResponseEntity<?> bySession(@PathVariable String sessionId) {
         String tenant = TenantContext.getTenant();
-        List<OrderEntity> entities = orderService.bySessionForTenant(sessionId, tenant);
-        // Session is considered expired only if ALL orders in the session are expired
-        // This ensures canceling a single order (which sets its sessionExpiresAt to
-        // now)
-        // doesn't hide other active orders from the same session.
-        LocalDateTime now = LocalDateTime.now(appZoneId);
-        boolean anyNonExpired = false;
-        for (OrderEntity e : entities) {
-            boolean isExpired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));
-            if (!isExpired) {
-                anyNonExpired = true;
-                break;
-            }
-        }
-        if (!entities.isEmpty() && !anyNonExpired) {
+        var res = orderService.bySessionForView(sessionId, tenant, appZoneId);
+        if (!res.orders().isEmpty() && !res.anyNonExpired()) {
             return ResponseEntity.status(410).build();
         }
-        return ResponseEntity.ok(entities.stream().map(converter::toDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(res.orders().stream().map(converter::toDto).collect(Collectors.toList()));
     }
 
     @PostMapping("/close-table/{tableCode}")

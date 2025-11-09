@@ -1,30 +1,32 @@
 <template>
   <section class="py-12">
     <div class="container mx-auto px-6">
-      <div class="mb-6 flex items-end justify-between">
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900 md:text-3xl">Ekran Yapıları</h2>
-          <p class="mt-1 text-gray-600">Basit, hızlı ve kullanışlı ekran yapıları</p>
-        </div>
-        <div class="flex gap-2">
-          <button
-            class="rounded-md border px-3 py-1.5 text-sm"
-            :class="
-              mode === 'web' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
-            "
-            @click="setMode('web')"
-          >
-            Web
-          </button>
-          <button
-            class="rounded-md border px-3 py-1.5 text-sm"
-            :class="
-              mode === 'mobil' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
-            "
-            @click="setMode('mobil')"
-          >
-            Mobil
-          </button>
+      <div class="mb-6">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 md:text-3xl">Ekran Yapıları</h2>
+            <p class="mt-1 text-gray-600">Basit, hızlı ve kullanışlı ekran yapıları</p>
+          </div>
+          <div class="flex gap-2">
+            <button
+              class="rounded-md border px-3 py-1.5 text-sm"
+              :class="
+                mode === 'web' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
+              "
+              @click="setMode('web')"
+            >
+              Web
+            </button>
+            <button
+              class="rounded-md border px-3 py-1.5 text-sm"
+              :class="
+                mode === 'mobil' ? 'border-brand-500 bg-brand-500 text-white' : 'hover:bg-gray-100'
+              "
+              @click="setMode('mobil')"
+            >
+              Mobil
+            </button>
+          </div>
         </div>
       </div>
 

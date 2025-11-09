@@ -18,4 +18,6 @@ public class MenuItemDto {
     private String category;
     private String subcategory;
     private String image;
+    private Boolean stockEnabled;
+    private Integer stockQuantity;
 }

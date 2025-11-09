@@ -37,6 +37,10 @@
                 yönetimi: Fiyat ve içerik değişiklikleri anında yayında
               </li>
               <li v-if="!hasTenant" class="flex items-center gap-2">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Stok
+                yönetimi: Gelişmiş stok kontrolü ile tükenen ürünleri otomatik gizleyin
+              </li>
+              <li v-if="!hasTenant" class="flex items-center gap-2">
                 <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span> Daha az
                 hata: Elle aktarım yok; mutfak & bar panoları net
               </li>
@@ -53,17 +57,20 @@
                 >Mutfak & Bar Panoları</span
               >
               <span class="rounded-full border bg-white px-2.5 py-1 text-xs shadow-sm"
+                >Stok Kontrolü</span
+              >
+              <span class="rounded-full border bg-white px-2.5 py-1 text-xs shadow-sm"
                 >Çoklu İşletme Desteği</span
               >
             </div>
             <!-- Tenant görünümleri için butonlar: mobilde dikey, sm+ yatay -->
-            <div v-if="hasTenant" class="flex flex-col gap-3 sm:flex-row">
+            <div v-if="hasTenant" class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <!-- Menüyü Görüntüle: tek ise tam genişlik, ikili ise yarım genişlik -->
               <router-link
                 to="/menu"
                 :class="[
-                  'rounded-md bg-indigo-600 px-3 py-2 text-center text-sm text-white shadow hover:bg-indigo-700 sm:px-4 sm:py-3 sm:text-base',
-                  showOrdersButton ? 'w-full sm:min-w-0 sm:flex-1' : 'w-full',
+                  'w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm text-white shadow hover:bg-indigo-700 sm:min-w-0 sm:px-4 sm:py-3 sm:text-base',
+                  hasSecondaryButtons ? 'sm:flex-1' : '',
                 ]"
                 >Menüyü Görüntüle</router-link
               >
@@ -265,6 +272,11 @@
       // İkili buton düzeni gösterilecek mi?
       const showOrdersButton = computed(
         () => !!hasTenant.value && !!sessionCheckDone.value && !!showMyOrders.value,
+      );
+
+      // En az iki buton varsa (Siparişlerim veya Admin), birincil buton da esnek genişlik almalı
+      const hasSecondaryButtons = computed(
+        () => !!showOrdersButton.value || !!isAdmin.value || !!isSuperAdmin.value,
       );
 
       // Yerel heuristikleri kaldırıyoruz; yalnızca sunucu doğrulamasından sonra gösterilecek
@@ -479,6 +491,7 @@
         showMyOrders,
         sessionCheckDone,
         showOrdersButton,
+        hasSecondaryButtons,
         popular,
         isPaidPlan,
         formatMoney,

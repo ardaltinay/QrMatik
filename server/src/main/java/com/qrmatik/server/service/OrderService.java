@@ -1,6 +1,7 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.dto.CreateOrderRequest;
+import com.qrmatik.server.exception.BadRequestException;
 import com.qrmatik.server.exception.TableUnavailableException;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.model.OrderEntity;
@@ -9,12 +10,14 @@ import com.qrmatik.server.model.OrderStatus;
 import com.qrmatik.server.model.TableEntity;
 import com.qrmatik.server.model.TableStatus;
 import com.qrmatik.server.model.TenantEntity;
+import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +59,40 @@ public class OrderService {
         }
     }
 
+    public Optional<OrderEntity> getIfViewable(String id, String sid, boolean authenticated) {
+        Optional<OrderEntity> o = getById(id);
+        if (o.isEmpty())
+            return Optional.empty();
+        OrderEntity e = o.get();
+        if (!authenticated) {
+            if (sid == null || sid.isBlank()) {
+                return Optional.empty();
+            }
+            String realSid = e.getSessionId();
+            if (realSid == null || !realSid.equals(sid)) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(e);
+    }
+
+    public static record SessionViewResult(List<OrderEntity> orders, boolean anyNonExpired) {
+    }
+
+    public SessionViewResult bySessionForView(String sessionId, String tenant, ZoneId zoneId) {
+        List<OrderEntity> entities = bySessionForTenant(sessionId, tenant);
+        LocalDateTime now = LocalDateTime.now(zoneId);
+        boolean anyNonExpired = false;
+        for (OrderEntity e : entities) {
+            boolean isExpired = (e.getSessionExpiresAt() != null && e.getSessionExpiresAt().isBefore(now));
+            if (!isExpired) {
+                anyNonExpired = true;
+                break;
+            }
+        }
+        return new SessionViewResult(entities, anyNonExpired);
+    }
+
     public List<OrderEntity> byTableForTenant(String tableCode, String tenant) {
         if (tenant == null)
             return orderRepository.findByTable_Code(tableCode);
@@ -92,7 +129,7 @@ public class OrderService {
             }
         }
 
-        order.setStatus(parsed);
+    order.setStatus(parsed);
         // adjust session expiry based on status
         if (parsed == OrderStatus.SERVED) {
             order.setSessionExpiresAt(LocalDateTime.now().plusHours(3));
@@ -110,6 +147,15 @@ public class OrderService {
             LocalDateTime min = LocalDateTime.now().plusHours(24);
             if (order.getSessionExpiresAt() == null || order.getSessionExpiresAt().isBefore(min)) {
                 order.setSessionExpiresAt(min);
+            }
+        }
+        // Stok iadesi: ilk kez CANCELED'a geçiliyorsa ve inventoryApplied true ise geri al
+        if (parsed == OrderStatus.CANCELED && (order.getInventoryApplied() != null && order.getInventoryApplied())) {
+            try {
+                restoreInventory(order);
+                order.setInventoryApplied(false); // iade yapıldı
+            } catch (Exception ex) {
+                log.warn("Inventory restore failed for order {}: {}", order.getId(), ex.getMessage());
             }
         }
         OrderEntity saved = orderRepository.save(order);
@@ -191,7 +237,7 @@ public class OrderService {
                 if (existingTenant != null) {
                     // If request tenant (from context) is present and different, reject
                     if (tcode != null && !tcode.equals(existingTenant)) {
-                        return Optional.empty();
+                        throw new BadRequestException("Oturum farklı bir işletmeye ait");
                     }
                     // Otherwise, align order tenant to the existing session's tenant
                     try {
@@ -213,14 +259,14 @@ public class OrderService {
                     ? tableRepository.findByCodeAndTenant_Code(req.getTableCode(), tcode)
                     : tableRepository.findByCode(req.getTableCode());
             if (tableOpt.isEmpty()) {
-                return Optional.empty();
+                throw new BadRequestException("Masa bulunamadı: " + req.getTableCode());
             }
             var table = tableOpt.get();
             // tenant tutarlılığı: hem paramda tenant hem tablonun tenantı varsa ve
             // farklıysa reddet
             String tableTenant = (table.getTenant() != null ? table.getTenant().getCode() : null);
             if (tcode != null && tableTenant != null && !tcode.equals(tableTenant)) {
-                return Optional.empty();
+                throw new BadRequestException("İşletme uyuşmazlığı: masa farklı bir işletmeye ait");
             }
             // order.tenant öncelik: param -> tablonun tenantı
             if (tcode != null) {
@@ -248,10 +294,10 @@ public class OrderService {
 
         // En az 1 satır zorunlu
         if (req.getLines() == null || req.getLines().isEmpty()) {
-            return Optional.empty();
+            throw new BadRequestException("En az bir ürün satırı gereklidir");
         }
 
-        buildOrderLinesFromRequest(input, (input.getTenant() != null ? input.getTenant().getCode() : tcode), req);
+    buildOrderLinesFromRequest(input, (input.getTenant() != null ? input.getTenant().getCode() : tcode), req);
 
         if ((input.getTotal() == null || BigDecimal.ZERO.compareTo(input.getTotal()) == 0) && input.getLines() != null
                 && !input.getLines().isEmpty()) {
@@ -271,12 +317,14 @@ public class OrderService {
                 if (li.getMenuItem() != null && li.getMenuItem().getTenant() != null) {
                     String miTenant = li.getMenuItem().getTenant().getCode();
                     if (miTenant != null && !orderTenant.equals(miTenant)) {
-                        return Optional.empty();
+                        throw new BadRequestException("Menü kalemi işletme uyuşmazlığı");
                     }
                 }
             }
         }
 
+        // Envanter düşümü (yalnız PRO plan & stok aktif kalemler)
+        applyInventoryIfEligible(input);
         return Optional.of(orderRepository.save(input));
     }
 
@@ -461,6 +509,69 @@ public class OrderService {
         }
         if (!lines.isEmpty()) {
             input.setLines(lines);
+        }
+    }
+
+    private void applyInventoryIfEligible(OrderEntity order) {
+        try {
+            String tenantCode = order.getTenant() != null ? order.getTenant().getCode() : null;
+            if (tenantCode == null) return;
+            TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
+            if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO) return; // yalnız PRO
+            if (order.getLines() == null || order.getLines().isEmpty()) return;
+            // Önce yeterli stok var mı kontrol et
+            for (OrderItemEntity li : order.getLines()) {
+                MenuItemEntity mi = li.getMenuItem();
+                if (mi == null) continue;
+                Boolean enabled = mi.getStockEnabled();
+                Integer qty = mi.getStockQuantity();
+                if (enabled != null && enabled && qty != null) {
+                    int need = (li.getQuantity() != null ? li.getQuantity() : 1);
+                    if (qty < need) {
+                        throw new BadRequestException("Yetersiz stok: " + mi.getName());
+                    }
+                }
+            }
+            // Yeterli ise düş
+            for (OrderItemEntity li : order.getLines()) {
+                MenuItemEntity mi = li.getMenuItem();
+                if (mi == null) continue;
+                Boolean enabled = mi.getStockEnabled();
+                Integer qty = mi.getStockQuantity();
+                if (enabled != null && enabled && qty != null) {
+                    int need = (li.getQuantity() != null ? li.getQuantity() : 1);
+                    mi.setStockQuantity(Math.max(0, qty - need));
+                    menuItemRepository.save(mi);
+                }
+            }
+            order.setInventoryApplied(true);
+        } catch (BadRequestException ex) {
+            throw ex; // ileriye fırlat
+        } catch (Exception ex) {
+            log.warn("Inventory apply failed for order {}: {}", order.getId(), ex.getMessage());
+        }
+    }
+
+    private void restoreInventory(OrderEntity order) {
+        if (order.getLines() == null) return;
+        String tenantCode = order.getTenant() != null ? order.getTenant().getCode() : null;
+        if (tenantCode == null) return;
+        TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
+    if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO) return; // yalnız PRO
+        for (OrderItemEntity li : order.getLines()) {
+            MenuItemEntity mi = li.getMenuItem();
+            if (mi == null) continue;
+            Boolean enabled = mi.getStockEnabled();
+            Integer qty = mi.getStockQuantity();
+            if (enabled != null && enabled) {
+                int add = (li.getQuantity() != null ? li.getQuantity() : 1);
+                if (qty == null) {
+                    // Sınırsız stok modunda iade anlamsız, skip
+                    continue;
+                }
+                mi.setStockQuantity(qty + add);
+                menuItemRepository.save(mi);
+            }
         }
     }
 

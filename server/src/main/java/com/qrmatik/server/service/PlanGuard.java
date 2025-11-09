@@ -1,6 +1,7 @@
 package com.qrmatik.server.service;
 
 import com.qrmatik.server.exception.PlanLimitExceededException;
+import com.qrmatik.server.exception.PlanFeatureUnavailableException;
 import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
@@ -62,6 +63,16 @@ public class PlanGuard {
         // Logo yükleme yalnızca Standart ve Pro planlarda
         if (plan == PlanType.FREE) {
             throw new PlanLimitExceededException("Logo özelleştirme Standart/Pro planlarda mevcuttur.");
+        }
+    }
+
+    public void assertStockFeature(String tenantCode) {
+        TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
+        if (t == null)
+            return;
+        PlanType plan = t.getPlan() == null ? PlanType.FREE : t.getPlan();
+        if (plan != PlanType.PRO) {
+            throw new PlanFeatureUnavailableException("Stok kontrolü yalnızca Pro planda mevcuttur.");
         }
     }
 }

@@ -3,6 +3,7 @@ package com.qrmatik.server.controller;
 import com.qrmatik.server.converter.MenuItemConverter;
 import com.qrmatik.server.dto.MenuItemDto;
 import com.qrmatik.server.exception.PlanLimitExceededException;
+import com.qrmatik.server.exception.PlanFeatureUnavailableException;
 import com.qrmatik.server.model.MenuItemEntity;
 import com.qrmatik.server.service.MenuService;
 import com.qrmatik.server.service.TenantContext;
@@ -63,33 +64,24 @@ public class MenuController {
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemDto> update(@PathVariable UUID id, @RequestBody MenuItemEntity patch) {
         String tenant = TenantContext.getTenant();
-        return menuService.update(id, patch, tenant).map(e -> ResponseEntity.ok(converter.toDto(e)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return menuService.update(id, patch, tenant).map(e -> ResponseEntity.ok(converter.toDto(e)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (PlanFeatureUnavailableException ex) {
+            return ResponseEntity.status(402).build();
+        }
     }
 
     @PostMapping(path = "/{id}/image", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
-            // Basit güvenlik/doğrulama kontrolleri
-            if (file == null || file.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Boş dosya"));
-            }
-            // Boyut limiti (örnek: 2 MB)
-            final long MAX_BYTES = 2 * 1024 * 1024;
-            if (file.getSize() > MAX_BYTES) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Dosya çok büyük (max 2MB)"));
-            }
-            String contentType = file.getContentType();
-            if (contentType == null || (!contentType.equalsIgnoreCase("image/jpeg")
-                    && !contentType.equalsIgnoreCase("image/png") && !contentType.equalsIgnoreCase("image/webp")
-                    && !contentType.equalsIgnoreCase("image/gif"))) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Desteklenmeyen içerik türü"));
-            }
             String tenant = TenantContext.getTenant();
             Map<String, Object> result = menuService.uploadImage(id, file, tenant);
             if (result == null)
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         } catch (Exception e) {
             Throwable root = e;
             while (root.getCause() != null && root.getCause() != root) {

@@ -52,4 +52,7 @@ public class OrderEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id")
     private TableEntity table;
+
+    // Envanter uygulandı mı? (Stok düşümü yapıldı mı) İptalde iade için idempotent flag
+    private Boolean inventoryApplied; // null => false
 }

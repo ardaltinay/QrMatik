@@ -36,4 +36,12 @@ public class MenuItemEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")
     private TenantEntity tenant;
+
+    // Stok kontrolü (yalnızca PRO plan özellikleri UI/API üzerinden açılır)
+    // stockEnabled = true ise stockQuantity değeri anlamlıdır; false ise sınırsız kabul edilir.
+    @Column(name = "stock_enabled")
+    private Boolean stockEnabled; // null => varsayılan false (sınırsız)
+
+    @Column(name = "stock_qty")
+    private Integer stockQuantity; // null => sınırsız
 }
