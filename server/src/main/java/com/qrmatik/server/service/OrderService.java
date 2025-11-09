@@ -15,11 +15,6 @@ import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
@@ -130,7 +129,7 @@ public class OrderService {
             }
         }
 
-    order.setStatus(parsed);
+        order.setStatus(parsed);
         // adjust session expiry based on status
         if (parsed == OrderStatus.SERVED) {
             order.setSessionExpiresAt(LocalDateTime.now().plusHours(3));
@@ -150,7 +149,8 @@ public class OrderService {
                 order.setSessionExpiresAt(min);
             }
         }
-        // Stok iadesi: ilk kez CANCELED'a geçiliyorsa ve inventoryApplied true ise geri al
+        // Stok iadesi: ilk kez CANCELED'a geçiliyorsa ve inventoryApplied true ise geri
+        // al
         if (parsed == OrderStatus.CANCELED && (order.getInventoryApplied() != null && order.getInventoryApplied())) {
             try {
                 restoreInventory(order);
@@ -298,7 +298,7 @@ public class OrderService {
             throw new BadRequestException("En az bir ürün satırı gereklidir");
         }
 
-    buildOrderLinesFromRequest(input, (input.getTenant() != null ? input.getTenant().getCode() : tcode), req);
+        buildOrderLinesFromRequest(input, (input.getTenant() != null ? input.getTenant().getCode() : tcode), req);
 
         if ((input.getTotal() == null || BigDecimal.ZERO.compareTo(input.getTotal()) == 0) && input.getLines() != null
                 && !input.getLines().isEmpty()) {
@@ -516,14 +516,18 @@ public class OrderService {
     private void applyInventoryIfEligible(OrderEntity order) {
         try {
             String tenantCode = order.getTenant() != null ? order.getTenant().getCode() : null;
-            if (tenantCode == null) return;
+            if (tenantCode == null)
+                return;
             TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
-            if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO) return; // yalnız PRO
-            if (order.getLines() == null || order.getLines().isEmpty()) return;
+            if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO)
+                return; // yalnız PRO
+            if (order.getLines() == null || order.getLines().isEmpty())
+                return;
             // Önce yeterli stok var mı kontrol et
             for (OrderItemEntity li : order.getLines()) {
                 MenuItemEntity mi = li.getMenuItem();
-                if (mi == null) continue;
+                if (mi == null)
+                    continue;
                 Boolean enabled = mi.getStockEnabled();
                 Integer qty = mi.getStockQuantity();
                 if (enabled != null && enabled && qty != null) {
@@ -536,7 +540,8 @@ public class OrderService {
             // Yeterli ise düş
             for (OrderItemEntity li : order.getLines()) {
                 MenuItemEntity mi = li.getMenuItem();
-                if (mi == null) continue;
+                if (mi == null)
+                    continue;
                 Boolean enabled = mi.getStockEnabled();
                 Integer qty = mi.getStockQuantity();
                 if (enabled != null && enabled && qty != null) {
@@ -554,14 +559,18 @@ public class OrderService {
     }
 
     private void restoreInventory(OrderEntity order) {
-        if (order.getLines() == null) return;
+        if (order.getLines() == null)
+            return;
         String tenantCode = order.getTenant() != null ? order.getTenant().getCode() : null;
-        if (tenantCode == null) return;
+        if (tenantCode == null)
+            return;
         TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
-    if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO) return; // yalnız PRO
+        if (t == null || t.getPlan() == null || t.getPlan() != PlanType.PRO)
+            return; // yalnız PRO
         for (OrderItemEntity li : order.getLines()) {
             MenuItemEntity mi = li.getMenuItem();
-            if (mi == null) continue;
+            if (mi == null)
+                continue;
             Boolean enabled = mi.getStockEnabled();
             Integer qty = mi.getStockQuantity();
             if (enabled != null && enabled) {

@@ -7,10 +7,6 @@ import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.OrderItemRepository;
 import com.qrmatik.server.repository.TenantRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MenuService {
@@ -109,9 +108,9 @@ public class MenuService {
             throw new IllegalArgumentException("Dosya çok büyük (max 2MB)");
         }
         String contentType = file.getContentType();
-        if (contentType == null || (!contentType.equalsIgnoreCase("image/jpeg")
-                && !contentType.equalsIgnoreCase("image/png") && !contentType.equalsIgnoreCase("image/webp")
-                && !contentType.equalsIgnoreCase("image/gif"))) {
+        if (contentType == null
+                || (!contentType.equalsIgnoreCase("image/jpeg") && !contentType.equalsIgnoreCase("image/png")
+                        && !contentType.equalsIgnoreCase("image/webp") && !contentType.equalsIgnoreCase("image/gif"))) {
             throw new IllegalArgumentException("Desteklenmeyen içerik türü");
         }
 
@@ -125,7 +124,7 @@ public class MenuService {
         ImageService.SavedImages saved = imageService.saveMenuItemImage(tenant, id, file);
         item.setImage(saved.mediumUrl());
         repository.save(item);
-    return Map.of("medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image", item.getImage());
+        return Map.of("medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image", item.getImage());
     }
 
     public boolean delete(UUID id, String tenant) {

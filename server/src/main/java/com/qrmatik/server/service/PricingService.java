@@ -3,9 +3,8 @@ package com.qrmatik.server.service;
 import com.qrmatik.server.config.PricingProperties.Props;
 import com.qrmatik.server.dto.PricingDto;
 import com.qrmatik.server.dto.PricingTierDto;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 /**
  * Central source of truth for pricing used by both public API and billing.
@@ -34,7 +33,8 @@ public class PricingService {
                                 .build(),
                         PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
                                 .features(List.of("Sınırsız masa ve ürün", "Gelişmiş raporlar",
-                                        "İsteğe bağlı özel alan adı (CNAME)", "Gelişmiş stok kontrolü", "Öncelikli destek"))
+                                        "İsteğe bağlı özel alan adı (CNAME)", "Gelişmiş stok kontrolü",
+                                        "Öncelikli destek"))
                                 .build()))
                 .build();
     }
