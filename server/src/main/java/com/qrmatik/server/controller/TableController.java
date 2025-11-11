@@ -40,7 +40,7 @@ public class TableController {
         try {
             Optional<TableEntity> e = tableService.createForCurrentTenant(req);
             if (e.isEmpty())
-                return ResponseEntity.badRequest().body("Invalid or duplicate table code");
+                return ResponseEntity.badRequest().body("Aynı masa kodu ile yalnızca bir masa oluşturulabilir");
             return ResponseEntity.ok(TableDto.fromEntity(e.get()));
         } catch (PlanLimitExceededException ex) {
             return ResponseEntity.status(402).body(ex.getMessage());
@@ -51,7 +51,7 @@ public class TableController {
     public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody TableInsertRequest req) {
         Optional<TableEntity> e = tableService.updateForCurrentTenant(id, req);
         if (e.isEmpty())
-            return ResponseEntity.badRequest().body("Invalid table or duplicate code");
+            return ResponseEntity.badRequest().body("Masa Bulunamadı veya güncellenemiyor");
         return ResponseEntity.ok(TableDto.fromEntity(e.get()));
     }
 
@@ -59,7 +59,7 @@ public class TableController {
     public ResponseEntity<?> delete(@PathVariable("id") UUID id) {
         boolean ok = tableService.deleteForCurrentTenant(id);
         if (!ok)
-            return ResponseEntity.badRequest().body("Invalid table");
+            return ResponseEntity.badRequest().body("Masa Bulunamadı veya silinemiyor");
         return ResponseEntity.noContent().build();
     }
 }

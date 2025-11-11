@@ -198,11 +198,26 @@
       <div class="mb-1 font-semibold">İşletme oluşturuldu.</div>
       <div class="text-sm">
         <div class="mb-1">
-          Kod: <strong>{{ done.code }}</strong>
+          Kod: <strong>{{ done.code || (done.tenant && done.tenant.code) }}</strong>
         </div>
-        <div v-if="form.adminUsername">
+
+        <!-- Show bootstrap credentials if backend returned them -->
+        <div v-if="done.bootstrap">
+          <div>Admin kullanıcı: <strong>{{ done.bootstrap.username }}</strong></div>
+          <div>Admin parola: <strong class="font-mono">{{ done.bootstrap.password }}</strong></div>
+        </div>
+
+        <!-- If bootstrap not present, but admin DTO exists show it -->
+        <div v-else-if="done.admin">
+          <div>Admin kullanıcı: <strong>{{ done.admin.username }}</strong></div>
+          <div>Admin rol: <strong>{{ done.admin.role }}</strong></div>
+        </div>
+
+        <!-- Fall back to form-provided admin username -->
+        <div v-else-if="form.adminUsername">
           Admin kullanıcı: <strong>{{ form.adminUsername }}</strong>
         </div>
+
         <div class="mt-2">
           Yönetim için:
           <code class="rounded border bg-white px-1 py-0.5">{{ adminSubdomainUrl }}</code>
@@ -291,7 +306,9 @@
 
   const adminSubdomainUrl = computed(() => {
     try {
-      const code = done.value && done.value.code ? String(done.value.code).trim() : "";
+      const code = done.value
+        ? String(done.value.code || (done.value.tenant && done.value.tenant.code) || "").trim()
+        : "";
       if (!code) return "";
       const loc = typeof window !== "undefined" ? window.location : null;
       const hostname = loc && loc.hostname ? loc.hostname : "qrmatik.cloud";

@@ -109,9 +109,40 @@ const routes = [
     component: () => import(/* webpackChunkName: "qr-menu" */ "../views/QrMenuLanding.vue"),
   },
   {
+    path: "/dijital-menu",
+    name: "dijital-menu",
+    component: () => import(/* webpackChunkName: "dijital-menu" */ "../views/DijitalMenuLanding.vue"),
+  },
+  {
+    path: "/qr-siparis",
+    name: "qr-siparis",
+    component: () => import(/* webpackChunkName: "qr-siparis" */ "../views/QrSiparisLanding.vue"),
+  },
+  {
+    path: "/restoran-bar-menu",
+    name: "restoran-bar-menu",
+    component: () => import(/* webpackChunkName: "restoran-bar-menu" */ "../views/RestoranBarMenuLanding.vue"),
+  },
+  {
     path: "/signup/tenant",
     name: "tenant-signup",
     component: () => import(/* webpackChunkName: "tenant-signup" */ "../views/TenantSignup.vue"),
+  },
+  {
+    path: "/blog",
+    name: "blog",
+    component: () => import(/* webpackChunkName: "blog" */ "../views/BlogList.vue"),
+  },
+  {
+    path: "/blog/qr-restoran-nedir",
+    name: "blog-qr-restoran-nedir",
+    component: () => import(/* webpackChunkName: "blog-post" */ "../views/blog/QrRestoranNedir.vue"),
+  },
+  {
+    path: "/blog/dijital-menu-avantajlari",
+    name: "blog-dijital-menu-avantajlari",
+    component: () =>
+      import(/* webpackChunkName: "blog-post" */ "../views/blog/DijitalMenuAvantajlari.vue"),
   },
   {
     path: "/super/tenants",
@@ -356,6 +387,32 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next();
+});
+
+// Post-navigation: set robots meta for marketing vs tenant/admin pages
+router.afterEach((to) => {
+  try {
+    const marketingPaths = new Set([
+      "/",
+      "/about",
+      "/qr-menu",
+      "/dijital-menu",
+      "/qr-siparis",
+      "/restoran-bar-menu",
+      "/signup/tenant",
+    ]);
+    const isMarketing = marketingPaths.has(to.path);
+    const robots = isMarketing ? "index,follow" : "noindex, nofollow";
+    let el = document.querySelector('meta[name="robots"]');
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute("name", "robots");
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", robots);
+  } catch {
+    /* ignore */
+  }
 });
 
 export default router;

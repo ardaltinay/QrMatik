@@ -8,7 +8,7 @@
         <div class="text-sm text-gray-500">{{ catLabel }} · {{ subLabel }}</div>
         <div class="mt-1 truncate text-base font-semibold text-gray-900">{{ item.name }}</div>
       </div>
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-2">
         <div class="font-semibold text-indigo-600">{{ item.price }}₺</div>
         <button
           @click="$emit('add', item)"
@@ -26,6 +26,7 @@
   export default {
     name: "MenuItemCard",
     props: { item: { type: Object, required: true } },
+  emits: ["add"],
     computed: {
       catLabel() {
         return categoryLabel(this.item.category);
@@ -35,5 +36,6 @@
         return subLabelUtil(s);
       },
     },
+    methods: {},
   };
 </script>

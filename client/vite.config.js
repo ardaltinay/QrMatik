@@ -11,7 +11,17 @@ export default defineConfig(({ command }) => ({
       ? [
           prerender({
             staticDir: path.resolve(__dirname, "dist"),
-            routes: ["/", "/about", "/qr-menu"],
+            routes: [
+              "/",
+              "/about",
+              "/qr-menu",
+              "/dijital-menu",
+              "/qr-siparis",
+              "/restoran-bar-menu",
+              "/blog",
+              "/blog/qr-restoran-nedir",
+              "/blog/dijital-menu-avantajlari",
+            ],
           }),
         ]
       : []),

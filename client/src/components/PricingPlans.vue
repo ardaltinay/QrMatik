@@ -1,5 +1,5 @@
 <template>
-  <section class="py-12">
+  <section id="pricing" class="py-12">
     <div class="container mx-auto">
       <h2 class="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">Fiyatlandırma</h2>
       <!-- Yalnızca yıllık faturalama -->

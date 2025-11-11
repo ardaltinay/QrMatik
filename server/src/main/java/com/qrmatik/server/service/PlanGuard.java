@@ -44,9 +44,8 @@ public class PlanGuard {
             return;
         PlanType plan = t.getPlan() == null ? PlanType.FREE : t.getPlan();
         long current = tableRepository.countByTenant_Code(tenantCode);
-        // NOTE: FREE limit temporarily reduced to 1 for testing
         long limit = switch (plan) {
-            case FREE -> 1L;
+            case FREE -> 10L;
             case STANDARD -> 50L;
             case PRO -> Long.MAX_VALUE;
         };

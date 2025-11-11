@@ -392,6 +392,79 @@
       }
 
       onMounted(() => {
+        // Add noindex for tenant-context pages to avoid indexing customer/tenant UIs
+        if (hasTenant.value) {
+          try {
+            useHead({
+              meta: [{ name: "robots", content: "noindex, nofollow" }],
+            });
+          } catch {
+            /* ignore */
+          }
+        }
+        // Global marketing (apex) head tags for homepage when no tenant context is detected
+        if (!hasTenant.value) {
+          const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud";
+          const canonical = baseUrl + "/";
+          const title = "QR Restoran Dijital Menü ve QR Sipariş Sistemi | QrMatik";
+          const description =
+            "QrMatik ile dijital menü (akıllı QR menü), QR sipariş ve restoran karekod sistemi: masa bazlı takip, mutfak & bar panoları, stok kontrolü.";
+          const keywords =
+            "qr restoran, dijital menü, qr menü, restoran bar menü, karekod menü, qr sipariş, akıllı qr menü";
+          useHead({
+            title,
+            meta: [
+              { name: "description", content: description },
+              { name: "keywords", content: keywords },
+              { property: "og:title", content: title },
+              { property: "og:description", content: description },
+              { property: "og:type", content: "website" },
+              { property: "og:url", content: canonical },
+              { property: "og:site_name", content: "QrMatik" },
+              { name: "twitter:card", content: "summary_large_image" },
+              { name: "twitter:title", content: title },
+              { name: "twitter:description", content: description },
+              // Primary image (can be replaced by dynamic CDN later)
+              { property: "og:image", content: baseUrl + "/og-image.svg" },
+              { name: "twitter:image", content: baseUrl + "/og-image.svg" },
+              // Indexing directives
+              { name: "robots", content: "index,follow" },
+              // Language meta (helpful for multi-lingual expansion later)
+              { name: "language", content: "tr" },
+            ],
+            link: [
+              { rel: "canonical", href: canonical },
+              { rel: "alternate", href: canonical, hreflang: "tr" },
+            ],
+            script: [
+              {
+                type: "application/ld+json",
+                children: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "WebApplication",
+                  name: "QrMatik",
+                  applicationCategory: "BusinessApplication",
+                  operatingSystem: "Web",
+                  url: canonical,
+                  description,
+                  keywords,
+                  offers: {
+                    "@type": "Offer",
+                    priceCurrency: "TRY",
+                    price: "249",
+                    category: "STANDARD",
+                    availability: "https://schema.org/InStock",
+                  },
+                  creator: {
+                    "@type": "Organization",
+                    name: "QrMatik",
+                    url: canonical,
+                  },
+                }),
+              },
+            ],
+          });
+        }
         // Apex-only structured data and richer OG
         if (!hasTenant.value) {
           try {

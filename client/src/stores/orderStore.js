@@ -302,13 +302,14 @@ export const useOrderStore = defineStore("order", () => {
 
   // not auto-loading to avoid redundant requests; views call loadMenu lazily when needed
 
-  function addToCart(itemId, note = "") {
+  function addToCart(itemId, note = "", qty = 1) {
+    const amount = Math.max(1, Number(qty) || 1);
     const keyNote = String(note || "").trim();
     const existing = cart.value.find(
       (i) => i.itemId === itemId && String(i.note || "").trim() === keyNote,
     );
-    if (existing) existing.qty++;
-    else cart.value.push({ itemId, qty: 1, note: keyNote || undefined });
+    if (existing) existing.qty += amount;
+    else cart.value.push({ itemId, qty: amount, note: keyNote || undefined });
   }
 
   function removeFromCart(itemId, note = "") {
