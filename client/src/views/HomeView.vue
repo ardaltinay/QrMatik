@@ -404,7 +404,8 @@
         }
         // Global marketing (apex) head tags for homepage when no tenant context is detected
         if (!hasTenant.value) {
-          const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud";
+          const baseUrl =
+            typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud";
           const canonical = baseUrl + "/";
           const title = "QR Restoran Dijital Menü ve QR Sipariş Sistemi | QrMatik";
           const description =

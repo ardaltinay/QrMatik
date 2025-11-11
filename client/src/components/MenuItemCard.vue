@@ -26,7 +26,7 @@
   export default {
     name: "MenuItemCard",
     props: { item: { type: Object, required: true } },
-  emits: ["add"],
+    emits: ["add"],
     computed: {
       catLabel() {
         return categoryLabel(this.item.category);

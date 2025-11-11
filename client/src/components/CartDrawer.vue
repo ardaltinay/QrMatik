@@ -127,8 +127,7 @@
         emit("update:mobileOpen", false);
       }
 
-
-  return { store, menuName, submitOrder, closeMobile, clearCart, keyFor };
+      return { store, menuName, submitOrder, closeMobile, clearCart, keyFor };
     },
   };
 </script>

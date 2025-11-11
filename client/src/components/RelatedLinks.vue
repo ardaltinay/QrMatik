@@ -16,10 +16,10 @@
 </template>
 
 <script>
-export default {
-  name: "RelatedLinks",
-  props: {
-    items: { type: Array, required: true },
-  },
-};
+  export default {
+    name: "RelatedLinks",
+    props: {
+      items: { type: Array, required: true },
+    },
+  };
 </script>

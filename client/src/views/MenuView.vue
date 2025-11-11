@@ -81,30 +81,30 @@
         <div class="mt-1 text-sm text-gray-500">
           İsteğe bağlı: bu ürün için mutfak/bar'a not bırakabilirsiniz.
         </div>
-          <div class="mt-3 flex items-center gap-3">
-            <label class="text-sm text-gray-700">Adet</label>
-            <div class="flex items-center gap-1">
-              <button
-                @click="noteModal.qty = Math.max(1, Number(noteModal.qty || 1) - 1)"
-                class="h-7 w-7 rounded border text-sm text-gray-600 hover:bg-gray-50"
-                :disabled="(noteModal.qty || 1) <= 1"
-              >
-                -
-              </button>
-              <input
-                v-model.number="noteModal.qty"
-                type="number"
-                min="1"
-                class="h-7 w-16 rounded border px-1 text-center text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-              />
-              <button
-                @click="noteModal.qty = Math.min(999, Number(noteModal.qty || 1) + 1)"
-                class="h-7 w-7 rounded border text-sm text-gray-600 hover:bg-gray-50"
-              >
-                +
-              </button>
-            </div>
+        <div class="mt-3 flex items-center gap-3">
+          <label class="text-sm text-gray-700">Adet</label>
+          <div class="flex items-center gap-1">
+            <button
+              @click="noteModal.qty = Math.max(1, Number(noteModal.qty || 1) - 1)"
+              class="h-7 w-7 rounded border text-sm text-gray-600 hover:bg-gray-50"
+              :disabled="(noteModal.qty || 1) <= 1"
+            >
+              -
+            </button>
+            <input
+              v-model.number="noteModal.qty"
+              type="number"
+              min="1"
+              class="h-7 w-16 rounded border px-1 text-center text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+            />
+            <button
+              @click="noteModal.qty = Math.min(999, Number(noteModal.qty || 1) + 1)"
+              class="h-7 w-7 rounded border text-sm text-gray-600 hover:bg-gray-50"
+            >
+              +
+            </button>
           </div>
+        </div>
         <div class="mt-3">
           <textarea
             v-model="noteModal.note"
@@ -175,7 +175,7 @@
       );
 
       // simple modal state for add-to-cart note
-  const noteModal = ref({ open: false, item: null, note: "", qty: 1 });
+      const noteModal = ref({ open: false, item: null, note: "", qty: 1 });
 
       function openAddNote(item) {
         noteModal.value = { open: true, item, note: "", qty: 1 };
@@ -248,7 +248,7 @@
         noteModal,
         openAddNote,
         closeNoteModal,
-  confirmAddWithNote,
+        confirmAddWithNote,
         onRefresh,
       };
     },

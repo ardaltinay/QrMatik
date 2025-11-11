@@ -29,8 +29,16 @@
 
     <div class="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur md:hidden">
       <div class="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
-        <a href="/#demo" class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95">Demo talep et</a>
-        <router-link to="/" class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50">Anasayfa</router-link>
+        <a
+          href="/#demo"
+          class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95"
+          >Demo talep et</a
+        >
+        <router-link
+          to="/"
+          class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+          >Anasayfa</router-link
+        >
       </div>
     </div>
     <div class="h-16 md:hidden"></div>
@@ -38,7 +46,7 @@
       :items="[
         { to: '/dijital-menu', label: 'Dijital menü rehberi', desc: 'Akıllı QR menü detayları' },
         { to: '/restoran-bar-menu', label: 'Bar & mutfak yönetimi', desc: 'Hazırlanıyor → Servis' },
-        { to: '/#pricing', label: 'Planlar ve fiyatlar', desc: 'Fiyatlandırma karşılaştırması' }
+        { to: '/#pricing', label: 'Planlar ve fiyatlar', desc: 'Fiyatlandırma karşılaştırması' },
       ]"
     />
   </div>
@@ -58,7 +66,10 @@
     title,
     meta: [
       { name: "description", content: description },
-      { name: "keywords", content: "qr sipariş, qr restoran sipariş, dijital sipariş, mobil sipariş" },
+      {
+        name: "keywords",
+        content: "qr sipariş, qr restoran sipariş, dijital sipariş, mobil sipariş",
+      },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },

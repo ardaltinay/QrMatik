@@ -203,14 +203,22 @@
 
         <!-- Show bootstrap credentials if backend returned them -->
         <div v-if="done.bootstrap">
-          <div>Admin kullanıcı: <strong>{{ done.bootstrap.username }}</strong></div>
-          <div>Admin parola: <strong class="font-mono">{{ done.bootstrap.password }}</strong></div>
+          <div>
+            Admin kullanıcı: <strong>{{ done.bootstrap.username }}</strong>
+          </div>
+          <div>
+            Admin parola: <strong class="font-mono">{{ done.bootstrap.password }}</strong>
+          </div>
         </div>
 
         <!-- If bootstrap not present, but admin DTO exists show it -->
         <div v-else-if="done.admin">
-          <div>Admin kullanıcı: <strong>{{ done.admin.username }}</strong></div>
-          <div>Admin rol: <strong>{{ done.admin.role }}</strong></div>
+          <div>
+            Admin kullanıcı: <strong>{{ done.admin.username }}</strong>
+          </div>
+          <div>
+            Admin rol: <strong>{{ done.admin.role }}</strong>
+          </div>
         </div>
 
         <!-- Fall back to form-provided admin username -->

@@ -111,7 +111,8 @@ const routes = [
   {
     path: "/dijital-menu",
     name: "dijital-menu",
-    component: () => import(/* webpackChunkName: "dijital-menu" */ "../views/DijitalMenuLanding.vue"),
+    component: () =>
+      import(/* webpackChunkName: "dijital-menu" */ "../views/DijitalMenuLanding.vue"),
   },
   {
     path: "/qr-siparis",
@@ -121,7 +122,8 @@ const routes = [
   {
     path: "/restoran-bar-menu",
     name: "restoran-bar-menu",
-    component: () => import(/* webpackChunkName: "restoran-bar-menu" */ "../views/RestoranBarMenuLanding.vue"),
+    component: () =>
+      import(/* webpackChunkName: "restoran-bar-menu" */ "../views/RestoranBarMenuLanding.vue"),
   },
   {
     path: "/signup/tenant",
@@ -136,7 +138,8 @@ const routes = [
   {
     path: "/blog/qr-restoran-nedir",
     name: "blog-qr-restoran-nedir",
-    component: () => import(/* webpackChunkName: "blog-post" */ "../views/blog/QrRestoranNedir.vue"),
+    component: () =>
+      import(/* webpackChunkName: "blog-post" */ "../views/blog/QrRestoranNedir.vue"),
   },
   {
     path: "/blog/dijital-menu-avantajlari",

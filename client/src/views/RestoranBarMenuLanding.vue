@@ -1,10 +1,12 @@
 <template>
   <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
-      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">Restoran ve Bar Menü Yönetimi</h1>
+      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
+        Restoran ve Bar Menü Yönetimi
+      </h1>
       <p class="text-gray-600">
-        QrMatik ile <strong>restoran bar menüsü</strong>nü dijitalleştirin. QR menü, hızlı fiyat güncelleme,
-        stok kontrolü ve bar/mutfak panoları ile akıcı bir sipariş akışı sağlayın.
+        QrMatik ile <strong>restoran bar menüsü</strong>nü dijitalleştirin. QR menü, hızlı fiyat
+        güncelleme, stok kontrolü ve bar/mutfak panoları ile akıcı bir sipariş akışı sağlayın.
       </p>
     </header>
 
@@ -29,8 +31,16 @@
 
     <div class="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur md:hidden">
       <div class="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
-        <a href="/#demo" class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95">Demo talep et</a>
-        <router-link to="/" class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50">Anasayfa</router-link>
+        <a
+          href="/#demo"
+          class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95"
+          >Demo talep et</a
+        >
+        <router-link
+          to="/"
+          class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+          >Anasayfa</router-link
+        >
       </div>
     </div>
     <div class="h-16 md:hidden"></div>
@@ -38,7 +48,7 @@
       :items="[
         { to: '/dijital-menu', label: 'Dijital menü', desc: 'Stok kontrollü akıllı menü' },
         { to: '/qr-siparis', label: 'QR sipariş', desc: 'Sipariş ve durum takibi' },
-        { to: '/#pricing', label: 'Planlar', desc: 'STANDARD ve PRO farkları' }
+        { to: '/#pricing', label: 'Planlar', desc: 'STANDARD ve PRO farkları' },
       ]"
     />
   </div>

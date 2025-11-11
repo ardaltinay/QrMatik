@@ -1,10 +1,13 @@
 <template>
   <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
-      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">Dijital Menü (Akıllı QR Menü)</h1>
+      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
+        Dijital Menü (Akıllı QR Menü)
+      </h1>
       <p class="text-gray-600">
-        QrMatik ile <strong>dijital menü</strong> ve <strong>akıllı QR menü</strong> altyapısını birkaç adımda kurun.
-        Restoran, kafe ve barlar için hızlı kurulum; canlı sipariş takibi; mutfak & bar panoları.
+        QrMatik ile <strong>dijital menü</strong> ve <strong>akıllı QR menü</strong> altyapısını
+        birkaç adımda kurun. Restoran, kafe ve barlar için hızlı kurulum; canlı sipariş takibi;
+        mutfak & bar panoları.
       </p>
     </header>
 
@@ -36,7 +39,10 @@
         </summary>
         <div class="px-4 pb-4 text-sm leading-6 text-gray-700">
           <ul class="list-disc space-y-1 pl-5">
-            <li><strong>Akıllı QR menü</strong> nedir? — Güncel fiyat ve içerikleri otomatik gösteren, stokla entegre dijital menüdür.</li>
+            <li>
+              <strong>Akıllı QR menü</strong> nedir? — Güncel fiyat ve içerikleri otomatik gösteren,
+              stokla entegre dijital menüdür.
+            </li>
             <li>QR menü çok dilli mi? — Evet, içerikleri istediğiniz dilde sunabilirsiniz.</li>
             <li>Menüye görsel ekleyebilir miyim? — Evet, ürün fotoğrafları desteklenir.</li>
           </ul>
@@ -46,8 +52,16 @@
 
     <div class="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur md:hidden">
       <div class="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
-        <a href="/#demo" class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95">Demo talep et</a>
-        <router-link to="/" class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50">Anasayfa</router-link>
+        <a
+          href="/#demo"
+          class="bg-brand-gradient inline-flex flex-1 items-center justify-center rounded-md px-4 py-2 text-sm text-white shadow hover:opacity-95"
+          >Demo talep et</a
+        >
+        <router-link
+          to="/"
+          class="rounded-md border bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+          >Anasayfa</router-link
+        >
       </div>
     </div>
     <div class="h-16 md:hidden"></div>
@@ -55,7 +69,7 @@
       :items="[
         { to: '/qr-siparis', label: 'QR sipariş akışı', desc: 'Adım adım sipariş durumları' },
         { to: '/restoran-bar-menu', label: 'Bar ve mutfak panoları', desc: 'Operasyon yönetimi' },
-        { to: '/#pricing', label: 'Planlar ve fiyatlar', desc: 'STANDARD ve PRO planlar' }
+        { to: '/#pricing', label: 'Planlar ve fiyatlar', desc: 'STANDARD ve PRO planlar' },
       ]"
     />
   </div>
@@ -75,7 +89,10 @@
     title,
     meta: [
       { name: "description", content: description },
-      { name: "keywords", content: "dijital menü, akıllı qr menü, qr menü, karekod menü, restoran menü" },
+      {
+        name: "keywords",
+        content: "dijital menü, akıllı qr menü, qr menü, karekod menü, restoran menü",
+      },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
@@ -100,8 +117,7 @@
               name: "Dijital menü nedir?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text:
-                  "Dijital menü, telefonla görüntülenen çevrim içi menüdür. QrMatik ile menünüz her zaman güncel ve stokla entegredir.",
+                text: "Dijital menü, telefonla görüntülenen çevrim içi menüdür. QrMatik ile menünüz her zaman güncel ve stokla entegredir.",
               },
             },
             {
@@ -109,8 +125,7 @@
               name: "Akıllı QR menü nasıl çalışır?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text:
-                  "Masaya yerleştirilen QR kodu okutulur; müşteri menüyü görür, sipariş verir ve durumu canlı takip eder.",
+                text: "Masaya yerleştirilen QR kodu okutulur; müşteri menüyü görür, sipariş verir ve durumu canlı takip eder.",
               },
             },
           ],
