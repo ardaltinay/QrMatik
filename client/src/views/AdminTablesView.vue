@@ -118,7 +118,7 @@
         const p = String(plan.value || "FREE").toUpperCase();
         if (p === "PRO") return 999999;
         if (p === "STANDARD") return 50;
-        return 1; // FREE (test için 1'e çekildi)
+        return 10;
       });
       const nearLimitThreshold = computed(() => Math.max(0, tableLimit.value - 2));
       const form = ref({ code: "", description: "", status: "AVAILABLE" });

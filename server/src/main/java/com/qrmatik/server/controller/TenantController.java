@@ -48,4 +48,5 @@ public class TenantController {
             return ResponseEntity.status(402).body(ex.getMessage());
         }
     }
+
 }

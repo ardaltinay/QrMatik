@@ -52,6 +52,11 @@ public class BillingService {
         if (!props.isEnabled()) {
             throw new IllegalStateException("Payments disabled: set iyzico.enabled=true");
         }
+        // Proaktif yapılandırma doğrulaması: production'da boş anahtar hatasını önle
+        if (!StringUtils.hasText(props.getApiKey()) || !StringUtils.hasText(props.getSecretKey())) {
+            throw new IllegalStateException(
+                    "Ödeme yapılandırması eksik: iyzico.apiKey / iyzico.secretKey tanımlı değil.");
+        }
         String planUpper = plan == null ? "" : plan.trim().toUpperCase(Locale.ROOT);
         if (!"STANDARD".equals(planUpper) && !"PRO".equals(planUpper)) {
             throw new IllegalArgumentException("Geçersiz plan: " + plan);
