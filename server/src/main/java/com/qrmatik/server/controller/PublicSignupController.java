@@ -96,7 +96,8 @@ public class PublicSignupController {
         }
 
         Map<String, Object> out = new HashMap<>();
-        // flatten TenantDto fields to top-level for backward compatibility with frontend
+        // flatten TenantDto fields to top-level for backward compatibility with
+        // frontend
         out.put("id", dto.getId());
         out.put("code", dto.getCode());
         out.put("name", dto.getName());
