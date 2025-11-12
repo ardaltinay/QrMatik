@@ -3,8 +3,9 @@ package com.qrmatik.server.service;
 import com.qrmatik.server.config.PricingProperties.Props;
 import com.qrmatik.server.dto.PricingDto;
 import com.qrmatik.server.dto.PricingTierDto;
-import java.util.List;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Central source of truth for pricing used by both public API and billing.

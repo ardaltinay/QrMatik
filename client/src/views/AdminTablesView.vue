@@ -33,6 +33,28 @@
     </div>
 
     <div class="overflow-auto">
+      <!-- Search and Pagination Controls -->
+      <div class="mb-3 flex flex-wrap items-center gap-2">
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Masa kodu veya açıklama ile ara"
+          class="focus:ring-brand-200 w-full max-w-xs rounded border p-2 shadow-sm focus:ring-2"
+        />
+        <div class="ml-auto flex items-center gap-2" v-if="filteredTables.length > pageSize">
+          <button @click="prevPage" :disabled="page === 1" class="rounded border px-2 py-1">
+            Önceki
+          </button>
+          <span class="text-sm">{{ page }} / {{ totalPages }}</span>
+          <button
+            @click="nextPage"
+            :disabled="page === totalPages"
+            class="rounded border px-2 py-1"
+          >
+            Sonraki
+          </button>
+        </div>
+      </div>
       <table class="min-w-full text-sm">
         <thead>
           <tr class="border-b text-left">
@@ -44,7 +66,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="t in tables" :key="t.id" class="border-b">
+          <tr v-for="t in pagedTables" :key="t.id" class="border-b">
             <td class="p-2">
               <input v-if="editId === t.id" v-model="edit.code" class="w-32 rounded border p-1" />
               <span v-else class="font-medium">{{ t.code }}</span>
@@ -104,7 +126,7 @@
 </template>
 
 <script>
-  import { ref, onMounted, computed } from "vue";
+  import { ref, onMounted, computed, watch } from "vue";
   import { fetchJson, apiFetch } from "@/utils/api";
   import BaseSelect from "@/components/BaseSelect.vue";
 
@@ -113,6 +135,40 @@
     components: { BaseSelect },
     setup() {
       const tables = ref([]);
+      // Search and Pagination
+      const search = ref("");
+      const page = ref(1);
+      const pageSize = 50;
+      const filteredTables = computed(() => {
+        const q = search.value.trim().toLowerCase();
+        if (!q) return tables.value;
+        return tables.value.filter(
+          (t) =>
+            String(t.code || "")
+              .toLowerCase()
+              .includes(q) ||
+            String(t.description || "")
+              .toLowerCase()
+              .includes(q),
+        );
+      });
+      const totalPages = computed(() =>
+        Math.max(1, Math.ceil(filteredTables.value.length / pageSize)),
+      );
+      const pagedTables = computed(() => {
+        const start = (page.value - 1) * pageSize;
+        return filteredTables.value.slice(start, start + pageSize);
+      });
+      function nextPage() {
+        if (page.value < totalPages.value) page.value++;
+      }
+      function prevPage() {
+        if (page.value > 1) page.value--;
+      }
+      // Reset page on search change
+      watch(search, () => {
+        page.value = 1;
+      });
       const plan = ref(null);
       const tableLimit = computed(() => {
         const p = String(plan.value || "FREE").toUpperCase();
@@ -233,6 +289,14 @@
         statusOptions,
         tableLimit,
         nearLimitThreshold,
+        search,
+        page,
+        pageSize,
+        filteredTables,
+        pagedTables,
+        totalPages,
+        nextPage,
+        prevPage,
       };
     },
   };

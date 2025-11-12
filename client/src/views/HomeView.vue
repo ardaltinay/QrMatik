@@ -407,7 +407,7 @@
           const baseUrl =
             typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud";
           const canonical = baseUrl + "/";
-          const title = "QR Restoran Dijital Menü ve QR Sipariş Sistemi | QrMatik";
+          const title = "QrMatik - Qr Akıllı Mobil Sipariş";
           const description =
             "QrMatik ile dijital menü (akıllı QR menü), QR sipariş ve restoran karekod sistemi: masa bazlı takip, mutfak & bar panoları, stok kontrolü.";
           const keywords =

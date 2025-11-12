@@ -75,6 +75,50 @@
       </button>
       <router-link class="btn btn-secondary order-2" to="/admin">İptal</router-link>
     </div>
+    <!-- Downgrade Confirmation Modal -->
+    <div
+      v-if="showConfirm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        @click="closeConfirm"
+        aria-hidden="true"
+      ></div>
+      <div class="relative w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-lg">
+        <div class="border-b px-5 py-3">
+          <h3 class="text-base font-semibold">Plan Düşürmeyi Onayla</h3>
+        </div>
+        <div class="space-y-3 px-5 py-4 text-sm text-gray-700">
+          <p>
+            Seçtiğiniz plan mevcut planınızdan daha düşük bir seviyede. Plan düşürme talebi hemen
+            uygulanmaz; <strong>mevcut fatura dönemi sonunda</strong> geçerli olacaktır.
+          </p>
+          <p>
+            Bu işlem sonrasında o döneme kadar mevcut haklarınız devam eder. Dönem bitince yeni plan
+            limitleri uygulanacak.
+          </p>
+          <p class="text-xs text-gray-500">
+            Onaylarsanız talep kaydedilir ve yönetici paneline yönlendirileceksiniz.
+          </p>
+        </div>
+        <div class="flex items-center justify-end gap-2 px-5 py-3">
+          <button class="btn btn-secondary" type="button" :disabled="loading" @click="closeConfirm">
+            Vazgeç
+          </button>
+          <button
+            class="btn btn-primary"
+            type="button"
+            :disabled="loading"
+            @click="confirmDowngrade"
+          >
+            Onayla
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -94,6 +138,7 @@
       const prices = reactive({ standard: "", pro: "" });
       const ui = useUiStore();
       const loading = ref(false);
+      const showConfirm = ref(false);
 
       function selClass(active) {
         return (
@@ -224,6 +269,27 @@
         return planDown;
       }
 
+      function closeConfirm() {
+        showConfirm.value = false;
+      }
+
+      async function confirmDowngrade() {
+        try {
+          loading.value = true;
+          await fetchJson("/api/billing/schedule-downgrade", {
+            method: "POST",
+            body: JSON.stringify({ plan: sel.plan, billingPeriod: sel.billing }),
+          });
+          ui.toastSuccess("Plan düşürme talebi kaydedildi. Dönem sonunda uygulanacak.");
+          showConfirm.value = false;
+          router.push("/admin");
+        } catch (e) {
+          console.debug("downgrade fail", e);
+        } finally {
+          loading.value = false;
+        }
+      }
+
       async function goCheckout() {
         try {
           loading.value = true;
@@ -233,12 +299,9 @@
             return;
           }
           if (isDowngrade(sel.plan)) {
-            await fetchJson("/api/billing/schedule-downgrade", {
-              method: "POST",
-              body: JSON.stringify({ plan: sel.plan, billingPeriod: sel.billing }),
-            });
-            ui.toastSuccess("Plan değişikliği dönem sonunda uygulanacak.");
-            router.push("/admin");
+            // Show confirmation modal instead of immediate request
+            showConfirm.value = true;
+            return;
           } else {
             const res = await fetchJson("/api/billing/checkout/init", {
               method: "POST",
@@ -246,6 +309,7 @@
             });
             try {
               sessionStorage.setItem("qm_checkout_content", res.checkoutFormContent || "");
+              if (res && res.token) sessionStorage.setItem("qm_checkout_token", res.token || "");
             } catch (err) {
               /* ignore */
             }
@@ -260,7 +324,20 @@
       }
       onMounted(loadCurrent);
 
-      return { sel, current, prices, loading, selClass, goCheckout, planLabel, billingLabel };
+      return {
+        sel,
+        current,
+        prices,
+        loading,
+        selClass,
+        goCheckout,
+        planLabel,
+        billingLabel,
+        isDowngrade,
+        showConfirm,
+        closeConfirm,
+        confirmDowngrade,
+      };
     },
   };
 </script>

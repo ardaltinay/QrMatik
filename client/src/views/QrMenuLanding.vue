@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
       <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
-        Dijital QR Menü ve QR Sipariş Sistemi
+        QR Restoran Dijital Menü ve Mobil Sipariş Sistemi
       </h1>
       <p class="text-gray-600">
         QrMatik ile işletmenize <strong>dijital menü</strong>, <strong>QR sipariş</strong> ve
@@ -92,18 +92,18 @@
   import { useHead } from "@unhead/vue";
 
   useHead({
-    title: "Dijital QR Menü ve QR Sipariş | QrMatik",
+    title: "QR Restoran Dijital Menü ve Mobil Sipariş | QrMatik",
     meta: [
       {
         name: "description",
         content:
-          "QrMatik ile dijital menü, QR sipariş ve akıllı QR menü: restoran, kafe ve barlar için karekod menü ve mobil sipariş altyapısı.",
+          "QrMatik ile QR restoran çözümü: dijital QR menü, mobil sipariş ve akıllı QR menü. Restoran, kafe ve barlar için karekod menü altyapısı.",
       },
-      { property: "og:title", content: "Dijital QR Menü ve QR Sipariş | QrMatik" },
+      { property: "og:title", content: "QR Restoran Dijital Menü ve Mobil Sipariş | QrMatik" },
       {
         property: "og:description",
         content:
-          "Restoranlar için dijital menü, QR sipariş ve akıllı QR menü. Karekod restoran menüsü ve canlı sipariş takibi.",
+          "Restoranlar için QR restoran, dijital QR menü ve mobil sipariş. Karekod restoran menüsü ve canlı sipariş takibi.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

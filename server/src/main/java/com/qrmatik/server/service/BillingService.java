@@ -15,6 +15,9 @@ import com.qrmatik.server.config.IyzicoOptionsConfig.IyzicoProperties;
 import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.model.TenantEntity;
 import com.qrmatik.server.repository.TenantRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -24,8 +27,6 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class BillingService {
@@ -35,6 +36,9 @@ public class BillingService {
     private final PricingService pricingService;
     private final TenantRepository tenantRepository;
     private final ZoneId appZoneId;
+    // Simple in-memory cache for checkout snippet by token (short-lived)
+    private final java.util.concurrent.ConcurrentHashMap<String, SnippetEntry> snippetCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final long snippetTtlMillis = 15 * 60 * 1000; // 15 dakika
 
     public BillingService(Options options, IyzicoProperties props, PricingService pricingService,
             TenantRepository tenantRepository, ZoneId appZoneId) {
@@ -46,6 +50,18 @@ public class BillingService {
     }
 
     public static record InitResponse(String token, String checkoutFormContent) {
+    }
+
+    private static class SnippetEntry {
+        final String html;
+        final long ts;
+        SnippetEntry(String html) {
+            this.html = html;
+            this.ts = System.currentTimeMillis();
+        }
+        boolean expired(long ttl) {
+            return System.currentTimeMillis() - ts > ttl;
+        }
     }
 
     public InitResponse initializeHostedCheckout(TenantEntity tenant, String plan, String period, String baseUrl) {
@@ -174,6 +190,22 @@ public class BillingService {
         if (!"success".equalsIgnoreCase(init.getStatus())) {
             throw new IllegalStateException("Ödeme başlatma başarısız: " + init.getErrorMessage());
         }
+        // Cache snippet for direct HTML serving fallback
+        try {
+            String token = init.getToken();
+            String content = init.getCheckoutFormContent();
+            if (token != null && !token.isBlank() && content != null && !content.isBlank()) {
+                snippetCache.put(token, new SnippetEntry(content));
+            }
+            // Opportunistic cleanup
+            if (snippetCache.size() > 100) {
+                snippetCache.forEach((k, v) -> {
+                    if (v.expired(snippetTtlMillis))
+                        snippetCache.remove(k);
+                });
+            }
+        } catch (Throwable __ignored) {
+        }
         return new InitResponse(init.getToken(), init.getCheckoutFormContent());
     }
 
@@ -239,5 +271,18 @@ public class BillingService {
             case STANDARD -> 1;
             case PRO -> 2;
         };
+    }
+
+    public String getCachedSnippet(String token) {
+        if (token == null || token.isBlank())
+            return null;
+        SnippetEntry e = snippetCache.get(token);
+        if (e == null)
+            return null;
+        if (e.expired(snippetTtlMillis)) {
+            snippetCache.remove(token);
+            return null;
+        }
+        return e.html;
     }
 }

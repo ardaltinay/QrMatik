@@ -10,11 +10,12 @@ import com.qrmatik.server.repository.MenuItemRepository;
 import com.qrmatik.server.repository.TableRepository;
 import com.qrmatik.server.repository.TenantRepository;
 import com.qrmatik.server.repository.UserRepository;
-import java.math.BigDecimal;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @Component
 public class DataInitializer implements CommandLineRunner {

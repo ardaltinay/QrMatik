@@ -3,10 +3,11 @@ package com.qrmatik.server.service;
 import com.qrmatik.server.model.UserEntity;
 import com.qrmatik.server.repository.UserRepository;
 import com.qrmatik.server.security.JwtUtil;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthService {

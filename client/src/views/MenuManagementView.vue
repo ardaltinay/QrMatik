@@ -25,11 +25,29 @@
         Ekle
       </button>
     </div>
+    <!-- Search and Pagination Controls -->
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <input
+        v-model="search"
+        type="text"
+        placeholder="Ürün ismi ile ara"
+        class="focus:ring-brand-200 w-full max-w-xs rounded border p-2 shadow-sm focus:ring-2"
+      />
+      <div class="ml-auto flex items-center gap-2" v-if="filteredMenu.length > pageSize">
+        <button @click="prevPage" :disabled="page === 1" class="rounded border px-2 py-1">
+          Önceki
+        </button>
+        <span class="text-sm">{{ page }} / {{ totalPages }}</span>
+        <button @click="nextPage" :disabled="page === totalPages" class="rounded border px-2 py-1">
+          Sonraki
+        </button>
+      </div>
+    </div>
     <div class="mb-3 text-sm text-amber-600" v-if="statuses._new">{{ statuses._new }}</div>
 
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       <div
-        v-for="it in store.menu"
+        v-for="it in pagedMenu"
         :key="it.id"
         class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-white p-3 shadow-sm"
       >
@@ -127,7 +145,7 @@
 </template>
 
 <script>
-  import { ref, reactive, onMounted, computed } from "vue";
+  import { ref, reactive, onMounted, computed, watch } from "vue";
   import { useOrderStore } from "@/stores/orderStore";
   import { apiFetch, fetchJson } from "@/utils/api";
   import { primaryLabel } from "@/utils/format";
@@ -146,6 +164,36 @@
       const editing = reactive({});
       const drafts = reactive({});
       const confirm = reactive({ open: false, id: null, name: "" });
+      // Search and Pagination
+      const search = ref("");
+      const page = ref(1);
+      const pageSize = 50;
+      const filteredMenu = computed(() => {
+        const q = search.value.trim().toLowerCase();
+        if (!q) return store.menu;
+        return store.menu.filter((it) =>
+          String(it.name || "")
+            .toLowerCase()
+            .includes(q),
+        );
+      });
+      const totalPages = computed(() =>
+        Math.max(1, Math.ceil(filteredMenu.value.length / pageSize)),
+      );
+      const pagedMenu = computed(() => {
+        const start = (page.value - 1) * pageSize;
+        return filteredMenu.value.slice(start, start + pageSize);
+      });
+      function nextPage() {
+        if (page.value < totalPages.value) page.value++;
+      }
+      function prevPage() {
+        if (page.value > 1) page.value--;
+      }
+      // Reset page on search change
+      watch(search, () => {
+        page.value = 1;
+      });
 
       onMounted(async () => {
         if (!store.menuLoaded) {
@@ -435,6 +483,14 @@
         askRemove,
         cancelRemoveConfirm,
         confirmRemove,
+        search,
+        page,
+        pageSize,
+        filteredMenu,
+        pagedMenu,
+        totalPages,
+        nextPage,
+        prevPage,
       };
     },
   };

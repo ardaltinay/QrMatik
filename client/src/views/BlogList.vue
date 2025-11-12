@@ -58,6 +58,13 @@
       excerpt:
         "Dijital menü (akıllı QR menü) ile güncel içerik, stok entegrasyonu ve hızlı servis: restoranlar için başlıca faydalar.",
     },
+    {
+      slug: "mobil-siparis-sistemi-nedir",
+      title: "Mobil Sipariş Sistemi Nedir?",
+      date: "2025-11-12",
+      excerpt:
+        "Mobil sipariş ve QR dijital menü ile masadan kalkmadan sipariş; canlı takip ve mutfak/bar panoları ile hızlı servis.",
+    },
   ]);
 
   function formatDate(d) {

@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
       <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
-        Dijital Menü (Akıllı QR Menü)
+        QR Dijital Menü (Akıllı QR Menü) ve Mobil Sipariş
       </h1>
       <p class="text-gray-600">
         QrMatik ile <strong>dijital menü</strong> ve <strong>akıllı QR menü</strong> altyapısını
@@ -79,9 +79,9 @@
   import { useHead } from "@unhead/vue";
   import RelatedLinks from "@/components/RelatedLinks.vue";
 
-  const title = "Dijital Menü (Akıllı QR Menü) | QrMatik";
+  const title = "QR Dijital Menü ve Mobil Sipariş | QrMatik";
   const description =
-    "QrMatik ile dijital menü ve akıllı QR menü: her zaman güncel menü, stok kontrolü, QR sipariş ve mutfak/bar panoları.";
+    "QrMatik ile QR dijital menü ve mobil sipariş: her zaman güncel akıllı QR menü, stok kontrolü ve mutfak/bar panoları.";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://qrmatik.cloud";
   const canonical = baseUrl + "/dijital-menu";
 

@@ -28,6 +28,28 @@
             Yenile
           </button>
         </div>
+        <!-- Search and Pagination Controls -->
+        <div class="mt-3 flex w-full flex-wrap items-center gap-2">
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Ürün ismi ile ara"
+            class="focus:ring-brand-200 w-full max-w-xs rounded border p-2 shadow-sm focus:ring-2"
+          />
+          <div class="ml-auto flex items-center gap-2" v-if="filteredItems.length > pageSize">
+            <button @click="prevPage" :disabled="page === 1" class="rounded border px-2 py-1">
+              Önceki
+            </button>
+            <span class="text-sm">{{ page }} / {{ totalPages }}</span>
+            <button
+              @click="nextPage"
+              :disabled="page === totalPages"
+              class="rounded border px-2 py-1"
+            >
+              Sonraki
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Desktop/tablet: tablo -->
@@ -59,7 +81,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 bg-white">
-            <tr v-for="it in items" :key="it.id" class="hover:bg-gray-50">
+            <tr v-for="it in pagedItems" :key="it.id" class="hover:bg-gray-50">
               <td class="px-3 py-2">
                 <div class="flex items-center gap-3">
                   <img
@@ -101,7 +123,7 @@
 
       <!-- Mobil: kart listesi -->
       <div class="space-y-3 md:hidden">
-        <div v-for="it in items" :key="it.id" class="rounded-lg border bg-white p-3 shadow-sm">
+        <div v-for="it in pagedItems" :key="it.id" class="rounded-lg border bg-white p-3 shadow-sm">
           <div class="flex items-center gap-3">
             <img v-if="it.image" :src="it.image" class="h-12 w-12 rounded object-cover" alt="" />
             <div>
@@ -141,7 +163,7 @@
 </template>
 
 <script>
-  import { ref, onMounted, computed } from "vue";
+  import { ref, onMounted, computed, watch } from "vue";
   import { fetchJson } from "@/utils/api";
   import { useUiStore } from "@/stores/uiStore";
   import { useRouter } from "vue-router";
@@ -154,6 +176,36 @@
       const saving = ref({});
       const ui = useUiStore();
       const router = useRouter();
+      // Search and Pagination
+      const search = ref("");
+      const page = ref(1);
+      const pageSize = 50;
+      const filteredItems = computed(() => {
+        const q = search.value.trim().toLowerCase();
+        if (!q) return items.value;
+        return items.value.filter((it) =>
+          String(it.name || "")
+            .toLowerCase()
+            .includes(q),
+        );
+      });
+      const totalPages = computed(() =>
+        Math.max(1, Math.ceil(filteredItems.value.length / pageSize)),
+      );
+      const pagedItems = computed(() => {
+        const start = (page.value - 1) * pageSize;
+        return filteredItems.value.slice(start, start + pageSize);
+      });
+      function nextPage() {
+        if (page.value < totalPages.value) page.value++;
+      }
+      function prevPage() {
+        if (page.value > 1) page.value--;
+      }
+      // Reset page on search change
+      watch(search, () => {
+        page.value = 1;
+      });
 
       const isPro = computed(() => {
         try {
@@ -220,7 +272,23 @@
 
       onMounted(load);
 
-      return { items, loading, saving, isPro, load, queueSave, goUpgrade };
+      return {
+        items,
+        loading,
+        saving,
+        isPro,
+        load,
+        queueSave,
+        goUpgrade,
+        search,
+        page,
+        pageSize,
+        filteredItems,
+        pagedItems,
+        totalPages,
+        nextPage,
+        prevPage,
+      };
     },
   };
 </script>

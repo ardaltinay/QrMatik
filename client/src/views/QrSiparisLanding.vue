@@ -1,7 +1,9 @@
 <template>
   <div class="mx-auto max-w-4xl px-6 py-12">
     <header class="mb-8">
-      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">QR Sipariş Sistemi</h1>
+      <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
+        Mobil Sipariş ve QR Sipariş Sistemi
+      </h1>
       <p class="text-gray-600">
         QrMatik ile <strong>QR sipariş</strong>: Müşteriler masadan kalkmadan sipariş verir, durumu
         canlı takip eder. Mutfak ve bar panoları ile hatasız akış.

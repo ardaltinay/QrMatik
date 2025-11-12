@@ -256,7 +256,7 @@
 
   // Global head defaults + tenant/admin-specific robots
   useHead(() => ({
-    title: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim",
+    title: hasTenant.value ? "Mobil Sipariş" : "QrMatik - Qr Akıllı Mobil Sipariş",
     meta: [
       {
         name: "description",
@@ -269,7 +269,7 @@
         : { name: "robots", content: "index,follow" },
       {
         property: "og:title",
-        content: hasTenant.value ? "Mobil Sipariş" : "QrMatik — Mobil Sipariş ve Yönetim",
+        content: hasTenant.value ? "Mobil Sipariş" : "QrMatik - Qr Akıllı Mobil Sipariş",
       },
       {
         property: "og:description",
@@ -297,6 +297,38 @@
       { rel: "alternate", hreflang: "tr", href: canonical.value },
       { rel: "alternate", hreflang: "x-default", href: canonical.value },
     ],
+    script: hasTenant.value
+      ? []
+      : [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "QrMatik",
+              url: "https://qrmatik.cloud/",
+              logo: "https://qrmatik.cloud/favicon.svg",
+              sameAs: [],
+            }),
+          },
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "QrMatik",
+              url: "https://qrmatik.cloud/",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: "https://qrmatik.cloud/?q={search_term_string}",
+                },
+                queryInput: "required name=search_term_string",
+              },
+            }),
+          },
+        ],
   }));
 </script>
 
