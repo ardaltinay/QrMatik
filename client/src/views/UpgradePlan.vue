@@ -52,26 +52,12 @@
 
     <div class="flex items-center justify-center gap-3 md:justify-start">
       <button
-        @click="goCheckout"
+        @click="goManualRequest"
         :disabled="loading"
         class="btn btn-primary order-1 gap-2 disabled:opacity-50"
       >
-        <span v-if="!loading">Ödemeye Git</span>
+        <span v-if="!loading">Ödeme Talebi Oluştur</span>
         <span v-else>Hazırlanıyor…</span>
-        <svg
-          v-if="!loading"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 opacity-90"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
       </button>
       <router-link class="btn btn-secondary order-2" to="/admin">İptal</router-link>
     </div>
@@ -290,7 +276,7 @@
         }
       }
 
-      async function goCheckout() {
+      async function goManualRequest() {
         try {
           loading.value = true;
           // Aynı plan için ödeme başlatmayı engelle (erken geri bildirim)
@@ -302,31 +288,24 @@
             // Show confirmation modal instead of immediate request
             showConfirm.value = true;
             return;
-          } else {
+          }
+
+          // Ask backend for the contact email (backend returns {paymentDisabled:true, contactEmail})
+          let mail = "support@qrmatik.cloud";
+          try {
             const res = await fetchJson("/api/billing/checkout/init", {
               method: "POST",
               body: JSON.stringify({ plan: sel.plan, billingPeriod: sel.billing }),
             });
-            try {
-              // If payments are disabled server-side, the API will return
-              // { paymentDisabled: true, contactEmail: ... }
-              if (res && res.paymentDisabled) {
-                const mail = res.contactEmail || "support@qrmatik.cloud";
-                ui.toast("Online ödeme devre dışı. Ödeme talebi için: " + mail, "info");
-                router.push({ path: "/billing/manual", query: { email: mail } });
-                return;
-              }
-
-              sessionStorage.setItem("qm_checkout_content", res.checkoutFormContent || "");
-              if (res && res.token) sessionStorage.setItem("qm_checkout_token", res.token || "");
-            } catch (err) {
-              /* ignore */
-            }
-            router.push("/billing/checkout");
+            if (res && res.contactEmail) mail = res.contactEmail;
+          } catch (err) {
+            // ignore — we'll use fallback email
           }
+
+          ui.toastSuccess("Ödeme talebine yönlendiriliyorsunuz. E-posta: " + mail);
+          router.push({ path: "/billing/manual", query: { email: mail } });
         } catch (e) {
-          // toast already shown by fetchJson
-          console.debug("init fail", e);
+          console.debug("manual request fail", e);
         } finally {
           loading.value = false;
         }
@@ -339,7 +318,7 @@
         prices,
         loading,
         selClass,
-        goCheckout,
+        goManualRequest,
         planLabel,
         billingLabel,
         isDowngrade,

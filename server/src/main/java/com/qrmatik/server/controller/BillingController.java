@@ -1,13 +1,12 @@
 package com.qrmatik.server.controller;
 
-import com.qrmatik.server.dto.CheckoutInitRequest;
 import com.qrmatik.server.dto.SchedulePlanChangeRequest;
 import com.qrmatik.server.model.PlanType;
 import com.qrmatik.server.repository.TenantRepository;
-import com.qrmatik.server.service.BillingService;
 import com.qrmatik.server.service.TenantContext;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,65 +14,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 public class BillingController {
 
-    private final BillingService billingService;
     private final TenantRepository tenantRepository;
 
-    @Value("${iyzico.enabled:true}")
-    private boolean iyzicoEnabled;
-
-    @Value("${payments.contactEmail:support@qrmatik.cloud}")
+    @Value("${payments.contactEmail:qrmatik.cloud@gmail.com}")
     private String paymentsContactEmail;
 
-    public BillingController(BillingService billingService, TenantRepository tenantRepository) {
-        this.billingService = billingService;
+    public BillingController(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
     }
 
     @PostMapping("/api/billing/checkout/init")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> initializeCheckout(@Valid @RequestBody CheckoutInitRequest req, HttpServletRequest http) {
-        String tenantCode = TenantContext.getTenant();
-        if (tenantCode == null || tenantCode.isBlank()) {
-            return ResponseEntity.badRequest().body("Tenant bulunamadı");
-        }
-        var tOpt = tenantRepository.findByCode(tenantCode);
-        if (tOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Tenant bulunamadı");
-        }
-        String scheme = http.getHeader("X-Forwarded-Proto");
-        if (scheme == null || scheme.isBlank())
-            scheme = http.getScheme();
-        String host = http.getHeader("X-Forwarded-Host");
-        if (host == null || host.isBlank())
-            host = http.getServerName()
-                    + (http.getServerPort() != 80 && http.getServerPort() != 443 ? (":" + http.getServerPort()) : "");
-        String baseUrl = scheme + "://" + host;
-
-        // If iyzico payments are disabled in configuration, return a friendly
-        // payload that tells the frontend to fall back to manual/email payment.
-        if (!iyzicoEnabled) {
-            return ResponseEntity.ok(Map.of("paymentDisabled", true, "contactEmail", paymentsContactEmail));
-        }
-
-        try {
-            var init = billingService.initializeHostedCheckout(tOpt.get(), req.getPlan(), req.getBillingPeriod(),
-                    baseUrl);
-            return ResponseEntity.ok().body(new HashMap<String, Object>() {
-                {
-                    put("token", init.token());
-                    put("checkoutFormContent", init.checkoutFormContent());
-                }
-            });
-        } catch (IllegalArgumentException | IllegalStateException ex) {
-            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
-        }
+    public ResponseEntity<?> initializeCheckout() {
+        // Hosted checkout removed — instruct frontend to use manual flow.
+        return ResponseEntity.ok(Map.of("paymentDisabled", true, "contactEmail", paymentsContactEmail));
     }
 
     @PostMapping("/api/billing/schedule-downgrade")

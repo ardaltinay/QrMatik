@@ -1,5 +1,8 @@
 package com.qrmatik.server.config;
 
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,10 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Configuration
 @EnableScheduling
@@ -32,12 +31,6 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // 1) Callback first: make sure the specific rule wins over generic /api/**
-                // mapping
-                registry.addMapping("/api/public/iyzico/callback").allowedMethods("GET", "POST", "OPTIONS")
-                        .allowedHeaders("*").allowedOriginPatterns("*").allowCredentials(false);
-
-                // 2) General CORS for application APIs (frontend <-> backend)
                 var mapping = registry.addMapping("/api/**").allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*").allowCredentials(true);
 

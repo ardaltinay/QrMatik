@@ -169,8 +169,8 @@ const routes = [
   {
     path: "/billing/checkout",
     name: "billing-checkout",
-    component: () =>
-      import(/* webpackChunkName: "billing-checkout" */ "../views/BillingCheckout.vue"),
+    // Integration removed: redirect checkout route to manual payment view
+    redirect: "/billing/manual",
   },
   {
     path: "/billing/manual",
