@@ -196,6 +196,12 @@
         () => auth.user && String(auth.user.role).toLowerCase() === "superadmin",
       );
       function detectTenantFromLocation() {
+        // Guard for SSR/prerender where `window` is not defined
+        try {
+          if (typeof window === "undefined") return null;
+        } catch {
+          return null;
+        }
         try {
           const params = new URLSearchParams(window.location.search);
           const q = params.get("tenant") || params.get("t") || params.get("code");

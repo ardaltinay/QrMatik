@@ -308,6 +308,15 @@
               body: JSON.stringify({ plan: sel.plan, billingPeriod: sel.billing }),
             });
             try {
+              // If payments are disabled server-side, the API will return
+              // { paymentDisabled: true, contactEmail: ... }
+              if (res && res.paymentDisabled) {
+                const mail = res.contactEmail || "support@qrmatik.cloud";
+                ui.toast("Online ödeme devre dışı. Ödeme talebi için: " + mail, "info");
+                router.push({ path: "/billing/manual", query: { email: mail } });
+                return;
+              }
+
               sessionStorage.setItem("qm_checkout_content", res.checkoutFormContent || "");
               if (res && res.token) sessionStorage.setItem("qm_checkout_token", res.token || "");
             } catch (err) {

@@ -155,7 +155,10 @@
     () => auth.user && String(auth.user.role).toLowerCase() === "superadmin",
   );
   const route = useRoute();
+  const isBrowser = typeof window !== "undefined";
+
   const hasTenant = computed(() => {
+    if (!isBrowser) return false;
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get("tenant") || params.get("t") || params.get("code")) return true;
@@ -178,6 +181,7 @@
   });
 
   const apexHome = computed(() => {
+    if (!isBrowser) return "/";
     try {
       const loc = window.location;
       const hostname = loc.hostname || "";

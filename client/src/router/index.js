@@ -172,6 +172,11 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "billing-checkout" */ "../views/BillingCheckout.vue"),
   },
+  {
+    path: "/billing/manual",
+    name: "billing-manual",
+    component: () => import(/* webpackChunkName: "billing-manual" */ "../views/ManualPayment.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -181,6 +186,15 @@ const router = createRouter({
 
 // navigation guard using auth store (lazy import to avoid circular deps)
 router.beforeEach(async (to, from, next) => {
+  // If we're running in a prerender/SSR environment, skip navigation guards that rely on
+  // browser globals (window/localStorage/sessionStorage) to avoid runtime errors.
+  try {
+    if (typeof window === "undefined") return next();
+  } catch {
+    // If typeof throws for any reason, be conservative and skip guards
+    return next();
+  }
+
   // Tenant validation: ensure tenant exists for customer-facing routes on every navigation
   try {
     // Skip tenant check for super admin routes
@@ -394,6 +408,12 @@ router.beforeEach(async (to, from, next) => {
 
 // Post-navigation: set robots meta for marketing vs tenant/admin pages
 router.afterEach((to) => {
+  // Only manipulate the DOM when running in a browser environment
+  try {
+    if (typeof document === "undefined") return;
+  } catch {
+    return;
+  }
   try {
     const marketingPaths = new Set([
       "/",

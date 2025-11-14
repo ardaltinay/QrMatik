@@ -20,29 +20,25 @@
 <script>
   import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import { useAuthStore } from "@/stores/authStore";
 
   export default {
     name: "BillingCheckout",
     setup() {
       const router = useRouter();
       const token = ref("");
-        const auth = useAuthStore();
-        // Tenant context: try to extract from subdomain or localStorage
-        function getTenantCode() {
-          try {
-            // Prefer subdomain
-            const host = window.location.hostname;
-            const parts = host.split(".");
-            if (parts.length > 2) return parts[0];
-            // Fallback: localStorage
-            const raw = localStorage.getItem("qm_tenant");
-            if (raw) return raw;
-          } catch(e) {
-            /* noop */
-          }
-          return null;
+
+      function getTenantCode() {
+        try {
+          const host = window.location.hostname;
+          const parts = host.split(".");
+          if (parts.length > 2) return parts[0];
+          const raw = localStorage.getItem("qm_tenant");
+          if (raw) return raw;
+        } catch (e) {
+          /* noop */
         }
+        return null;
+      }
 
       function goBackToUpgrade() {
         try {
@@ -57,7 +53,7 @@
         try {
           const m = String(html || "").match(/token=([A-Za-z0-9_-]{16,})/);
           return m && m[1] ? m[1] : null;
-        } catch {
+        } catch (e) {
           return null;
         }
       }
@@ -68,117 +64,166 @@
           token.value;
         if (!t) return null;
         const tenant = getTenantCode();
-        // detect dev (vite) environment: localhost or dev port 5173
-        const host = window.location.hostname || "";
-        const port = window.location.port || "";
-        const isDev = host.includes("localhost") || host === "127.0.0.1" || port === "5173";
-        if (!isDev && tenant) {
-          // In production prefer path-style tenant so anonymous navigation resolves tenant server-side
-          return "/r/" + encodeURIComponent(tenant) + "/api/public/checkout/html?token=" + encodeURIComponent(t);
-        }
-        // In dev (vite) proxy we must keep the /api path so the dev server forwards to backend
-        return "/api/public/checkout/html?token=" + encodeURIComponent(t);
+        let url = "/api/public/checkout/html?token=" + encodeURIComponent(t);
+        if (tenant) url += "&tenant=" + encodeURIComponent(tenant);
+        return url;
       }
 
-      function openSameTab() {
+      async function openSameTab() {
         const url = resolveUrl();
         if (!url) return goBackToUpgrade();
-        // Build headers
+        // Prefer direct navigation to the backend URL. This lets the browser
+        // load the page normally and avoids document.write/blob/data URL issues
+        // that often fail on mobile webviews.
+        try {
+          window.location.href = url;
+          return;
+        } catch (e) {
+          // if direct navigation fails for any reason, fall back to the
+          // fetch+blob approach below
+        }
+
         const headers = { Accept: "text/html" };
-        if (auth.token) headers["Authorization"] = "Bearer " + auth.token;
         const tenantCode = getTenantCode();
         if (tenantCode) headers["X-Tenant"] = tenantCode;
 
-        fetch(url, { headers })
-          .then(res => res.text())
-          .then(html => {
-            // Preferred: replace current document with fetched HTML
-            try {
-              document.open();
-              document.write(html);
-              document.close();
-              return;
-            } catch (writeErr) {
-              console.debug("document.write failed for same-tab open", writeErr);
-            }
+        try {
+          const res = await fetch(url, { headers });
+          const buf = await res.arrayBuffer();
+          const decoder = new TextDecoder("utf-8");
+          const html = decoder.decode(buf);
 
-            // Fallback: navigate to a Blob URL in the same tab
+          try {
+            document.open();
+            document.write(html);
+            document.close();
+            return;
+          } catch (writeErr) {
+            console.debug("document.write failed for same-tab open", writeErr, {
+              len: html ? html.length : 0,
+              preview: html ? html.slice(0, 200) : null,
+            });
+          }
+
+          // blob fallback
+          try {
+            const blob = new Blob([buf], { type: "text/html; charset=utf-8" });
+            const blobUrl = URL.createObjectURL(blob);
             try {
-              const blob = new Blob([html], { type: "text/html" });
-              const blobUrl = URL.createObjectURL(blob);
+              window.location.href = blobUrl;
+            } catch (navErr) {
+              console.debug(
+                "navigating to blob URL failed, falling back to base64/data URL",
+                navErr,
+              );
               try {
-                window.location.href = blobUrl;
-              } catch (navErr) {
-                console.debug("navigating to blob URL failed, falling back to data URL", navErr);
+                const base64 = btoa(unescape(encodeURIComponent(html)));
+                window.location.href = "data:text/html;charset=utf-8;base64," + base64;
+              } catch (b64err) {
                 window.location.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
               }
-              // Revoke after a short timeout to allow navigation to start
-              setTimeout(() => {
-                try { URL.revokeObjectURL(blobUrl); } catch (e) { /* ignore */ }
-              }, 5000);
-            } catch (e) {
-              // Final fallback: navigate to the original backend URL
-              try { window.location.href = url; } catch (e2) { /* ignore */ }
             }
-          })
-          .catch(() => {
-            try { window.location.href = url; } catch (e) { /* ignore */ }
-          });
+            setTimeout(() => {
+              try {
+                URL.revokeObjectURL(blobUrl);
+              } catch (e) {
+                /* ignore */
+              }
+            }, 5000);
+            return;
+          } catch (e) {
+            try {
+              window.location.href = url;
+            } catch (e2) {
+              /* ignore */
+            }
+          }
+        } catch (e) {
+          try {
+            window.location.href = url;
+          } catch (e2) {
+            /* ignore */
+          }
+        }
       }
 
-      function openNewTab() {
+      async function openNewTab() {
         const url = resolveUrl();
         if (!url) return goBackToUpgrade();
-        // Build headers
         const headers = { Accept: "text/html" };
-        if (auth.token) headers["Authorization"] = "Bearer " + auth.token;
         const tenantCode = getTenantCode();
         if (tenantCode) headers["X-Tenant"] = tenantCode;
 
-        fetch(url, { headers })
-          .then(res => res.text())
-          .then(html => {
-            const w = window.open();
-            if (w) {
-              // Preferred: write directly into the new window's document.
-              try {
-                w.document.open();
-                w.document.write(html);
-                w.document.close();
-                return;
-              } catch (writeErr) {
-                // If direct document.write fails (some browsers/security), try blob/data URL fallback
-                console.debug("direct write to new window failed", writeErr);
-              }
+        try {
+          const res = await fetch(url, { headers });
+          const buf = await res.arrayBuffer();
+          const decoder = new TextDecoder("utf-8");
+          const html = decoder.decode(buf);
 
+          // Try opening a new tab to the backend URL directly. If this succeeds
+          // the browser will load the page natively which avoids injection
+          // problems on mobile. If the popup is blocked (w == null) we'll
+          // fall back to the fetch+blob approach below.
+          const w = window.open(url);
+          if (w) return;
+
+          try {
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
+            return;
+          } catch (writeErr) {
+            console.debug("direct write to new window failed", writeErr, {
+              len: html ? html.length : 0,
+              preview: html ? html.slice(0, 200) : null,
+            });
+          }
+
+          try {
+            const blob = new Blob([buf], { type: "text/html; charset=utf-8" });
+            const blobUrl = URL.createObjectURL(blob);
+            try {
+              w.location.href = blobUrl;
+            } catch (navErr) {
+              console.debug("navigating new window to blob URL failed", navErr);
               try {
-                const blob = new Blob([html], { type: "text/html" });
-                const blobUrl = URL.createObjectURL(blob);
-                try {
-                  w.location.href = blobUrl;
-                } catch (navErr) {
-                  // If setting location fails, try data URL
-                  console.debug("navigating new window to blob URL failed", navErr);
-                  w.location.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
-                }
-                // Revoke after a short timeout; ensure navigation had time to start.
-                setTimeout(() => {
-                  try { URL.revokeObjectURL(blobUrl); } catch (e) { /* ignore */ }
-                }, 5000);
+                const base64 = btoa(unescape(encodeURIComponent(html)));
+                w.location.href = "data:text/html;charset=utf-8;base64," + base64;
+              } catch (b64err) {
+                w.location.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
+              }
+            }
+            setTimeout(() => {
+              try {
+                URL.revokeObjectURL(blobUrl);
               } catch (e) {
-                // If blob creation fails, try writing via data URL as last resort
+                /* ignore */
+              }
+            }, 5000);
+            return;
+          } catch (e) {
+            try {
+              const base64 = btoa(unescape(encodeURIComponent(html)));
+              w.location.href = "data:text/html;charset=utf-8;base64," + base64;
+            } catch (b64err) {
+              try {
+                w.location.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
+              } catch (e2) {
                 try {
-                  w.location.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
-                } catch (e2) {
-                  try { w.close(); } catch (e3) { /* ignore */ }
+                  w.close();
+                } catch (e3) {
+                  /* ignore */
                 }
               }
-            } else {
-              // Popup blocked — navigate current tab
-              window.location.href = url;
             }
-          })
-          .catch(() => { window.location.href = url; });
+          }
+        } catch (e) {
+          try {
+            window.location.href = url;
+          } catch (e2) {
+            /* ignore */
+          }
+        }
       }
 
       onMounted(() => {

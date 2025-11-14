@@ -43,6 +43,10 @@ public class SecurityConfig {
                 // Allow CORS preflight requests universally
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/files/**", "/api/auth/**", "/api/tenant/config", "/api/public/**").permitAll()
+                // Explicitly permit the public checkout HTML endpoint (GET) to avoid any
+                // pattern-matching surprises in complex matcher setups or additional
+                // security filters that may treat certain anonymous GETs specially.
+                .requestMatchers(HttpMethod.GET, "/api/public/checkout/html").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 // Stok API sadece admin (PRO kontrolu controller icinde ayrica yapiliyor)
                 .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")

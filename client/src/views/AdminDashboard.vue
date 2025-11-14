@@ -194,6 +194,7 @@
       const isAdmin = computed(() => auth.user && auth.user.role === "admin");
       const isPaidPlan = computed(() => {
         try {
+          if (typeof window === "undefined") return false;
           const raw = localStorage.getItem("qm_tenant_cfg");
           if (!raw) return false;
           const cfg = JSON.parse(raw);
@@ -205,6 +206,7 @@
       });
       const isProPlan = computed(() => {
         try {
+          if (typeof window === "undefined") return false;
           const raw = localStorage.getItem("qm_tenant_cfg");
           if (!raw) return false;
           const cfg = JSON.parse(raw);

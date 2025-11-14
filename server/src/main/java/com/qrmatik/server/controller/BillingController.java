@@ -8,6 +8,7 @@ import com.qrmatik.server.service.BillingService;
 import com.qrmatik.server.service.TenantContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,12 @@ public class BillingController {
 
     private final BillingService billingService;
     private final TenantRepository tenantRepository;
+
+    @Value("${iyzico.enabled:true}")
+    private boolean iyzicoEnabled;
+
+    @Value("${payments.contactEmail:support@qrmatik.cloud}")
+    private String paymentsContactEmail;
 
     public BillingController(BillingService billingService, TenantRepository tenantRepository) {
         this.billingService = billingService;
@@ -48,6 +55,12 @@ public class BillingController {
             host = http.getServerName()
                     + (http.getServerPort() != 80 && http.getServerPort() != 443 ? (":" + http.getServerPort()) : "");
         String baseUrl = scheme + "://" + host;
+
+        // If iyzico payments are disabled in configuration, return a friendly
+        // payload that tells the frontend to fall back to manual/email payment.
+        if (!iyzicoEnabled) {
+            return ResponseEntity.ok(Map.of("paymentDisabled", true, "contactEmail", paymentsContactEmail));
+        }
 
         try {
             var init = billingService.initializeHostedCheckout(tOpt.get(), req.getPlan(), req.getBillingPeriod(),
