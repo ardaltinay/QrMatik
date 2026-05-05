@@ -54,7 +54,7 @@
               <span class="text-5xl font-black transition-all duration-300" :class="plan.popular ? 'text-white' : 'text-slate-900'">
                 {{ billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly }}
               </span>
-              <span v-if="plan.nameKey !== 'Ücretsiz' && plan.nameKey !== 'landing.pricing.freeName'" 
+              <span v-if="plan.nameKey !== 'landing.pricing.freeName'" 
                 class="text-sm font-bold uppercase tracking-widest transition-colors" 
                 :class="plan.popular ? 'text-slate-500' : 'text-slate-300'">
                 / {{ billingCycle === 'yearly' ? $t('common.year') : $t('common.month') }}
@@ -102,15 +102,57 @@ async function loadPricing() {
       const symbol = isUSD ? '$' : (data.currency === 'TRY' ? '₺' : data.currency)
       const locale = isUSD ? 'en-US' : 'tr-TR'
       
-      plans.value = data.tiers.map((tier: any) => ({
-        nameKey: tier.name,
-        descKey: '',
-        priceMonthly: symbol + tier.monthly.toLocaleString(locale, { minimumFractionDigits: 2 }),
-        priceYearly: symbol + (tier.yearly || (tier.monthly * 10)).toLocaleString(locale, { minimumFractionDigits: 2 }),
-        popular: tier.name === 'Standart',
-        featureKeys: tier.features,
-        isDynamic: true
-      }))
+      plans.value = data.tiers.map((tier: any) => {
+        const name = tier.name.toLowerCase();
+        let featureKeys: string[] = [];
+        let descKey = '';
+        let nameKey = '';
+
+        if (name === 'ücretsiz' || name === 'free') {
+          nameKey = 'landing.pricing.freeName';
+          descKey = 'landing.pricing.freeDesc';
+          featureKeys = [
+            'landing.pricing.features.tables20',
+            'landing.pricing.features.products100',
+            'landing.pricing.features.qrMenuBasic',
+            'landing.pricing.features.kitchenBarBoards'
+          ];
+        } else if (name === 'standart' || name === 'standard') {
+          nameKey = 'landing.pricing.standardName';
+          descKey = 'landing.pricing.standardDesc';
+          featureKeys = [
+            'landing.pricing.features.tables50',
+            'landing.pricing.features.products500',
+            'landing.pricing.features.kitchenBarBoards',
+            'landing.pricing.features.branding',
+            'landing.pricing.features.reports',
+            'landing.pricing.features.prioritySupport'
+          ];
+        } else if (name === 'pro') {
+          nameKey = 'landing.pricing.proName';
+          descKey = 'landing.pricing.proDesc';
+          featureKeys = [
+            'landing.pricing.features.productsUnlimited',
+            'landing.pricing.features.tablesUnlimited',
+            'landing.pricing.features.reportsAdvanced',
+            'landing.pricing.features.unlimitedUsers',
+            'landing.pricing.features.kitchenBarCashierBoards',
+            'landing.pricing.features.reports',
+            'landing.pricing.features.stockControl',
+            'landing.pricing.features.prioritySupport'
+          ];
+        }
+
+        return {
+          nameKey,
+          descKey,
+          priceMonthly: symbol + tier.monthly.toLocaleString(locale, { minimumFractionDigits: 0 }),
+          priceYearly: symbol + (tier.yearly || (tier.monthly * 10)).toLocaleString(locale, { minimumFractionDigits: 0 }),
+          popular: name === 'standart' || name === 'standard',
+          featureKeys,
+          isDynamic: false
+        };
+      })
     }
   } catch (e) {
     console.error('Failed to load pricing', e)
@@ -118,18 +160,39 @@ async function loadPricing() {
     plans.value = [
       {
         nameKey: 'landing.pricing.freeName', descKey: 'landing.pricing.freeDesc',
-        priceMonthly: '$0', priceYearly: '$0', popular: false,
-        featureKeys: ['landing.pricing.feature50Items', 'landing.pricing.feature10Tables', 'landing.pricing.featureQrCode', 'landing.pricing.featureDigitalMenu', 'landing.pricing.featureOrderTracking', 'landing.pricing.featureAdminPanel'],
+        priceMonthly: '₺0', priceYearly: '₺0', popular: false,
+        featureKeys: [
+          'landing.pricing.features.tables20',
+          'landing.pricing.features.products100',
+          'landing.pricing.features.qrMenuBasic',
+          'landing.pricing.features.kitchenBarBoards'
+        ],
       },
       {
         nameKey: 'landing.pricing.standardName', descKey: 'landing.pricing.standardDesc',
-        priceMonthly: '$14.99', priceYearly: '$149.99', popular: true,
-        featureKeys: ['landing.pricing.feature500Items', 'landing.pricing.feature50Tables', 'landing.pricing.featureKitchenBar', 'landing.pricing.featureLogo', 'landing.pricing.featureReports', 'landing.pricing.featurePrioritySupport'],
+        priceMonthly: '$14.99', priceYearly: '$149.90', popular: true,
+        featureKeys: [
+          'landing.pricing.features.tables50',
+          'landing.pricing.features.products500',
+          'landing.pricing.features.kitchenBarBoards',
+          'landing.pricing.features.branding',
+          'landing.pricing.features.reports',
+          'landing.pricing.features.prioritySupport'
+        ],
       },
       {
         nameKey: 'landing.pricing.proName', descKey: 'landing.pricing.proDesc',
         priceMonthly: '$29.99', priceYearly: '$299.99', popular: false,
-        featureKeys: ['landing.pricing.featureUnlimitedItems', 'landing.pricing.featureUnlimitedTables', 'landing.pricing.featureStock', 'landing.pricing.featureCustomDomain', 'landing.pricing.featureAdvancedReports', 'landing.pricing.featureAllStandard'],
+        featureKeys: [
+          'landing.pricing.features.productsUnlimited',
+          'landing.pricing.features.tablesUnlimited',
+          'landing.pricing.features.reportsAdvanced',
+          'landing.pricing.features.unlimitedUsers',
+          'landing.pricing.features.kitchenBarCashierBoards',
+          'landing.pricing.features.reports',
+          'landing.pricing.features.stockControl',
+          'landing.pricing.features.prioritySupport'
+        ],
       },
     ]
   } finally {

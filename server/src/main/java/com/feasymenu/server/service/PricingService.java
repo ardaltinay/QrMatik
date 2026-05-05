@@ -26,24 +26,15 @@ public class PricingService {
     public PricingDto currentPricing() {
         return PricingDto.builder().currency(props.getCurrency()).note(props.getNote())
                 .tiers(List.of(
-                        PricingTierDto.builder().name("Ücretsiz").monthly(0.0).yearly(0.0)
-                                .features(List.of("10 masa", "50 ürün", "QR menü ve temel sipariş",
-                                        "Renk/Logo özelleştirme"))
-                                .build(),
+                        PricingTierDto.builder().name("Ücretsiz").monthly(0.0).yearly(0.0).build(),
                         PricingTierDto.builder().name("Standart").monthly(props.getStandardMonthly())
                                 .yearly(props.getStandardYearly())
                                 .variantMonthly(lsProps.getVariant().getStandardMonthly())
                                 .variantYearly(lsProps.getVariant().getStandardYearly())
-                                .features(
-                                        List.of("50 masa", "500 ürün", "Mutfak & Bar panoları",
-                                                "Popüler ürünler ve raporlar", "Öncelikli e-posta desteği"))
                                 .build(),
                         PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
                                 .variantMonthly(lsProps.getVariant().getProMonthly())
                                 .variantYearly(lsProps.getVariant().getProYearly())
-                                .features(List.of("Sınırsız masa ve ürün", "Gelişmiş raporlar",
-                                        "İsteğe bağlı özel alan adı (CNAME)", "Gelişmiş stok kontrolü",
-                                        "Öncelikli destek"))
                                 .build()))
                 .build();
     }

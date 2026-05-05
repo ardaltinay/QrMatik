@@ -34,4 +34,5 @@ public class BlogPost extends AbstractEntity {
     @Column(columnDefinition = "TEXT")
     private String contentEn;
 
+    private String imageUrl;
 }

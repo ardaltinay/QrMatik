@@ -36,8 +36,8 @@
           <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">{{ $t('footer.contact') }}</h4>
           <ul class="space-y-4">
             <li>
-              <a href="mailto:hello@feasymenu.com" class="text-sm text-slate-500 hover:text-brand-600 transition-colors font-medium">
-                hello@feasymenu.com
+              <a href="mailto:support@feasymenu.com" class="text-sm text-slate-500 hover:text-brand-600 transition-colors font-medium">
+                support@feasymenu.com
               </a>
             </li>
           </ul>

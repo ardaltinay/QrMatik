@@ -17,18 +17,36 @@ export default defineNuxtConfig({
     name: 'feasymenu',
   },
 
+  sitemap: {
+    sources: [
+      '/api/public/blog' // Backend'den tüm blog yazılarını otomatik çekip haritaya ekler
+    ],
+    defaults: {
+      changefreq: 'daily',
+      priority: 0.7,
+      lastmod: new Date().toISOString(),
+    }
+  },
+
+  robots: {
+    allow: '/',
+    sitemap: 'https://feasymenu.com/sitemap.xml'
+  },
+
   i18n: {
+    baseUrl: 'https://feasymenu.com',
     locales: [
-      { code: 'tr', name: 'Türkçe', language: 'tr-TR', file: 'tr.ts' },
-      { code: 'en', name: 'English', language: 'en-US', file: 'en.ts' },
+      { code: 'tr', iso: 'tr-TR', name: 'Türkçe', file: 'tr.ts' },
+      { code: 'en', iso: 'en-US', name: 'English', file: 'en.ts' },
     ],
     defaultLocale: 'tr',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
     lazy: true,
     langDir: '../app/locales',
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'fm_i18n',
+      alwaysRedirect: true,
       fallbackLocale: 'tr',
       redirectOn: 'root',
     },

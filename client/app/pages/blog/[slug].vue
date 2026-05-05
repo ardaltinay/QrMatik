@@ -75,5 +75,41 @@ function formatDate(dateStr: string) {
 useSeoMeta({
   title: () => (post.value ? (locale.value === 'tr' ? post.value.titleTr : post.value.titleEn) : 'Blog') + ' | feasymenu',
   description: () => post.value ? (locale.value === 'tr' ? post.value.excerptTr : post.value.excerptEn) : '',
+  ogImage: () => post.value?.imageUrl || 'https://feasymenu.com/og-image.jpg',
+  twitterImage: () => post.value?.imageUrl || 'https://feasymenu.com/og-image.jpg',
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.value ? (locale.value === 'tr' ? post.value.titleTr : post.value.titleEn) : '',
+        description: post.value ? (locale.value === 'tr' ? post.value.excerptTr : post.value.excerptEn) : '',
+        image: post.value?.imageUrl ? [post.value.imageUrl] : [],
+        datePublished: post.value?.createdTime,
+        dateModified: post.value?.updatedTime || post.value?.createdTime,
+        author: {
+          '@type': 'Organization',
+          name: 'feasymenu',
+          url: 'https://feasymenu.com'
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'feasymenu',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://feasymenu.com/logo.png'
+          }
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `https://feasymenu.com${route.path}`
+        }
+      })
+    }
+  ]
 })
 </script>

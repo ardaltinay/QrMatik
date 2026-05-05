@@ -24,6 +24,15 @@
             class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium"
           />
         </div>
+        <div>
+          <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{{ $t('admin.super.blog.edit.coverImage') }}</label>
+          <input 
+            v-model="form.imageUrl" 
+            type="text" 
+            :placeholder="$t('admin.super.blog.edit.coverImagePlaceholder')"
+            class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium"
+          />
+        </div>
       </div>
 
       <div class="border-t border-slate-50 pt-10 grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -112,7 +121,8 @@ const form = ref({
   excerptTr: '',
   excerptEn: '',
   contentTr: '',
-  contentEn: ''
+  contentEn: '',
+  imageUrl: ''
 })
 
 onMounted(async () => {

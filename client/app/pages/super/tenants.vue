@@ -142,7 +142,7 @@ async function toggleStatus(tenant: any) {
     })
     if (updated) {
       tenant.active = updated.active
-      useUiStore().success(t(tenant.active ? 'admin.common.activated' : 'admin.common.suspended'))
+      useUiStore().success(t(tenant.active ? 'admin.common.active' : 'admin.common.suspended'))
     }
   } catch (e) {
     console.error('Failed to toggle tenant status:', e)

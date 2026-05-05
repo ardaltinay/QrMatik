@@ -35,7 +35,7 @@
             
             <div class="bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">{{ $t('order.table') }}</p>
-              <p class="font-black text-brand-600 text-lg tracking-tight">{{ (typeof order.table === 'object' ? order.table?.code : order.table) || order.tableCode || 'Misafir' }}</p>
+              <p class="font-black text-brand-600 text-lg tracking-tight">{{ (typeof order.table === 'object' ? order.table?.code : order.table) || order.tableCode || $t('common.guest') }}</p>
             </div>
           </div>
 
@@ -361,7 +361,7 @@ async function requestBill() {
 
 function menuItemName(itemId: number) {
   const item = orderStore.menuItemById(itemId)
-  return item ? item.name : 'Ürün'
+  return item ? item.name : t('common.product')
 }
 
 let unsub: (() => void) | null = null

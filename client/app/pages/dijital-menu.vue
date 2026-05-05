@@ -26,7 +26,14 @@
           <ul class="space-y-5">
             <li v-for="f in features" :key="f" class="flex items-start gap-4">
               <span class="text-brand-600 font-black text-xl leading-none mt-0.5">•</span>
-              <span class="text-slate-600 font-medium leading-relaxed" v-html="$t(f)"></span>
+              <span class="text-slate-600 font-medium leading-relaxed">
+                <template v-if="$t(f).includes(':')">
+                  <b class="font-black text-slate-900">{{ $t(f).split(':')[0] }}:</b>{{ $t(f).split(':').slice(1).join(':') }}
+                </template>
+                <template v-else>
+                  {{ $t(f) }}
+                </template>
+              </span>
             </li>
           </ul>
         </section>
@@ -103,18 +110,18 @@ useHead({
         mainEntity: [
           {
             '@type': 'Question',
-            name: 'Dijital menü nedir?',
+            name: t('dijitalMenuLanding.faq1Q'),
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Dijital menü, telefonla görüntülenen çevrim içi menüdür. feasymenu ile menünüz her zaman güncel ve stokla entegredir.',
+              text: t('dijitalMenuLanding.faq1A'),
             },
           },
           {
             '@type': 'Question',
-            name: 'Akıllı QR menü nasıl çalışır?',
+            name: t('dijitalMenuLanding.faq2Q'),
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Masaya yerleştirilen QR kodu okutulur; müşteri menüyü görür, sipariş verir ve durumu canlı takip eder.',
+              text: t('dijitalMenuLanding.faq2A'),
             },
           },
         ],

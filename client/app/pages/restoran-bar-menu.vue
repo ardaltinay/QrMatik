@@ -26,7 +26,14 @@
           <ul class="space-y-5">
             <li v-for="f in features" :key="f" class="flex items-start gap-4">
               <span class="text-rose-600 font-black text-xl leading-none mt-0.5">•</span>
-              <span class="text-slate-600 font-medium leading-relaxed" v-html="$t(f)"></span>
+              <span class="text-slate-600 font-medium leading-relaxed">
+                <template v-if="$t(f).includes(':')">
+                  <b class="font-black text-slate-900">{{ $t(f).split(':')[0] }}:</b>{{ $t(f).split(':').slice(1).join(':') }}
+                </template>
+                <template v-else>
+                  {{ $t(f) }}
+                </template>
+              </span>
             </li>
           </ul>
         </section>
@@ -79,13 +86,13 @@ useHead({
           {
             '@type': 'ListItem',
             position: 1,
-            name: 'Anasayfa',
+            name: t('common.home'),
             item: baseUrl + '/',
           },
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Restoran Bar Menü',
+            name: t('restoranBarMenuLanding.metaTitle'),
             item: baseUrl + '/restoran-bar-menu',
           },
         ],

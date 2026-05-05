@@ -11,7 +11,7 @@
           class="px-8 py-4 rounded-2xl bg-brand-600 text-white font-bold text-sm uppercase tracking-widest hover:bg-brand-500 transition-all duration-300 shadow-xl shadow-brand-600/20">
           {{ $t('landing.cta.primary') }}
         </NuxtLink>
-        <a href="mailto:hello@feasymenu.com"
+        <a href="mailto:support@feasymenu.com"
           class="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm uppercase tracking-widest hover:bg-slate-50 transition-all duration-300">
           {{ $t('landing.cta.secondary') }}
         </a>
