@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: feasymenu-db
+    environment:
+      POSTGRES_DB: feasymenu
+      POSTGRES_USER: ${DATASOURCE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATASOURCE_PASS:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: feasymenu-redis
+    restart: always
+
+  backend:
+    build: ./server
+    container_name: feasymenu-backend
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATASOURCE_URL: ${DATASOURCE_URL:-jdbc:postgresql://db:5432/feasymenu}
+      DATASOURCE_USER: ${DATASOURCE_USER:-postgres}
+      DATASOURCE_PASS: ${DATASOURCE_PASS:-postgres}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-7b4a62a003b62678e68fa76724d604cec2afc41eda7034552ddabde2c43672dc}
+      SUPER_USER: ${SUPER_USER:-super}
+      SUPER_PASS: ${SUPER_PASS:-super123}
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+    volumes:
+      - ./server/uploads:/app/uploads
+    restart: always
+
+  frontend:
+    build: ./client
+    container_name: feasymenu-frontend
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: feasymenu-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+
+volumes:
+  postgres_data:

@@ -47,3 +47,5 @@ server/uploads/**
 
 # Misc
 Thumbs.db
+# Environment Variables
+.env

@@ -1,0 +1,164 @@
+package com.feasymenu.server.controller;
+
+import com.feasymenu.server.security.JwtUtil;
+import com.feasymenu.server.security.LoginRateLimiter;
+import com.feasymenu.server.service.AuthService;
+import com.feasymenu.server.service.TenantContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final AuthService authService;
+    private final LoginRateLimiter rateLimiter;
+    private final JwtUtil jwtUtil;
+
+    public AuthController(AuthService authService, LoginRateLimiter rateLimiter, JwtUtil jwtUtil) {
+        this.authService = authService;
+        this.rateLimiter = rateLimiter;
+        this.jwtUtil = jwtUtil;
+    }
+
+    public record LoginRequest(@NotBlank String username, @NotBlank String password) {
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response) {
+        String tenant = TenantContext.getTenant();
+        String ip = "unknown";
+        try {
+            ip = Optional.ofNullable(RequestContextHolder.getRequestAttributes()).flatMap(a -> {
+                if (a instanceof ServletRequestAttributes s) {
+                    return Optional.ofNullable(s.getRequest().getRemoteAddr());
+                }
+                return Optional.empty();
+            }).orElse("unknown");
+        } catch (Exception ignored) {
+        }
+        String key = (tenant == null ? "_" : tenant) + "|" + req.username().toLowerCase() + "|" + ip;
+        if (rateLimiter.isBlocked(key)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(Map.of("error", "Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin."));
+        }
+        return authService.login(req.username(), req.password(), tenant).map(r -> {
+            rateLimiter.onSuccess(key);
+
+            String token = (String) r.get("token");
+            String refreshToken = (String) r.get("refreshToken");
+
+            String origin = request.getHeader("Origin");
+            String forwardedProto = request.getHeader("X-Forwarded-Proto");
+            
+            // Eğer istek HTTPS ise VEYA arkada çalıştığımız proxy (Nginx) orijinal isteğin HTTPS olduğunu söylüyorsa
+            boolean isSecure = (origin != null && origin.startsWith("https")) || "https".equalsIgnoreCase(forwardedProto);
+
+            var cookie = ResponseCookie.from("qm_token", token)
+                    .httpOnly(true)
+                    .secure(isSecure)
+                    .path("/")
+                    .maxAge(jwtUtil.getExpMinutes() * 60)
+                    .sameSite("Lax")
+                    .build();
+
+            var refreshCookie = ResponseCookie.from("qm_refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(isSecure)
+                    .path("/")
+                    .maxAge(jwtUtil.getRefreshExpDays() * 24 * 3600)
+                    .sameSite("Lax")
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+            // Still return user info but without tokens in body
+            return ResponseEntity.ok(Map.of("user", r.get("user")));
+        }).orElseGet(() -> {
+            rateLimiter.onFailure(key);
+            return ResponseEntity.status(401).body(Map.of("error", "Hatalı kullanıcı adı veya parola"));
+        });
+    }
+
+    public record RefreshRequest() {
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@CookieValue(name = "qm_refresh_token", required = false) String refreshToken,
+            HttpServletRequest request, HttpServletResponse response) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Refresh token bulunamadı"));
+        }
+        return authService.refresh(refreshToken).map(r -> {
+            String token = r.get("token");
+
+            String origin = request.getHeader("Origin");
+            String forwardedProto = request.getHeader("X-Forwarded-Proto");
+            boolean isSecure = (origin != null && origin.startsWith("https")) || "https".equalsIgnoreCase(forwardedProto);
+
+            var cookie = ResponseCookie.from("qm_token", token).httpOnly(true).secure(isSecure).path("/")
+                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Lax").build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            return ResponseEntity.ok(Map.of("message", "Token yenilendi"));
+        }).orElse(ResponseEntity.status(401).body(Map.of("error", "Geçersiz refresh token")));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            authService.logout(auth.getName());
+        }
+
+        String origin = request.getHeader("Origin");
+        String forwardedProto = request.getHeader("X-Forwarded-Proto");
+        boolean isSecure = (origin != null && origin.startsWith("https")) || "https".equalsIgnoreCase(forwardedProto);
+
+        var cookie = ResponseCookie.from("qm_token", "").httpOnly(true).secure(isSecure).path("/").maxAge(0).build();
+
+        var refreshCookie = ResponseCookie.from("qm_refresh_token", "").httpOnly(true).secure(isSecure).path("/")
+                .maxAge(0).build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok(Map.of("message", "Başarıyla çıkış yapıldı"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = auth.getName();
+        String role = auth.getAuthorities().stream().map(a -> a.getAuthority().replace("ROLE_", "").toLowerCase())
+                .findFirst().orElse("user");
+
+        java.util.Map<String, Object> resp = new java.util.HashMap<>();
+        resp.put("username", username);
+        resp.put("role", role);
+        resp.put("tenantCode", TenantContext.getTenant());
+
+        return ResponseEntity.ok(resp);
+    }
+}

@@ -1,6 +1,6 @@
 # Outreach Kit
 
-Bu klasör QrMatik SEO backlink çalışmaları için temel varlıkları içerir.
+Bu klasör feasymenu SEO backlink çalışmaları için temel varlıkları içerir.
 
 ## İçerikler
 - `targets.csv`: İlk 10 hedef domain, iletişim epostası ve durum.

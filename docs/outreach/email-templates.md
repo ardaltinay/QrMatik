@@ -8,8 +8,8 @@ Merhaba {{isim}},
 
 {{site}}’de yayınladığınız {{kategori/konu}} içeriklerini takip ediyoruz. Restoranlar için dijital menü ve QR sipariş akışını anlatan kapsamlı bir rehber hazırladık:
 
-- Dijital Menü Avantajları: https://qrmatik.cloud/blog/dijital-menu-avantajlari
-- QR Restoran Nedir?: https://qrmatik.cloud/blog/qr-restoran-nedir
+- Dijital Menü Avantajları: https://feasymenu.com/blog/dijital-menu-avantajlari
+- QR Restoran Nedir?: https://feasymenu.com/blog/qr-restoran-nedir
 
 Okuyucularınız için faydalı olacağını düşünüyoruz. İsterseniz, {{site}} için veri ve ekran görüntüleri içeren özel bir konuk yazı da hazırlayabiliriz.
 

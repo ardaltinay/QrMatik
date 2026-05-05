@@ -1,53 +1,33 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "vue-cli-service lint",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "vue": "^3.2.13",
-    "vue-router": "^4.0.3",
-    "pinia": "^2.0.0",
-    "@unhead/vue": "^1.8.8"
+    "@nuxt/fonts": "^0.14.0",
+    "@nuxtjs/i18n": "^10.2.4",
+    "@pinia/nuxt": "^0.11.3",
+    "@stomp/stompjs": "^7.3.0",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@tailwindcss/vite": "^4.2.4",
+    "@vueuse/core": "^14.2.1",
+    "@vueuse/nuxt": "^14.2.1",
+    "date-fns": "^4.1.0",
+    "lucide-vue-next": "^1.0.0",
+    "nuxt": "^4.3.1",
+    "pinia": "^3.0.4",
+    "tailwindcss": "^4.2.4",
+    "vue": "^3.5.29",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "vite-plugin-prerender": "^1.0.8",
-    "eslint": "^8.0.0",
-    "eslint-plugin-vue": "^9.0.0",
-    "sass": "^1.32.7",
-    "sass-loader": "^12.0.0",
-    "tailwindcss": "^3.4.7",
-    "postcss": "^8.4.0",
-    "autoprefixer": "^10.4.0",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.5.14"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+    "@nuxtjs/robots": "^6.0.7",
+    "@nuxtjs/sitemap": "^8.0.13"
+  }
 }
