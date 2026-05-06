@@ -1,18 +1,19 @@
 <template>
-  <section class="relative py-24 overflow-hidden">
-    <div class="absolute inset-0 gradient-glow opacity-50"></div>
-    <div class="relative mx-auto max-w-4xl px-6 text-center">
-      <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mb-6">
-        {{ $t('landing.cta.title') }} <span class="text-brand-600">{{ $t('landing.cta.titleHighlight') }}</span> {{ $t('landing.cta.titleEnd') }}
+  <section class="relative py-32 bg-white overflow-hidden">
+    <!-- Decorative curves -->
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-[300px] bg-brand-50 rounded-t-[50%] -z-10 opacity-50"></div>
+    
+    <div class="container-custom text-center relative z-10">
+      <h2 class="text-4xl sm:text-5xl font-bold text-slate-900 mb-8 max-w-2xl mx-auto leading-tight">
+        {{ $t('landing.cta.title') }} <span class="text-brand-400">{{ $t('landing.cta.titleHighlight') }}</span> {{ $t('landing.cta.titleEnd') }}
       </h2>
-      <p class="text-slate-500 mb-10 max-w-xl mx-auto font-medium">{{ $t('landing.cta.description') }}</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <NuxtLink to="/signup/tenant"
-          class="px-8 py-4 rounded-2xl bg-brand-600 text-white font-bold text-sm uppercase tracking-widest hover:bg-brand-500 transition-all duration-300 shadow-xl shadow-brand-600/20">
+      <p class="text-lg text-slate-400 mb-12 max-w-xl mx-auto font-medium">{{ $t('landing.cta.description') }}</p>
+      
+      <div class="flex flex-col sm:flex-row gap-6 justify-center">
+        <NuxtLink to="/signup/tenant" class="btn-primary px-12">
           {{ $t('landing.cta.primary') }}
         </NuxtLink>
-        <a href="mailto:support@feasymenu.com"
-          class="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm uppercase tracking-widest hover:bg-slate-50 transition-all duration-300">
+        <a href="mailto:support@feasymenu.com" class="btn-secondary px-12">
           {{ $t('landing.cta.secondary') }}
         </a>
       </div>

@@ -1,3 +1,5 @@
+import { getRequestHeaders } from 'h3'
+
 /**
  * API fetch wrapper for authenticated requests.
  * Automatically attaches tenant header and JWT token via HttpOnly cookies.
@@ -13,6 +15,18 @@ export function useApi() {
       ...(options.headers as Record<string, string> || {}),
     }
 
+    // Proxy headers from the original request when on the server
+    if (import.meta.server) {
+      const event = useRequestEvent()
+      if (event) {
+        const requestHeaders = getRequestHeaders(event)
+        // Forward cookies and other relevant headers
+        if (requestHeaders.cookie) headers.cookie = requestHeaders.cookie
+        if (requestHeaders.authorization) headers.authorization = requestHeaders.authorization
+        if (requestHeaders['user-agent']) headers['user-agent'] = requestHeaders['user-agent']
+      }
+    }
+
     if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json'
     }
@@ -22,10 +36,18 @@ export function useApi() {
     const id = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
     try {
-      const response = await fetch(path, { 
+      // Ensure path is absolute for server-side fetches if it starts with /api
+      let fetchUrl = path
+      if (import.meta.server && path.startsWith('/')) {
+        // You might need to use the full backend URL here
+        // If they are on the same server, localhost or the proxy URL is needed
+        fetchUrl = `${config.public.apiBase || 'http://localhost:8080'}${path}`
+      }
+
+      const response = await fetch(fetchUrl, { 
         ...options, 
         headers,
-        credentials: 'include', // Important for HttpOnly cookies
+        credentials: 'include',
         signal: controller.signal
       })
       clearTimeout(id)

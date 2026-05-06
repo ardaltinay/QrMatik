@@ -108,10 +108,10 @@ export default defineNuxtConfig({
     '/qr-siparis': { ssr: true },
     '/restoran-bar-menu': { ssr: true },
     '/blog/**': { ssr: true },
-    '/admin/**': { ssr: false },
-    '/super/**': { ssr: false },
-    '/menu': { ssr: false },
-    '/order/**': { ssr: false },
+    '/admin/**': { ssr: true },
+    '/super/**': { ssr: true },
+    '/menu': { ssr: true },
+    '/order/**': { ssr: true },
   },
 
   nitro: {

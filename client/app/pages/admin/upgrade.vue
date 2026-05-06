@@ -18,7 +18,7 @@
         </div>
         <div>
           <p class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5">{{ $t('admin.upgrade.currentPlan') }}</p>
-          <p class="text-base font-bold text-slate-900 uppercase tracking-tight">{{ currentPlan }}</p>
+          <p class="text-base font-bold text-slate-900 uppercase tracking-tight">{{ $t(`admin.upgrade.plans.${currentPlan}`) }}</p>
         </div>
       </div>
       <div v-if="currentPlan === 'FREE'" class="flex items-center gap-2 bg-amber-50 border border-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
@@ -27,7 +27,7 @@
       </div>
       <div v-else class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-        Aktif
+        {{ $t('admin.common.active') }}
       </div>
     </div>
 

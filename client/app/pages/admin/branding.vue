@@ -228,7 +228,15 @@ async function saveSettings() {
   }
 }
 
+const authStore = useAuthStore()
+const localePath = useLocalePath()
+const currentPlan = computed(() => authStore.user?.tenant?.subscriptionPlan || 'FREE')
+
 onMounted(() => {
+  if (currentPlan.value === 'FREE') {
+    navigateTo(localePath('/admin/upgrade'))
+    return
+  }
   loadSettings()
 })
 </script>

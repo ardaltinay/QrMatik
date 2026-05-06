@@ -6,10 +6,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // DEBUG LOG: Middleware tetikleniyorsa bu yazı konsolda görünmeli
   console.log('[Middleware Run] Path:', path)
 
+  const authStore = useAuthStore()
+  const { detectTenant } = useTenant()
+
+  // 1. Tenant Detection (Subdomain aware)
+  const tenantCode = detectTenant()
+  
+  // If we are on a tenant subdomain but at the root, redirect to admin
+  // Skip redirect if there is a hash (e.g. #features) so landing page links work
+  if (tenantCode && (path === '/' || path === '') && !to.hash) {
+    console.log('[Middleware Tenant Redirect] Redirecting from root to /admin for tenant:', tenantCode)
+    return navigateTo('/admin')
+  }
+
   const isProtected = path.startsWith('/admin') || path.startsWith('/super')
   if (!isProtected) return
-
-  const authStore = useAuthStore()
 
   // Eğer henüz init edilmemişse veya kullanıcı yoksa sunucudan kontrol etmeyi BEKLE
   if (!authStore.user) {

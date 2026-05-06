@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isCashier = computed(() => hasRole('cashier'))
 
   async function init() {
-    if (!import.meta.client) return
     const { fetchJson } = useApi()
     try {
       // Restore user info from server using the HttpOnly cookie

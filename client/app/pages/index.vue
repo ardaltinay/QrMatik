@@ -1,7 +1,6 @@
 <template>
   <div>
     <LandingHero />
-    <LandingFeatures />
     <LandingHowItWorks />
     <LandingPricing />
     <LandingFaq />

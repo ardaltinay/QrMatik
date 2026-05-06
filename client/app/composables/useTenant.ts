@@ -1,3 +1,5 @@
+import { getRequestHeader } from 'h3'
+
 /**
  * Tenant detection and configuration composable.
  * Detects tenant from subdomain, query params, or path.
@@ -10,30 +12,56 @@ export function useTenant() {
    * Detect tenant from current URL context.
    */
   function detectTenant(): string | null {
-    if (!import.meta.client) return null
+    // 1. Subdomain (Works on both client and server)
+    let host = ''
+    if (import.meta.server) {
+      const event = useRequestEvent()
+      host = getRequestHeader(event, 'host') || ''
+    } else {
+      host = window.location.hostname || ''
+    }
 
-    try {
-      // 1. Query params: ?tenant=, ?code=, ?restaurant=
-      const params = new URLSearchParams(window.location.search)
-      const q = params.get('tenant') || params.get('code') || params.get('restaurant') || params.get('restaurantCode')
-      if (q) return q
-
-      // 2. Path: /r/:tenant/...
-      const path = window.location.pathname || ''
-      const parts = path.split('/')
-      const idx = parts.indexOf('r')
-      if (idx >= 0 && parts.length > idx + 1) return parts[idx + 1] || null
-
-      // 3. Subdomain
-      const host = window.location.hostname || ''
+    if (host) {
+      // Remove port if present
+      host = host.split(':')[0]
+      
       if (host.endsWith('.localhost')) {
         const dot = host.indexOf('.')
         if (dot > 0) return host.slice(0, dot)
       } else {
         const hostParts = host.split('.')
-        if (hostParts.length > 2) return hostParts[0] || null
+        // Handle cases like test.feasymenu.com (length > 2)
+        if (hostParts.length > 2 && hostParts[0] !== 'www') {
+          return hostParts[0] || null
+        }
       }
-    } catch { /* ignore */ }
+    }
+
+    // 2. Query params (Server-side compatible)
+    let search = ''
+    if (import.meta.server) {
+      const event = useRequestEvent()
+      search = useRequestURL(event).search
+    } else {
+      search = window.location.search
+    }
+
+    const params = new URLSearchParams(search)
+    const q = params.get('tenant') || params.get('code') || params.get('restaurant') || params.get('restaurantCode')
+    if (q) return q
+
+    // 3. Path (Server-side compatible)
+    let path = ''
+    if (import.meta.server) {
+      const event = useRequestEvent()
+      path = useRequestURL(event).pathname
+    } else {
+      path = window.location.pathname
+    }
+
+    const parts = path.split('/')
+    const idx = parts.indexOf('r')
+    if (idx >= 0 && parts.length > idx + 1) return parts[idx + 1] || null
 
     return null
   }
@@ -68,13 +96,11 @@ export function useTenant() {
   /**
    * Initialize tenant from URL context only.
    */
-  function initTenant() {
-    if (!import.meta.client) return
-
+  async function initTenant() {
     const detected = detectTenant()
     if (detected) {
       tenantCode.value = detected
-      loadTenantConfig(detected)
+      await loadTenantConfig(detected)
     }
   }
 
