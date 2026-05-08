@@ -24,6 +24,8 @@ interface MenuItem {
 interface Order {
   id: number | string
   status: string
+  kitchenStatus?: string
+  barStatus?: string
   items: any[]
   total: number
   tableCode?: string
@@ -112,7 +114,7 @@ export const useOrderStore = defineStore('order', () => {
     if (cart.value.length === 0) return null
     const { fetchJson } = useApi()
 
-    const sessionId = getOrCreateSessionId()
+    const sessionId = getOrCreateSessionId(tableCode)
     const body = {
       tableCode,
       sessionId,
@@ -133,6 +135,8 @@ export const useOrderStore = defineStore('order', () => {
 
       // Store session
       if (import.meta.client && order.sessionId) {
+        const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+        localStorage.setItem(sessionKey, order.sessionId)
         localStorage.setItem('qm_order_session', order.sessionId)
         if (order.sessionExpiresAt) {
           localStorage.setItem('qm_order_session_expires', order.sessionExpiresAt)
@@ -146,6 +150,34 @@ export const useOrderStore = defineStore('order', () => {
     }
   }
 
+  async function getOrder(id: string) {
+    const sid = localStorage.getItem('qm_order_session')
+    const currentTable = localStorage.getItem('qm_table_code')
+    const { fetchJson } = useApi()
+    
+    try {
+      const data = await fetchJson(`/api/orders/${id}`, {
+        headers: {
+          'X-Session-Id': sid || ''
+        }
+      })
+      
+      if (data) {
+        // Double check: If this order belongs to a DIFFERENT table than what we have in localStorage, REJECT.
+        // (Unless we are in admin mode, but this is the customer-side store method)
+        if (currentTable && data.tableCode && data.tableCode !== currentTable) {
+          console.error('Order table mismatch!', data.tableCode, 'vs', currentTable)
+          return null
+        }
+        return data
+      }
+      return null
+    } catch (e) {
+      console.error('Error fetching order:', e)
+      return null
+    }
+  }
+
   async function loadOrders() {
     const { fetchJson } = useApi()
     try {
@@ -156,10 +188,14 @@ export const useOrderStore = defineStore('order', () => {
     }
   }
 
-  async function loadSessionOrders(sessionId: string) {
+  async function loadSessionOrders(sessionId: string, tableCode?: string) {
     const { fetchJson } = useApi()
     try {
-      const data = await fetchJson(`/api/orders/session/${encodeURIComponent(sessionId)}`)
+      let url = `/api/orders/session/${encodeURIComponent(sessionId)}`
+      if (tableCode) {
+        url += `?tableCode=${encodeURIComponent(tableCode)}`
+      }
+      const data = await fetchJson(url)
       return Array.isArray(data) ? data : []
     } catch (e) {
       console.warn('Failed to load session orders:', e)
@@ -167,10 +203,14 @@ export const useOrderStore = defineStore('order', () => {
     }
   }
 
-  async function updateOrderStatus(orderId: number | string, status: string) {
+  async function updateOrderStatus(orderId: number | string, status: string, target?: string) {
     const { fetchJson } = useApi()
     try {
-      await fetchJson(`/api/orders/${orderId}/status`, {
+      let url = `/api/orders/${orderId}/status`
+      if (target) {
+        url += `?target=${encodeURIComponent(target)}`
+      }
+      await fetchJson(url, {
         method: 'PUT',
         body: JSON.stringify({ status }),
       })
@@ -178,6 +218,20 @@ export const useOrderStore = defineStore('order', () => {
       await loadOrders()
     } catch (e) {
       console.error('Failed to update order status:', e)
+      throw e
+    }
+  }
+
+  async function callWaiter(tableCode: string) {
+    const { fetchJson } = useApi()
+    const sessionId = getOrCreateSessionId(tableCode)
+    try {
+      return await fetchJson('/api/orders/call-waiter', {
+        method: 'POST',
+        body: JSON.stringify({ tableCode, sessionId }),
+      })
+    } catch (e) {
+      console.error('Failed to call waiter:', e)
       throw e
     }
   }
@@ -199,17 +253,20 @@ export const useOrderStore = defineStore('order', () => {
     loadOrders,
     loadSessionOrders,
     updateOrderStatus,
+    callWaiter,
   }
 })
 
 // ── Helpers ──────────────────────────────────────────────
-function getOrCreateSessionId(): string {
+export function getOrCreateSessionId(tableCode?: string): string {
   if (!import.meta.client) return crypto.randomUUID()
   try {
-    let sid = localStorage.getItem('qm_order_session')
+    const key = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+    let sid = localStorage.getItem(key)
+    
     if (!sid) {
       sid = crypto.randomUUID()
-      localStorage.setItem('qm_order_session', sid)
+      localStorage.setItem(key, sid)
     }
     return sid
   } catch {

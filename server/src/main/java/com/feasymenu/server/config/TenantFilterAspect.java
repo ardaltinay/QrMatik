@@ -24,11 +24,11 @@ public class TenantFilterAspect {
      */
     @Before("execution(* com.feasymenu.server.repository.*.*(..))")
     public void enableTenantFilter() {
-        String tenant = TenantContext.getTenant();
-        if (tenant != null && !tenant.trim().isEmpty()) {
+        java.util.UUID tenantId = TenantContext.getTenantId();
+        if (tenantId != null) {
             Session session = entityManager.unwrap(Session.class);
             Filter filter = session.enableFilter("tenantFilter");
-            filter.setParameter("tenantId", tenant);
+            filter.setParameter("tenantId", tenantId);
         }
     }
 }

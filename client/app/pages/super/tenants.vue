@@ -98,7 +98,7 @@ definePageMeta({
 const { t } = useI18n()
 
 useHead({
-  title: () => `${t('admin.super.tenants.title')} | Super Admin | feasymenu`
+  title: () => `${t('admin.super.tenants.title')} | Super Admin`
 })
 
 const searchQuery = ref('')

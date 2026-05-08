@@ -93,7 +93,7 @@ const stats = ref<any>(null)
 const tenants = ref<any[]>([])
 
 useHead({
-  title: () => `${t('admin.super.subscriptions.title')} | Super Admin | feasymenu`
+  title: () => `${t('admin.super.subscriptions.title')} | Super Admin`
 })
 
 async function fetchData() {

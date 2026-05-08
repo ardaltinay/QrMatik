@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -90,10 +91,10 @@ public class QrService {
         // Prod: baseUrl like https://app.example.com => use {tenant}.example.com (strip
         // common app/www prefix)
         try {
-            URL u = new URL(baseUrl);
-            String protocol = u.getProtocol();
-            String host = u.getHost();
-            int port = u.getPort(); // -1 if not set
+            URI uri = URI.create(baseUrl);
+            String protocol = uri.getScheme();
+            String host = uri.getHost();
+            int port = uri.getPort(); // -1 if not set
 
             String effectiveHost = host;
             if (tenantCode != null && !tenantCode.isBlank()) {

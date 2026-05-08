@@ -2,6 +2,7 @@ package com.feasymenu.server.controller;
 
 import com.feasymenu.server.converter.OrderConverter;
 import com.feasymenu.server.dto.CancelRequest;
+import com.feasymenu.server.dto.CallWaiterRequest;
 import com.feasymenu.server.dto.CreateOrderRequest;
 import com.feasymenu.server.dto.OrderDto;
 import com.feasymenu.server.dto.RequestBillRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,12 +54,13 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> get(@PathVariable String id,
-            @RequestParam(name = "sid", required = false) String sid) {
+    public ResponseEntity<OrderDto> getOrder(
+            @PathVariable String id,
+            @RequestHeader(value = "X-Session-Id", required = false) String sessionId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticated = auth != null && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
-        Optional<OrderEntity> o = orderService.getIfViewable(id, sid, authenticated);
+        Optional<OrderEntity> o = orderService.getIfViewable(id, sessionId, authenticated);
         return o.map(orderEntity -> ResponseEntity.ok(converter.toDto(orderEntity)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -85,9 +88,10 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<OrderDto> updateStatus(@PathVariable String id, @RequestBody StatusUpdate payload) {
+    public ResponseEntity<OrderDto> updateStatus(@PathVariable String id, @RequestBody StatusUpdate payload,
+            @RequestParam(name = "target", required = false) String target) {
         String tenant = TenantContext.getTenant();
-        Optional<OrderEntity> updated = orderService.updateStatus(id, tenant, payload.getStatus());
+        Optional<OrderEntity> updated = orderService.updateStatus(id, tenant, payload.getStatus(), target);
         return updated.map(orderEntity -> ResponseEntity.ok(converter.toDto(orderEntity)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -100,9 +104,10 @@ public class OrderController {
     }
 
     @GetMapping("/session/{sessionId}")
-    public ResponseEntity<?> bySession(@PathVariable String sessionId) {
+    public ResponseEntity<?> bySession(@PathVariable String sessionId,
+            @RequestParam(name = "tableCode", required = false) String tableCode) {
         String tenant = TenantContext.getTenant();
-        var res = orderService.bySessionForView(sessionId, tenant, appZoneId);
+        var res = orderService.bySessionForView(sessionId, tenant, appZoneId, tableCode);
         if (!res.orders().isEmpty() && !res.anyNonExpired()) {
             return ResponseEntity.status(410).build();
         }
@@ -132,5 +137,12 @@ public class OrderController {
         Optional<OrderEntity> updated = orderService.requestBillBySession(id, tenant, sessionId);
         return updated.map(e -> ResponseEntity.ok(converter.toDto(e)))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/call-waiter")
+    public ResponseEntity<?> callWaiter(@RequestBody CallWaiterRequest req) {
+        String tenant = TenantContext.getTenant();
+        orderService.callWaiter(req.getTableCode(), tenant);
+        return ResponseEntity.ok(Map.of("message", "Waiter call notification sent"));
     }
 }

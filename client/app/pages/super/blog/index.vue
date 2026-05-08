@@ -102,13 +102,20 @@ function formatDate(dateStr: string) {
 }
 
 async function deletePost(id: string) {
-  if (!confirm(t('admin.super.blog.deleteConfirm'))) return
-  try {
-    await fetchJson(`/api/admin/blog/${id}`, { method: 'DELETE' })
-    refresh()
-  } catch (e) {
-    const errorMessage = e?.message || e?.toString() || 'Error deleting post';
-    uiStore.error(errorMessage);
-  }
+  uiStore.confirm({
+    title: t('admin.common.delete') || 'Sil',
+    message: t('admin.super.blog.deleteConfirm') || 'Bu yazıyı silmek istediğinize emin misiniz?',
+    isDanger: true,
+    onConfirm: async () => {
+      try {
+        await fetchJson(`/api/admin/blog/${id}`, { method: 'DELETE' })
+        uiStore.success(t('admin.common.deleted') || 'Silindi.')
+        refresh()
+      } catch (e: any) {
+        const errorMessage = e?.message || e?.toString() || 'Error deleting post';
+        uiStore.error(errorMessage);
+      }
+    }
+  })
 }
 </script>

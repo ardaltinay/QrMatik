@@ -50,6 +50,8 @@ public class TenantFilter extends OncePerRequestFilter {
                     String tenant = resolveTenantAnonymous(request);
                     if (tenant != null && !tenant.isBlank()) {
                         TenantContext.setTenant(tenant);
+                        // Resolve UUID to avoid per-row subqueries in database filters
+                        tenantRepository.findByCode(tenant).ifPresent(t -> TenantContext.setTenantId(t.getId()));
                     }
                 }
             } else {

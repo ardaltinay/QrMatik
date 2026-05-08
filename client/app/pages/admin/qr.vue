@@ -96,7 +96,7 @@ const { t } = useI18n()
 const uiStore = useUiStore()
 
 useHead({
-  title: () => `${t('admin.qr.title')} | Admin | feasymenu`
+  title: () => `${t('admin.qr.title')} | Admin`
 })
 
 // State

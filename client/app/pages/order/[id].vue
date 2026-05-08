@@ -13,7 +13,16 @@
           </svg>
           <span>{{ $t('common.menu') }}</span>
         </button>
-        <h1 class="text-xl font-black text-slate-900 tracking-tight">{{ $t('order.orderDetail') }}</h1>
+        
+        <NuxtLink 
+          to="/order/history" 
+          class="flex items-center gap-2 text-brand-600 hover:bg-brand-50 transition-all px-5 py-2.5 rounded-2xl border border-brand-100 bg-brand-50/30 font-bold text-xs uppercase tracking-widest"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <span>{{ $t('order.myOrders') || 'Tüm Siparişlerim' }}</span>
+        </NuxtLink>
       </div>
 
       <div v-if="order" class="space-y-8">
@@ -69,8 +78,29 @@
           </div>
         </div>
 
-        <!-- Alerts -->
+        <!-- Alerts & Actions -->
         <TransitionGroup name="fade">
+          <div v-if="canCancel" key="cancel-action" class="bg-amber-50 border border-amber-100 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 shadow-lg shadow-amber-500/5">
+            <div class="flex gap-4">
+              <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shrink-0 shadow-md">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm text-amber-900 font-bold leading-tight">{{ $t('order.cancelTimeTitle') || 'Vazgeçme Hakkı' }}</p>
+                <p class="text-xs text-amber-600 font-medium">{{ $t('order.cancelTimeDesc') || 'Siparişi iptal etmek için son' }} {{ cancelTimeLeft }}</p>
+              </div>
+            </div>
+            <button 
+              @click="cancelOrder"
+              :disabled="isCanceling"
+              class="w-full sm:w-auto px-6 py-2.5 bg-white border border-amber-200 text-amber-600 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all active:scale-95 shadow-sm"
+            >
+              {{ isCanceling ? '...' : $t('order.cancelBtn') || 'İPTAL ET' }}
+            </button>
+          </div>
+
           <div v-if="isExpired" key="expired" class="bg-rose-50 border border-rose-100 rounded-2xl p-5 flex gap-4">
             <div class="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-rose-500/20">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -80,7 +110,7 @@
             <p class="text-sm text-rose-600 font-bold leading-relaxed">{{ $t('order.expiredAlert') }}</p>
           </div>
 
-          <div v-else-if="order.status === 'served'" key="served" class="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xl shadow-emerald-500/5">
+          <div v-else-if="order.status?.toLowerCase() === 'served'" key="served" class="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xl shadow-emerald-500/5">
             <div class="flex gap-4">
               <div class="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20">
                 <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -101,7 +131,7 @@
             </button>
           </div>
           
-          <div v-else-if="order.status === 'bill_requested'" key="bill_requested" class="bg-brand-50 border border-brand-100 rounded-2xl p-5 flex gap-4">
+          <div v-else-if="order.status?.toLowerCase() === 'bill_requested'" key="bill_requested" class="bg-brand-50 border border-brand-100 rounded-2xl p-5 flex gap-4">
             <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-brand-600/20">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -222,14 +252,71 @@ const orderStore = useOrderStore()
 const { formatMoney, formatDateTz, orderCodeFromId, statusLabel } = useFormat()
 const { fetchJson } = useApi()
 const { connect, subscribe, disconnect } = useSocket()
+const uiStore = useUiStore()
 
 const id = String(route.params.id)
 const loadedOrder = ref<any>(null)
 const isLoading = ref(true)
 const isRequestingBill = ref(false)
+const isCanceling = ref(false)
+const now = ref(Date.now())
+
+let timer: any = null
 
 const orderFromStore = computed(() => orderStore.orders.find(o => String(o.id) === id))
 const order = computed(() => orderFromStore.value || loadedOrder.value)
+
+const canCancel = computed(() => {
+  if (!order.value || order.value.status?.toLowerCase() !== 'new') return false
+  
+  const createdAt = order.value.createdTime || order.value.createdAt
+  if (!createdAt) return false
+  
+  const createdDate = new Date(createdAt).getTime()
+  const diffMinutes = (now.value - createdDate) / 1000 / 60
+  
+  return diffMinutes < 2
+})
+
+const cancelTimeLeft = computed(() => {
+  if (!order.value) return ''
+  const createdAt = new Date(order.value.createdTime || order.value.createdAt).getTime()
+  const secondsLeft = Math.max(0, 120 - Math.floor((now.value - createdAt) / 1000))
+  const m = Math.floor(secondsLeft / 60)
+  const s = secondsLeft % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+})
+
+async function cancelOrder() {
+  if (!order.value || !canCancel.value || isCanceling.value) return
+
+  uiStore.confirm({
+    title: t('order.cancelBtn') || 'İptal Et',
+    message: t('order.cancelConfirm') || 'Siparişi iptal etmek istediğinize emin misiniz?',
+    isDanger: true,
+    onConfirm: async () => {
+      isCanceling.value = true
+      try {
+        const tableCode = localStorage.getItem('qm_table_code')
+        const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+        const sid = localStorage.getItem(sessionKey) || localStorage.getItem('qm_order_session') || ''
+
+        await fetchJson(`/api/orders/${encodeURIComponent(id)}/cancel`, {
+          method: 'POST',
+          body: JSON.stringify({ sessionId: sid })
+        })
+        
+        // Refresh data
+        await loadOrderData()
+        uiStore.success(t('order.canceledSuccess') || 'Siparişiniz iptal edildi.')
+      } catch (e) {
+        uiStore.error(t('order.cancelError') || 'İptal edilemedi. Mutfak hazırlığa başlamış olabilir.')
+      } finally {
+        isCanceling.value = false
+      }
+    }
+  })
+}
 
 // Stepper Logic
 const steps = computed(() => [
@@ -312,22 +399,37 @@ function copyLink() {
 async function loadOrderData() {
   isLoading.value = true
   try {
-    let sid = localStorage.getItem('qm_order_session') || ''
-    const querySid = route.query.sid
-    if (querySid) sid = String(querySid)
+    const tableCode = localStorage.getItem('qm_table_code')
+    const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+    const sid = localStorage.getItem(sessionKey) || localStorage.getItem('qm_order_session') || ''
     
-    let url = `/api/orders/${encodeURIComponent(id)}`
-    if (sid) url += `?sid=${encodeURIComponent(sid)}`
+    const currentTable = localStorage.getItem('qm_table_code') || ''
+    
+    // We send sessionId via header for security (prevents IDOR)
+    const data = await fetchJson(`/api/orders/${encodeURIComponent(id)}`, {
+      headers: {
+        'X-Session-Id': sid
+      }
+    })
 
-    const data = await fetchJson(url)
     if (data) {
+      // Security: Even if backend returned data, ensure it belongs to the current table session
+      // If the customer scanned A2 but is trying to view A1's order, block it.
+      if (currentTable && data.tableCode && data.tableCode !== currentTable) {
+        console.error('Security Breach: Table mismatch detected!')
+        router.push('/menu')
+        return
+      }
+
       loadedOrder.value = {
         ...data,
         items: Array.isArray(data.lines) ? data.lines : [],
       }
     }
-  } catch (e) {
-    // silently fail
+  } catch (e: any) {
+    if (e?.status === 403 || e?.status === 404) {
+      router.push('/menu')
+    }
   } finally {
     isLoading.value = false
   }
@@ -338,7 +440,10 @@ async function requestBill() {
   if (!order.value || isRequestingBill.value) return
   isRequestingBill.value = true
   try {
-    const sid = localStorage.getItem('qm_order_session') || ''
+    const tableCode = localStorage.getItem('qm_table_code')
+    const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+    const sid = localStorage.getItem(sessionKey) || localStorage.getItem('qm_order_session') || ''
+
     await fetchJson(`/api/orders/${encodeURIComponent(order.value.id)}/request-bill`, {
       method: 'POST',
       body: JSON.stringify({ sessionId: sid })
@@ -367,6 +472,10 @@ function menuItemName(itemId: number) {
 let unsub: (() => void) | null = null
 
 onMounted(() => {
+  timer = setInterval(() => {
+    now.value = Date.now()
+  }, 1000)
+
   if (!orderFromStore.value) {
     loadOrderData()
   } else {
@@ -380,7 +489,10 @@ onMounted(() => {
   // WebSocket Connection
   connect(() => {
     // We need the session ID to subscribe
-    const sid = localStorage.getItem('qm_order_session') || route.query.sid
+    const tableCode = localStorage.getItem('qm_table_code')
+    const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+    const sid = localStorage.getItem(sessionKey) || localStorage.getItem('qm_order_session') || route.query.sid
+    
     if (sid) {
       unsub = subscribe(`/topic/session/${sid}`, (updatedOrder: any) => {
         if (String(updatedOrder.id) === id) {
@@ -400,11 +512,12 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  if (timer) clearInterval(timer)
   if (unsub) unsub()
 })
 
 useHead({
-  title: () => `${t('order.orderDetail')} #${orderCodeFromId(id)} | feasymenu`,
+  title: () => `${t('order.orderDetail')} #${orderCodeFromId(id)}`,
   meta: [
     { name: 'robots', content: 'noindex, nofollow' }
   ]

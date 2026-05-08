@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div v-else-if="orders.length === 0" class="text-center py-24 bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
+      <div v-else-if="visibleOrders.length === 0" class="text-center py-24 bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
         <div class="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-slate-200 shadow-inner">
           <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -38,7 +38,7 @@
 
       <div v-else class="space-y-6">
         <div 
-          v-for="order in orders" 
+          v-for="order in visibleOrders" 
           :key="order.id" 
           @click="router.push(`/order/${order.id}`)"
           class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative overflow-hidden"
@@ -86,16 +86,42 @@ const { t } = useI18n()
 const router = useRouter()
 const orderStore = useOrderStore()
 const { formatMoney, formatDateTz, orderCodeFromId, statusLabel } = useFormat()
+const { connect, subscribe, disconnect } = useSocket()
 
 const orders = ref<any[]>([])
 const loading = ref(true)
+let unsub: (() => void) | null = null
+
+const visibleOrders = computed(() => {
+  return orders.value.filter(o => String(o.status || '').toLowerCase() !== 'canceled')
+})
 
 onMounted(async () => {
-  const sid = localStorage.getItem('qm_order_session')
+  const tableCode = localStorage.getItem('qm_table_code')
+  const sessionKey = tableCode ? `qm_session_${tableCode}` : 'qm_order_session'
+  const sid = localStorage.getItem(sessionKey) || localStorage.getItem('qm_order_session')
+
   if (sid) {
-    orders.value = await orderStore.loadSessionOrders(sid)
+    orders.value = await orderStore.loadSessionOrders(sid, tableCode || undefined)
+    
+    // Connect to WebSocket for real-time updates
+    connect(() => {
+      unsub = subscribe(`/topic/session/${sid}`, (updatedOrder: any) => {
+        const idx = orders.value.findIndex(o => String(o.id) === String(updatedOrder.id))
+        if (idx >= 0) {
+          orders.value[idx] = updatedOrder
+        } else {
+          // If it's a new order for this session, add it to the top
+          orders.value.unshift(updatedOrder)
+        }
+      })
+    })
   }
   loading.value = false
+})
+
+onBeforeUnmount(() => {
+  if (unsub) unsub()
 })
 
 function getStatusColor(status: string) {
@@ -125,7 +151,7 @@ function getStatusBadgeClass(status: string) {
 }
 
 useHead({
-  title: () => `${t('order.myOrders') || 'Siparişlerim'} | feasymenu`,
+  title: () => `${t('order.myOrders') || 'Siparişlerim'}`,
   meta: [
     { name: 'robots', content: 'noindex, nofollow' }
   ]

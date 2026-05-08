@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
+    '@nuxt/image',
   ],
 
   site: {
@@ -80,7 +81,7 @@ export default defineNuxtConfig({
       htmlAttrs: {},
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'feasymenu — Fast and Easy QR Menü & Restoran Yönetim Sistemi',
+      title: 'Hızlı ve Kolay QR Menü & Restoran Yönetim Sistemi',
       titleTemplate: '%s | feasymenu',
       meta: [
         { charset: 'utf-8' },
@@ -117,16 +118,16 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/api': {
-        target: 'http://localhost:8080/api',
+        target: 'http://127.0.0.1:8080/api',
         changeOrigin: false,
       },
       '/api/ws': {
-        target: 'http://localhost:8080/ws',
+        target: 'http://127.0.0.1:8080/ws',
         ws: true,
         changeOrigin: false,
       },
       '/files': {
-        target: 'http://localhost:8080/files',
+        target: 'http://127.0.0.1:8080/files',
         changeOrigin: false,
       },
     },

@@ -193,6 +193,6 @@ onMounted(() => {
 })
 
 useHead({
-  title: () => `${t('admin.upgrade.title')} | Admin | feasymenu`
+  title: () => `${t('admin.upgrade.title')} | Admin`
 })
 </script>

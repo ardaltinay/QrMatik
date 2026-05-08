@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <!-- Unauthenticated State (Login Form) -->
     <div v-if="!authStore.user" class="flex min-h-screen flex-col items-center justify-center p-4">
-      <div class="w-full max-w-md bg-white rounded-3xl p-8  border border-slate-100">
+      <div class="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100">
         <div class="text-center mb-8">
           <Logo size="lg" animate shadow />
           <h2 class="text-2xl font-bold text-slate-900">{{ $t('admin.login.title') }}</h2>
@@ -33,7 +33,7 @@
           <button 
             type="submit" 
             :disabled="authStore.loading"
-            class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg  transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg v-if="authStore.loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -46,7 +46,42 @@
     </div>
 
     <!-- Authenticated Layout -->
-    <div v-else class="flex h-screen overflow-hidden">
+    <div v-else class="flex h-screen overflow-hidden relative">
+      <!-- Persistent Notification Overlays -->
+      <div v-if="notifStore.notifications.length > 0" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3 w-full max-w-xs sm:max-w-sm pointer-events-none">
+        <TransitionGroup name="list">
+          <div 
+            v-for="notif in notifStore.notifications" 
+            :key="notif.id"
+            class="pointer-events-auto bg-white rounded-2xl shadow-2xl border-2 border-amber-500 overflow-hidden animate-in slide-in-from-right duration-300"
+          >
+            <div class="p-4 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center shrink-0 animate-bounce">
+                <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h4 class="font-black text-slate-900 text-sm uppercase tracking-tight">{{ notif.title }}</h4>
+                  <span class="text-[10px] font-bold text-slate-400">{{ formatTime(notif.timestamp) }}</span>
+                </div>
+                <p class="text-xs font-bold text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                  {{ notif.message }}
+                </p>
+                <div class="mt-3 flex justify-end">
+                  <button 
+                    @click="notifStore.remove(notif.id)"
+                    class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all active:scale-95"
+                  >
+                    {{ $t('common.confirm') || 'TAMAM' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TransitionGroup>
+      </div>
       
       <!-- Desktop Sidebar -->
       <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 shrink-0">
@@ -195,14 +230,19 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 import { useOrderStore } from '~/stores/order'
+import { useNotificationStore } from '~/stores/notification'
+import { useSocket } from '~/composables/useSocket'
 
 const authStore = useAuthStore()
 const orderStore = useOrderStore()
+const notifStore = useNotificationStore()
 const uiStore = useUiStore()
 const route = useRoute()
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
+const { connect, subscribe } = useSocket()
+let unsubNotif: (() => void) | null = null
 
 const loginForm = ref({
   username: '',
@@ -253,27 +293,19 @@ watch(() => route.path, (newPath) => {
   if (!authStore.user) return
   
   const role = String(authStore.user.role || '').toLowerCase().trim().replace(/ı/g, 'i')
-  
-  // DEBUG: Mutfak kullanıcısı için rolü ekrana bas (Bunu gördükten sonra sileceğiz)
-  if (newPath.includes('orders') && !role.includes('admin')) {
-     console.log('DEBUG ROLE:', role)
-  }
 
   // Kitchen user should only see kitchen
   if ((role === 'kitchen' || role.includes('kitchen')) && !newPath.includes('/admin/kitchen')) {
-    console.log('[Layout Guard] Kitchen detected, forcing /admin/kitchen')
     router.replace('/admin/kitchen')
   }
   
   // Bar user should only see bar
   if (role.includes('bar') && !newPath.includes('/admin/bar')) {
-    console.log('[Layout Guard] Bar user detected on wrong path, redirecting...')
     router.replace('/admin/bar')
   }
 
   // Saloon user should only see saloon
   if (role.includes('saloon') && !newPath.includes('/admin/saloon')) {
-    console.log('[Layout Guard] Saloon user detected on wrong path, redirecting...')
     router.replace('/admin/saloon')
   }
 
@@ -283,10 +315,34 @@ watch(() => route.path, (newPath) => {
   }
 }, { immediate: true })
 
-onMounted(() => {
+onMounted(async () => {
   if (authStore.user && (route.path === '/admin' || route.path === '/admin/')) {
     redirectByRole()
   }
+
+  if (authStore.user?.tenantCode) {
+    try {
+      await connect()
+      unsubNotif = subscribe(`/topic/notifications/${authStore.user.tenantCode}`, (notif: any) => {
+        if (notif.type === 'WAITER_CALL') {
+          notifStore.add({
+            type: 'WAITER_CALL',
+            title: t('menu.callWaiter'),
+            message: `${t('order.table')}: ${notif.tableCode}`,
+            tableCode: notif.tableCode,
+            timestamp: notif.timestamp || new Date().toISOString()
+          })
+          playNotificationSound()
+        }
+      })
+    } catch (e) {
+      console.error('Failed to connect to notification socket', e)
+    }
+  }
+})
+
+onBeforeUnmount(() => {
+  if (unsubNotif) unsubNotif()
 })
 
 const { t, locale, setLocale } = useI18n()
@@ -313,6 +369,24 @@ const isAdmin = computed(() => authStore.hasRole('admin'))
 
 function isActive(path: string) {
   return route.path === path || route.path.startsWith(path + '/')
+}
+
+function formatTime(iso: string) {
+  try {
+    return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  } catch {
+    return ''
+  }
+}
+
+function playNotificationSound() {
+  try {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3')
+    audio.volume = 0.5
+    audio.play()
+  } catch (e) {
+    console.warn('Sound play failed', e)
+  }
 }
 
 const navItems = computed(() => [
@@ -419,5 +493,20 @@ const navItems = computed(() => [
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 20px;
+}
+</style>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s ease;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 </style>

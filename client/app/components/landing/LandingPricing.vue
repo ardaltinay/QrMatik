@@ -30,7 +30,10 @@
           class="bg-white rounded-[2.5rem] md:rounded-[3rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm flex flex-col transition-all duration-500 hover:shadow-2xl hover:shadow-brand-400/10"
           :class="{'ring-2 ring-brand-400 ring-offset-4': plan.popular}"
         >
-          <div class="mb-6 md:mb-8">
+          <div class="mb-6 md:mb-8 relative">
+            <div v-if="plan.popular" class="absolute -top-10 -right-2 sm:-right-4 bg-brand-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-brand-500/30 animate-pulse">
+              {{ $i18n.locale === 'tr' ? 'En Popüler' : 'Most Popular' }}
+            </div>
             <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-1">{{ plan.isDynamic ? plan.nameKey : $t(plan.nameKey) }}</h3>
             <div class="flex items-baseline gap-1 mb-3 md:mb-4">
               <span class="text-3xl md:text-4xl font-bold text-slate-900">
@@ -79,18 +82,19 @@ async function loadPricing() {
   try {
     loading.value = true
     const data = await fetchJson('/api/public/pricing')
-    if (data && data.tiers) {
+    if (data && data.tiers && data.tiers.length > 0) {
       const isUSD = data.currency === 'USD'
       const symbol = isUSD ? '$' : (data.currency === 'TRY' ? '₺' : data.currency)
       const locale = isUSD ? 'en-US' : 'tr-TR'
       
       plans.value = data.tiers.map((tier: any) => {
-        const name = tier.name.toLowerCase();
+        const name = (tier.name || '').toLowerCase();
         let featureKeys: string[] = [];
         let descKey = '';
         let nameKey = '';
 
-        if (name === 'ücretsiz' || name === 'free') {
+        // Flexible matching for names
+        if (name.includes('ücretsiz') || name.includes('free')) {
           nameKey = 'landing.pricing.freeName';
           descKey = 'landing.pricing.freeDesc';
           featureKeys = [
@@ -99,7 +103,7 @@ async function loadPricing() {
             'landing.pricing.features.qrMenuBasic',
             'landing.pricing.features.kitchenBarBoards'
           ];
-        } else if (name === 'standart' || name === 'standard') {
+        } else if (name.includes('standart') || name.includes('standard')) {
           nameKey = 'landing.pricing.standardName';
           descKey = 'landing.pricing.standardDesc';
           featureKeys = [
@@ -110,7 +114,7 @@ async function loadPricing() {
             'landing.pricing.features.reports',
             'landing.pricing.features.prioritySupport'
           ];
-        } else if (name === 'pro') {
+        } else if (name.includes('pro')) {
           nameKey = 'landing.pricing.proName';
           descKey = 'landing.pricing.proDesc';
           featureKeys = [
@@ -128,17 +132,22 @@ async function loadPricing() {
         return {
           nameKey,
           descKey,
-          priceMonthly: symbol + tier.monthly.toLocaleString(locale, { minimumFractionDigits: 0 }),
-          priceYearly: symbol + (tier.yearly || (tier.monthly * 10)).toLocaleString(locale, { minimumFractionDigits: 0 }),
-          popular: name === 'standart' || name === 'standard',
+          priceMonthly: symbol + (tier.monthly || 0).toLocaleString(locale, { minimumFractionDigits: 0 }),
+          priceYearly: symbol + (tier.yearly || (tier.monthly * 10) || 0).toLocaleString(locale, { minimumFractionDigits: 0 }),
+          popular: name.includes('standart') || name.includes('standard'),
           featureKeys,
           isDynamic: false
         };
       })
     }
+
+    // If still empty after API check, trigger fallback
+    if (!plans.value || plans.value.length === 0) {
+      throw new Error('No pricing tiers found');
+    }
   } catch (e) {
     console.error('Failed to load pricing', e)
-    // Fallback to static if API fails
+    // Fallback to static if API fails or is empty
     plans.value = [
       {
         nameKey: 'landing.pricing.freeName', descKey: 'landing.pricing.freeDesc',

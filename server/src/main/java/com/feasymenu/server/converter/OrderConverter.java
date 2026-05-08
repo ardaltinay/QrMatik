@@ -49,6 +49,8 @@ public class OrderConverter {
         }
         dto.setCustomerName(e.getCustomerName());
         dto.setStatus(e.getStatus() != null ? e.getStatus().name() : null);
+        dto.setKitchenStatus(e.getKitchenStatus() != null ? e.getKitchenStatus().name() : null);
+        dto.setBarStatus(e.getBarStatus() != null ? e.getBarStatus().name() : null);
         try {
             if (e.getTotal() != null) {
                 dto.setTotal(e.getTotal());

@@ -150,7 +150,7 @@ const { fetchJson } = useApi()
 const uiStore = useUiStore()
 
 useHead({
-  title: () => `${t('admin.tables.title')} | Admin | feasymenu`
+  title: () => `${t('admin.tables.title')} | Admin`
 })
 
 // State
@@ -255,16 +255,22 @@ async function saveTable() {
 }
 
 async function confirmDelete(table: any) {
-  if (confirm(t('admin.tables.deleteConfirm'))) {
-    try {
-      await fetchJson(`/api/tables/${table.id}`, { method: 'DELETE' })
-      await loadTables()
-    } catch (e: any) {
-      const errorMessage = e?.message || e?.toString() || t('errors.serverError');
-      const translated = t(errorMessage);
-      uiStore.error(translated.includes('error.') ? errorMessage : translated);
+  uiStore.confirm({
+    title: t('admin.common.delete') || 'Sil',
+    message: t('admin.tables.deleteConfirm') || 'Bu masayı silmek istediğinize emin misiniz?',
+    isDanger: true,
+    onConfirm: async () => {
+      try {
+        await fetchJson(`/api/tables/${table.id}`, { method: 'DELETE' })
+        await loadTables()
+        uiStore.success(t('admin.common.deleted') || 'Silindi.')
+      } catch (e: any) {
+        const errorMessage = e?.message || e?.toString() || t('errors.serverError');
+        const translated = t(errorMessage);
+        uiStore.error(translated.includes('error.') ? errorMessage : translated);
+      }
     }
-  }
+  })
 }
 
 function getTableUrl(code: string) {

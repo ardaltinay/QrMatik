@@ -193,7 +193,7 @@
 
             <div class="flex items-center justify-between mt-auto pt-2 border-t border-slate-100">
               <div class="font-bold text-slate-800">{{ formatPrice(order.total) }}</div>
-              <button v-if="order.status?.toLowerCase() === 'served'" @click="updateStatus(order.id, 'payment_completed')" class="px-3 py-1.5 bg-brand-50 text-brand-600 font-bold text-xs rounded-lg hover:bg-brand-100 transition-colors border border-brand-200">
+              <button v-if="['served', 'bill_requested'].includes(order.status?.toLowerCase())" @click="updateStatus(order.id, 'payment_completed')" class="px-3 py-1.5 bg-brand-50 text-brand-600 font-bold text-xs rounded-lg hover:bg-brand-100 transition-colors border border-brand-200">
                 {{ $t('admin.orders.completeBtn') }}
               </button>
             </div>
@@ -246,6 +246,11 @@ onMounted(async () => {
         if (typeof updatedOrder.lines === 'string') {
           try { updatedOrder.lines = JSON.parse(updatedOrder.lines) } catch (e) {}
         }
+
+        // Backend DTO uses 'lines', but template might expect 'items'
+        if (updatedOrder.lines && !updatedOrder.items) {
+          updatedOrder.items = updatedOrder.lines
+        }
         
         // Play notification sound for NEW orders
         const isNew = !orderStore.orders.some(o => o.id === updatedOrder.id)
@@ -259,7 +264,7 @@ onMounted(async () => {
         if (index !== -1) {
           orderStore.orders[index] = updatedOrder
         } else {
-          // If it's a new order, add it to the beginning
+          // If it's a new order, add it to the beginning of the list
           orderStore.orders.unshift(updatedOrder)
         }
       })
@@ -335,7 +340,7 @@ function getOtherStatusTextColor(status: string) {
 }
 
 useHead({
-  title: () => `${t('admin.orders.title')} | Admin | feasymenu`
+  title: () => `${t('admin.orders.title')} | Admin`
 })
 </script>
 

@@ -25,6 +25,12 @@
           </svg>
           {{ $t('admin.menu.addItem') }}
         </button>
+        <button @click="openCategorySortModal" class="w-full sm:w-auto px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h13M3 8h13M3 12h13M3 16h13" />
+          </svg>
+          {{ $t('admin.menu.sortCategories') }}
+        </button>
       </div>
     </div>
 
@@ -52,7 +58,7 @@
             <tr v-for="item in filteredMenu" :key="item.id" class="hover:bg-slate-50/80 transition-colors">
               <td class="px-6 py-4">
                 <div v-if="item.image" class="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden border border-slate-200">
-                  <img :src="item.image" :alt="item.name" class="w-full h-full object-cover" loading="lazy" />
+                  <NuxtImg :src="item.image" :alt="item.name" format="webp" class="w-full h-full object-cover" loading="lazy" />
                 </div>
                 <div v-else class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
                   <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,9 +83,9 @@
               </td>
               <td class="px-6 py-4">
                 <div v-if="item.stockEnabled">
-                  <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold border" 
+                  <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold border min-w-[3.5rem]" 
                     :class="item.stockQuantity && item.stockQuantity > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'">
-                    {{ item.stockQuantity || 0 }} {{ $t('admin.menu.columns.stock') }}
+                    {{ item.stockQuantity || 0 }}
                   </span>
                 </div>
                 <span v-else class="text-xs text-slate-400">-</span>
@@ -166,6 +172,11 @@
               </datalist>
             </div>
 
+            <div class="md:col-span-1">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.menu.modal.sortOrder') }}</label>
+              <input v-model.number="form.sortOrder" type="number" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" placeholder="0" />
+            </div>
+
             <div class="md:col-span-2">
               <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.menu.modal.image') }}</label>
               <input v-model="form.image" type="text" placeholder="https://" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
@@ -205,7 +216,62 @@
         </div>
       </div>
     </div>
+    
+    <!-- Category Sort Modal -->
+    <div v-if="isCategorySortModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="isCategorySortModalOpen = false"></div>
+      <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900">{{ $t('admin.menu.categorySort.title') }}</h3>
+            <p class="text-slate-500 text-xs mt-0.5">{{ $t('admin.menu.categorySort.subtitle') }}</p>
+          </div>
+          <button @click="isCategorySortModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto grow">
+          <div class="space-y-2">
+            <div 
+              v-for="(cat, index) in sortingCategories" 
+              :key="cat" 
+              class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl group hover:border-brand-500 transition-all shadow-sm"
+            >
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">{{ index + 1 }}</span>
+                <span class="font-bold text-slate-800">{{ te(`menu.categories.${cat}`) ? $t(`menu.categories.${cat}`) : cat }}</span>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button 
+                  @click="moveCategory(index, -1)" 
+                  :disabled="index === 0"
+                  class="p-2 text-slate-400 hover:text-brand-600 disabled:opacity-20 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg>
+                </button>
+                <button 
+                  @click="moveCategory(index, 1)" 
+                  :disabled="index === sortingCategories.length - 1"
+                  class="p-2 text-slate-400 hover:text-brand-600 disabled:opacity-20 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+          <button @click="isCategorySortModalOpen = false" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">
+            {{ $t('admin.common.cancel') }}
+          </button>
+          <button @click="saveCategoryOrder" class="px-4 py-2 text-sm font-semibold bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors shadow-lg" :disabled="savingOrder">
+            {{ savingOrder ? $t('admin.common.saving') : $t('admin.common.save') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -225,7 +291,7 @@ const authStore = useAuthStore()
 const { isProPlan, loadTenantConfig } = useTenant()
 
 useHead({
-  title: () => `${t('admin.menu.title')} | Admin | feasymenu`
+  title: () => `${t('admin.menu.title')} | Admin`
 })
 
 // State
@@ -234,8 +300,12 @@ const loading = ref(true)
 const searchQuery = ref('')
 
 const isModalOpen = ref(false)
+const isCategorySortModalOpen = ref(false)
 const isEditing = ref(false)
 const saving = ref(false)
+const savingOrder = ref(false)
+
+const sortingCategories = ref<string[]>([])
 
 const form = ref({
   id: '',
@@ -245,19 +315,18 @@ const form = ref({
   descriptionEn: '',
   price: null as number | null,
   priceUsd: null as number | null,
-  category: 'main_courses',
+  category: '',
   subcategory: '',
   image: '',
+  sortOrder: null as number | null,
   stockEnabled: false,
-  stockQuantity: 0
+  stockQuantity: 0,
 })
 
 // Configurable categories for the form (includes existing item values to avoid missing categories)
-const defaultCategories = ['main_courses', 'beverages', 'desserts', 'salads', 'starters']
-const defaultSubcategories = ['hot', 'cold', 'vegan', 'gluten_free', 'popular']
 
 const availableCategories = computed(() => {
-  const set = new Set(defaultCategories)
+  const set = new Set([])
   menuItems.value.forEach(item => {
     if (item.category) set.add(item.category)
   })
@@ -265,7 +334,7 @@ const availableCategories = computed(() => {
 })
 
 const availableSubcategories = computed(() => {
-  const set = new Set(defaultSubcategories)
+  const set = new Set([])
   menuItems.value.forEach(item => {
     if (item.subcategory) set.add(item.subcategory)
   })
@@ -303,20 +372,7 @@ function formatPrice(p: number) {
 function openModal(item?: any) {
   if (item) {
     isEditing.value = true
-    form.value = {
-      id: item.id,
-      name: item.name,
-      nameEn: item.nameEn || '',
-      description: item.description || '',
-      descriptionEn: item.descriptionEn || '',
-      price: item.price,
-      priceUsd: item.priceUsd || null,
-      category: item.category,
-      subcategory: item.subcategory || '',
-      image: item.image || '',
-      stockEnabled: item.stockEnabled || false,
-      stockQuantity: item.stockQuantity || 0
-    }
+    form.value = { ...item }
   } else {
     isEditing.value = false
     form.value = {
@@ -327,14 +383,47 @@ function openModal(item?: any) {
       descriptionEn: '',
       price: null,
       priceUsd: null,
-      category: 'main_courses',
+      category: '',
       subcategory: '',
       image: '',
+      sortOrder: null,
       stockEnabled: false,
-      stockQuantity: 0
+      stockQuantity: 0,
     }
   }
   isModalOpen.value = true
+}
+
+function openCategorySortModal() {
+  sortingCategories.value = [...availableCategories.value]
+  isCategorySortModalOpen.value = true
+}
+
+function moveCategory(index: number, direction: number) {
+  const newIndex = index + direction
+  if (newIndex < 0 || newIndex >= sortingCategories.value.length) return
+  const item = sortingCategories.value.splice(index, 1)[0]
+  sortingCategories.value.splice(newIndex, 0, item)
+}
+
+async function saveCategoryOrder() {
+  savingOrder.value = true
+  try {
+    await fetchJson('/api/tenant/category-order', {
+      method: 'PUT',
+      body: JSON.stringify({ order: sortingCategories.value.join(',') })
+    })
+    uiStore.success(t('admin.menu.categorySort.saveSuccess'))
+    isCategorySortModalOpen.value = false
+    // Reload tenant config to update UI elsewhere
+    if (authStore.user?.tenantCode) {
+      await loadTenantConfig(authStore.user.tenantCode)
+    }
+  } catch (e) {
+    uiStore.error(t('admin.menu.categorySort.saveError'))
+  } finally {
+    savingOrder.value = false
+  }
 }
 
 function closeModal() {
@@ -364,6 +453,7 @@ async function saveItem() {
       category: form.value.category,
       subcategory: form.value.subcategory,
       image: form.value.image,
+      sortOrder: form.value.sortOrder,
       stockEnabled: form.value.stockEnabled,
       stockQuantity: form.value.stockQuantity
     }
@@ -392,16 +482,22 @@ async function saveItem() {
 }
 
 async function confirmDelete(item: any) {
-  if (confirm(t('admin.menu.deleteConfirm'))) {
-    try {
-      await fetchJson(`/api/menu/${item.id}`, { method: 'DELETE' })
-      await loadMenu()
-    } catch (e: any) {
-      const errorMessage = e?.message || e?.toString() || t('errors.serverError');
-      const translated = t(errorMessage);
-      uiStore.error(translated.includes('error.') ? errorMessage : translated);
+  uiStore.confirm({
+    title: t('admin.common.delete') || 'Sil',
+    message: t('admin.menu.deleteConfirm') || 'Bu ürünü silmek istediğinize emin misiniz?',
+    isDanger: true,
+    onConfirm: async () => {
+      try {
+        await fetchJson(`/api/menu/${item.id}`, { method: 'DELETE' })
+        await loadMenu()
+        uiStore.success(t('admin.common.deleted') || 'Silindi.')
+      } catch (e: any) {
+        const errorMessage = e?.message || e?.toString() || t('errors.serverError');
+        const translated = t(errorMessage);
+        uiStore.error(translated.includes('error.') ? errorMessage : translated);
+      }
     }
-  }
+  })
 }
 
 onMounted(async () => {

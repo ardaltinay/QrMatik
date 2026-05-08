@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class TenantAdminService {
         stats.put("mrr", mrr);
         stats.put("trialCount",
                 all.stream().filter(
-                        t -> t.getPlanPaidUntil() != null && t.getPlanPaidUntil().isAfter(java.time.LocalDate.now()))
+                        t -> t.getPlanPaidUntil() != null && t.getPlanPaidUntil().isAfter(Instant.now()))
                         .count());
 
         return stats;

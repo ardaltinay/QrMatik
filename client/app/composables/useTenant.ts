@@ -1,4 +1,3 @@
-import { getRequestHeader } from 'h3'
 
 /**
  * Tenant detection and configuration composable.
@@ -16,7 +15,7 @@ export function useTenant() {
     let host = ''
     if (import.meta.server) {
       const event = useRequestEvent()
-      host = getRequestHeader(event, 'host') || ''
+      host = (event?.node.req.headers.host) || ''
     } else {
       host = window.location.hostname || ''
     }

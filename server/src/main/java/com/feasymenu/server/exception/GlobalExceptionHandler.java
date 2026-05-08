@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -48,6 +49,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), "table_unavailable", req, null);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex, WebRequest req) {
+        // Return a generic conflict message instead of raw DB error details in response
+        String message = "Database constraint violation. The record might already exist or is linked to other data.";
+        return build(HttpStatus.CONFLICT, message, "data_integrity_error", req, null);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, WebRequest req) {
         List<String> details = ex.getBindingResult().getFieldErrors().stream()
@@ -74,7 +82,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, WebRequest req) {
         boolean prod = isProd();
-        String msg = prod ? "Beklenmeyen bir hata oluştu." : ex.getMessage();
+        String msg = prod ? "An unexpected error occurred." : ex.getMessage();
         return build(HttpStatus.INTERNAL_SERVER_ERROR, msg, "internal_error", req, null);
     }
 

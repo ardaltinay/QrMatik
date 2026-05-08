@@ -45,7 +45,7 @@
             <tr v-for="item in filteredStock" :key="item.id" class="hover:bg-slate-50/80 transition-colors">
               <td class="px-6 py-4">
                 <div v-if="item.image" class="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden border border-slate-200 shrink-0">
-                  <img :src="item.image" :alt="item.name" class="w-full h-full object-cover" loading="lazy" />
+                  <NuxtImg :src="item.image" :alt="item.name" format="webp" class="w-full h-full object-cover" loading="lazy" />
                 </div>
                 <div v-else class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200 shrink-0">
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold border" 
+                <span class="inline-flex items-center justify-center px-4 py-1 rounded-full text-sm font-bold border min-w-[3rem]" 
                   :class="item.stockQuantity && item.stockQuantity > 5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (item.stockQuantity && item.stockQuantity > 0 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200')">
                   {{ item.stockQuantity || 0 }}
                 </span>
@@ -119,7 +119,7 @@ const { fetchJson } = useApi()
 const uiStore = useUiStore()
 
 useHead({
-  title: () => `${t('admin.stock.title')} | Admin | feasymenu`
+  title: () => `${t('admin.stock.title')} | Admin`
 })
 
 // State

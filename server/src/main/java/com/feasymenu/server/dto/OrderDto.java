@@ -22,6 +22,8 @@ public class OrderDto {
     private String tenantCode;
     private String customerName;
     private String status;
+    private String kitchenStatus;
+    private String barStatus;
     private BigDecimal total;
     private Instant createdTime;
     // Zone-aware timestamp for clients; prefer this over createdTime when available

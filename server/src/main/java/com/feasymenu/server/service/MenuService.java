@@ -89,8 +89,11 @@ public class MenuService {
             e.setSubcategory(patch.getSubcategory());
         if (patch.getImage() != null)
             e.setImage(patch.getImage());
-        // Stock-related fields require plan check
-        if (patch.getStockEnabled() != null || patch.getStockQuantity() != null) {
+        // Stock-related fields require plan check only if they are actually being changed/enabled
+        boolean stockEnabledChanged = patch.getStockEnabled() != null && !patch.getStockEnabled().equals(e.getStockEnabled());
+        boolean stockQuantityChanged = patch.getStockQuantity() != null && !patch.getStockQuantity().equals(e.getStockQuantity());
+        
+        if (stockEnabledChanged || stockQuantityChanged) {
             // will throw PlanFeatureUnavailableException when not allowed
             if (tenant != null) {
                 planGuard.assertStockFeature(tenant);

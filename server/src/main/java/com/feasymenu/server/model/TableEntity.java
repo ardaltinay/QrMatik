@@ -23,7 +23,7 @@ import org.hibernate.annotations.Filter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "tenantFilter", condition = "tenant_id = (SELECT t.id FROM tenants t WHERE t.code = :tenantId)")
+@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 public class TableEntity extends AbstractEntity {
     @Column(nullable = false)
     private String code; // e.g. A1, B3, Bar-01

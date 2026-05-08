@@ -3,7 +3,6 @@ package com.feasymenu.server.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Configuration
-@EnableScheduling
 public class WebConfig {
 
     @Value("${app.upload-dir:uploads}")
@@ -42,16 +40,15 @@ public class WebConfig {
                 } else if (clientUrl != null && !clientUrl.isBlank()) {
                     mapping.allowedOrigins(clientUrl);
                 } else {
-                    // Safer dev fallback: restrict to common local dev origins instead of allowing all
+                    // Safer dev fallback: restrict to common local dev origins instead of allowing
+                    // all
                     mapping.allowedOrigins(
-                        "http://localhost:3000", "http://127.0.0.1:3000",
-                        "http://localhost:5173", "http://127.0.0.1:5173"
-                    );
+                            "http://localhost:3000", "http://127.0.0.1:3000",
+                            "http://localhost:5173", "http://127.0.0.1:5173");
                     // allow wildcard subdomains like http://{tenant}.localhost:3000
                     mapping.allowedOriginPatterns(
-                        "http://*.localhost:3000", "http://*.localhost",
-                        "http://*.localhost:5173"
-                    );
+                            "http://*.localhost:3000", "http://*.localhost",
+                            "http://*.localhost:5173");
                 }
                 // Note: callback mapping already configured above
             }

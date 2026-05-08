@@ -1,5 +1,6 @@
 package com.feasymenu.server.service;
 
+import com.feasymenu.server.model.RefreshTokenEntity;
 import com.feasymenu.server.model.UserEntity;
 import com.feasymenu.server.repository.RefreshTokenRepository;
 import com.feasymenu.server.repository.UserRepository;
@@ -30,31 +31,33 @@ public class AuthService {
     public Optional<Map<String, Object>> login(String username, String password, String tenant) {
         // Boş string gelirse null kabul et
         String tCode = (tenant == null || tenant.trim().isEmpty()) ? null : tenant;
-        
+
         var opt = (tCode != null)
                 ? userRepository.findTopByUsernameAndTenant_CodeOrderByCreatedTimeDesc(username, tCode)
                 : userRepository.findTopByUsernameAndTenantIsNullOrderByCreatedTimeDesc(username);
 
         if (opt.isEmpty()) {
-            System.out.println("[AuthService] Login failed: User not found with username: " + username + " (Tenant: " + tCode + ")");
+            System.out.println("[AuthService] Login failed: User not found with username: " + username + " (Tenant: "
+                    + tCode + ")");
             return Optional.empty();
         }
-        
+
         UserEntity u = opt.get();
         String hash = u.getPasswordHash();
         if (hash == null || !passwordEncoder.matches(password, hash)) {
             System.out.println("[AuthService] Login failed: Password mismatch for user: " + username);
             return Optional.empty();
         }
-        
+
         System.out.println("[AuthService] Login successful for user: " + username + " with role: " + u.getRole());
 
         String tenantCode = (u.getTenant() != null ? u.getTenant().getCode() : null);
+        String tenantId = (u.getTenant() != null ? u.getTenant().getId().toString() : null);
         if (u.getTenant() != null && !u.getTenant().isActive()) {
             return Optional.empty(); // Block login for suspended tenants
         }
         String accessToken = jwtUtil.generateToken(u.getUsername(), u.getRole() != null ? u.getRole().name() : null,
-                tenantCode);
+                tenantCode, tenantId);
 
         // Generate Refresh Token
         String refreshToken = jwtUtil.generateRefreshToken(u.getUsername());
@@ -71,7 +74,7 @@ public class AuthService {
 
     private void saveRefreshToken(String username, String token) {
         refreshTokenRepository.deleteByUsername(username); // One refresh token per user for simplicity
-        var rt = com.feasymenu.server.model.RefreshTokenEntity.builder().username(username).token(token)
+        var rt = RefreshTokenEntity.builder().username(username).token(token)
                 .expiryDate(java.time.Instant.now().plus(7, java.time.temporal.ChronoUnit.DAYS)).build();
         refreshTokenRepository.save(rt);
     }
@@ -81,8 +84,9 @@ public class AuthService {
                 .filter(rt -> !rt.isRevoked() && rt.getExpiryDate().isAfter(java.time.Instant.now())).map(rt -> {
                     var user = userRepository.findTopByUsernameOrderByCreatedTimeDesc(rt.getUsername()).orElseThrow();
                     String tenantCode = (user.getTenant() != null ? user.getTenant().getCode() : null);
+                    String tenantId = (user.getTenant() != null ? user.getTenant().getId().toString() : null);
                     String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name(),
-                            tenantCode);
+                            tenantCode, tenantId);
                     return Map.of("token", newAccessToken);
                 });
     }

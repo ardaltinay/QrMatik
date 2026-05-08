@@ -55,10 +55,8 @@ public class AuthController {
         } catch (Exception ignored) {
         }
         String key = (tenant == null ? "_" : tenant) + "|" + req.username().toLowerCase() + "|" + ip;
-        if (rateLimiter.isBlocked(key)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .body(Map.of("error", "Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin."));
-        }
+        boolean isBlocked = rateLimiter.isBlocked(key);
+
         return authService.login(req.username(), req.password(), tenant).map(r -> {
             rateLimiter.onSuccess(key);
 
@@ -68,7 +66,6 @@ public class AuthController {
             String origin = request.getHeader("Origin");
             String forwardedProto = request.getHeader("X-Forwarded-Proto");
             
-            // Eğer istek HTTPS ise VEYA arkada çalıştığımız proxy (Nginx) orijinal isteğin HTTPS olduğunu söylüyorsa
             boolean isSecure = (origin != null && origin.startsWith("https")) || "https".equalsIgnoreCase(forwardedProto);
 
             var cookie = ResponseCookie.from("qm_token", token)
@@ -90,10 +87,14 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-            // Still return user info but without tokens in body
             return ResponseEntity.ok(Map.of("user", r.get("user")));
         }).orElseGet(() -> {
             rateLimiter.onFailure(key);
+            if (isBlocked) {
+                try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                        .body(Map.of("error", "Çok fazla başarısız deneme. Lütfen 10 dakika sonra tekrar deneyin."));
+            }
             return ResponseEntity.status(401).body(Map.of("error", "Hatalı kullanıcı adı veya parola"));
         });
     }

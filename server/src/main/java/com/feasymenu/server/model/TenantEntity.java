@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "tenants")
@@ -44,6 +43,10 @@ public class TenantEntity extends AbstractEntity {
     @Column(name = "font_family")
     private String fontFamily;
 
+    private String address;
+
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     @Builder.Default
@@ -60,6 +63,9 @@ public class TenantEntity extends AbstractEntity {
     @Column(name = "time_zone")
     private String timeZone; // e.g., Europe/Istanbul
 
+    @Column(name = "category_order", length = 1000)
+    private String categoryOrder; // Comma separated list of category names
+
     // Billing tracking (set on successful upgrade payments)
     // MONTHLY | YEARLY
     @Column(name = "billing_period")
@@ -67,7 +73,7 @@ public class TenantEntity extends AbstractEntity {
 
     // Date until which the plan is paid/active (inclusive)
     @Column(name = "plan_paid_until")
-    private LocalDate planPaidUntil;
+    private Instant planPaidUntil;
 
     @Column(name = "last_payment_id")
     private String lastPaymentId;
@@ -84,7 +90,7 @@ public class TenantEntity extends AbstractEntity {
     private String pendingBillingPeriod; // MONTHLY | YEARLY
 
     @Column(name = "pending_effective_date")
-    private LocalDate pendingEffectiveDate;
+    private Instant pendingEffectiveDate;
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     @Builder.Default

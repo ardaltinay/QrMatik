@@ -1,4 +1,3 @@
-import { getRequestHeaders } from 'h3'
 
 /**
  * API fetch wrapper for authenticated requests.
@@ -17,43 +16,29 @@ export function useApi() {
 
     // Proxy headers from the original request when on the server
     if (import.meta.server) {
-      const event = useRequestEvent()
-      if (event) {
-        const requestHeaders = getRequestHeaders(event)
-        // Forward cookies and other relevant headers
-        if (requestHeaders.cookie) headers.cookie = requestHeaders.cookie
-        if (requestHeaders.authorization) headers.authorization = requestHeaders.authorization
-        if (requestHeaders['user-agent']) headers['user-agent'] = requestHeaders['user-agent']
-      }
+      // Official Nuxt way to proxy headers
+      const proxyHeaders = useRequestHeaders(['cookie', 'authorization', 'user-agent'])
+      Object.assign(headers, proxyHeaders)
     }
 
     if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json'
     }
 
-    // Add timeout handling
-    const controller = new AbortController()
-    const id = setTimeout(() => controller.abort(), 10000) // 10s timeout
-
     try {
       // Ensure path is absolute for server-side fetches if it starts with /api
       let fetchUrl = path
       if (import.meta.server && path.startsWith('/')) {
-        // You might need to use the full backend URL here
-        // If they are on the same server, localhost or the proxy URL is needed
-        fetchUrl = `${config.public.apiBase || 'http://localhost:8080'}${path}`
+        fetchUrl = `${config.public.apiBase || 'http://127.0.0.1:8080'}${path}`
       }
 
       const response = await fetch(fetchUrl, { 
         ...options, 
         headers,
-        credentials: 'include',
-        signal: controller.signal
+        credentials: 'include'
       })
-      clearTimeout(id)
       return response
     } catch (err) {
-      clearTimeout(id)
       throw err
     }
   }

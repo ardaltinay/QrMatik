@@ -23,70 +23,78 @@
     </div>
 
     <!-- Tables Grid -->
-    <div class="flex-grow overflow-y-auto pb-4 scrollbar-thin">
+    <div class="flex-grow overflow-y-auto pb-8 scrollbar-thin">
       <div v-if="filteredTableGroups.length === 0" class="text-center py-20 text-slate-400 font-medium">
         {{ $t('admin.cashier.noActiveTables') }}
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <div 
           v-for="group in filteredTableGroups" 
           :key="group.table"
-          class="bg-white rounded-2xl border flex flex-col overflow-hidden transition-all duration-500"
+          class="bg-white rounded-2xl border flex flex-col overflow-hidden transition-all duration-200"
           :class="[
-            group.hasBillRequest ? 'border-rose-500 shadow-xl shadow-rose-500/10 ring-2 ring-rose-500 ring-offset-2 animate-pulse-subtle' : 'border-slate-200 shadow-sm hover:shadow-md'
+            group.hasBillRequest ? 'border-rose-500 shadow-lg shadow-rose-500/10' : 'border-slate-200 shadow-sm hover:shadow-md'
           ]"
         >
-          <!-- Bill Requested Badge -->
-          <div v-if="group.hasBillRequest" class="bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.2em] py-1.5 text-center">
+          <!-- Bill Requested Indicator -->
+          <div v-if="group.hasBillRequest" class="bg-rose-500 text-white text-[10px] font-bold uppercase tracking-widest py-1.5 text-center animate-pulse">
             {{ $t('order.statuses.bill_requested') }}
           </div>
+
           <!-- Table Header -->
-          <div class="bg-brand-50 border-b border-brand-100 p-4 flex justify-between items-center">
+          <div class="p-4 flex justify-between items-center border-b border-slate-50 bg-slate-50/50">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-white text-brand-600 flex items-center justify-center font-bold shadow-sm">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </div>
-              <span class="font-bold text-brand-900 text-lg">{{ group.table }}</span>
+              <span class="font-bold text-slate-900 text-lg tracking-tight">{{ group.table }}</span>
             </div>
-            <div class="text-xs font-semibold text-brand-600 bg-brand-100 px-2 py-1 rounded-md">
+            <div class="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded-lg">
               {{ group.orders.length }} {{ $t('admin.reports.summary.orders') || 'Orders' }}
             </div>
           </div>
+ 
+          <!-- Items List (Compact) -->
+          <div class="p-4 flex-grow overflow-y-auto max-h-[280px] space-y-4">
+            <div v-for="(order, oIdx) in group.orders" :key="order.id" class="relative">
+              <div v-if="oIdx > 0" class="border-t border-dashed border-slate-100 my-3"></div>
+              
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-medium text-slate-400 uppercase">#{{ orderCodeFromId(order.id) }}</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-current" :class="getStatusBadgeClass(order.status)">
+                  {{ statusLabel(order.status) }}
+                </span>
+              </div>
 
-          <!-- Items List -->
-          <div class="p-4 flex-grow overflow-y-auto max-h-64 bg-slate-50/50">
-            <div class="space-y-3">
-              <div v-for="order in group.orders" :key="order.id" class="text-sm">
-                <div class="flex justify-between items-center mb-1">
-                  <span class="text-xs font-semibold text-slate-400">#{{ orderCodeFromId(order.id) }} - {{ statusLabel(order.status) }}</span>
-                  <span class="font-bold text-slate-700">{{ formatPrice(order.total) }}</span>
-                </div>
-                <div v-for="(it, i) in (order.items || order.lines)" :key="i" class="flex justify-between text-slate-600 mb-0.5">
-                  <span class="truncate pr-2">
-                    <span class="font-semibold text-slate-800">{{ it.qty || it.quantity }}x</span> 
+              <div class="space-y-1">
+                <div v-for="(it, i) in (order.items || order.lines)" :key="i" class="flex justify-between items-start text-sm">
+                  <span class="text-slate-600 line-clamp-1 flex-grow">
+                    <span class="font-bold text-slate-900 pr-1">{{ it.qty || it.quantity }}x</span>
                     {{ it.name || menuItemName(it.itemId) }}
                   </span>
+                  <span class="font-semibold text-slate-800 shrink-0 ml-2">{{ formatPrice((it.price || 0) * (it.qty || it.quantity)) }}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Checkout Footer -->
-          <div class="p-4 border-t border-slate-100 bg-white mt-auto">
-            <div class="flex justify-between items-center mb-4">
-              <span class="text-sm font-semibold text-slate-500">{{ $t('admin.cashier.tableTotal') }}</span>
-              <span class="text-xl font-bold text-slate-900">{{ formatPrice(group.total) }}</span>
+ 
+          <!-- Footer -->
+          <div class="p-4 bg-slate-50 border-t border-slate-100 mt-auto">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-semibold text-slate-500">{{ $t('admin.cashier.tableTotal') }}</span>
+              <span class="text-xl font-bold text-slate-900 tracking-tight">{{ formatPrice(group.total) }}</span>
             </div>
             <button 
               @click="checkoutTable(group)" 
-              class="w-full py-2.5 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-colors shadow-sm  disabled:opacity-50"
+              class="w-full py-2.5 font-bold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              :class="[
+                group.hasBillRequest 
+                  ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-500/20' 
+                  : 'bg-slate-800 hover:bg-slate-900 text-white shadow-sm'
+              ]"
               :disabled="checkingOut === group.table"
             >
-              <svg v-if="checkingOut === group.table" class="w-5 h-5 mx-auto animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg v-if="checkingOut === group.table" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               <span v-else>{{ $t('admin.cashier.payBtn') }}</span>
             </button>
@@ -106,12 +114,24 @@ definePageMeta({
 
 const { t } = useI18n()
 const orderStore = useOrderStore()
+const authStore = useAuthStore()
 const { orderCodeFromId, statusLabel } = useFormat()
 const uiStore = useUiStore()
 
 const searchQuery = ref('')
 const checkingOut = ref<string | null>(null)
 let pollInterval: any = null
+
+function getStatusBadgeClass(status?: string) {
+  const s = (status || '').toLowerCase()
+  switch (s) {
+    case 'bill_requested': return 'bg-rose-100 text-rose-700'
+    case 'served': return 'bg-emerald-100 text-emerald-700'
+    case 'ready': return 'bg-blue-100 text-blue-700'
+    case 'preparing': return 'bg-amber-100 text-amber-700'
+    default: return 'bg-slate-100 text-slate-500'
+  }
+}
 
 onMounted(async () => {
   await orderStore.loadMenu()
@@ -157,10 +177,11 @@ function formatPrice(p: number) {
 
 // Group active orders by table
 const tableGroups = computed(() => {
-  // Cashier only sees orders with BILL_REQUESTED status
-  const activeOrders = orderStore.orders.filter(o => o.status === 'bill_requested')
+  // Cashier sees all orders that are not terminal (completed, canceled, expired)
+  const terminalStatuses = ['payment_completed', 'canceled', 'expired']
+  const activeOrders = orderStore.orders.filter(o => !terminalStatuses.includes((o.status || '').toLowerCase()))
 
-  const groups: Record<string, { table: string, orders: any[], total: number }> = {}
+  const groups: Record<string, { table: string, orders: any[], total: number, hasBillRequest: boolean }> = {}
 
   for (const order of activeOrders) {
     const tableId = order.tableCode || order.table || 'Unknown'
@@ -168,21 +189,23 @@ const tableGroups = computed(() => {
       groups[tableId] = {
         table: tableId,
         orders: [],
-        total: 0
+        total: 0,
+        hasBillRequest: false
       }
     }
     groups[tableId].orders.push(order)
     groups[tableId].total += order.total || 0
-    if (order.status === 'bill_requested') {
-      (groups[tableId] as any).hasBillRequest = true
+    if ((order.status || '').toLowerCase() === 'bill_requested') {
+      groups[tableId].hasBillRequest = true
     }
   }
 
-  // Convert to array and sort by table name
+  // Convert to array and sort
   return Object.values(groups).sort((a, b) => {
-    // Prioritize tables with bill requests
-    if ((a as any).hasBillRequest && !(b as any).hasBillRequest) return -1
-    if (!(a as any).hasBillRequest && (b as any).hasBillRequest) return 1
+    // 1. Prioritize tables with bill requests
+    if (a.hasBillRequest && !b.hasBillRequest) return -1
+    if (!a.hasBillRequest && b.hasBillRequest) return 1
+    // 2. Then sort by table name
     return a.table.localeCompare(b.table)
   })
 })
@@ -194,24 +217,29 @@ const filteredTableGroups = computed(() => {
 })
 
 async function checkoutTable(group: any) {
-  if (!confirm(t('admin.cashier.checkoutConfirm'))) return
-
-  checkingOut.value = group.table
-  try {
-    // Update all orders in this group to payment_completed
-    const promises = group.orders.map((o: any) => orderStore.updateOrderStatus(o.id, 'payment_completed'))
-    await Promise.all(promises)
-    // Optional: add a toast success message here
-  } catch (e: any) {
-    const errorMessage = e?.message || e?.toString() || t('admin.orders.updateError') || 'An error occurred.';
-    uiStore.error(errorMessage);
-  } finally {
-    checkingOut.value = null
-  }
+  uiStore.confirm({
+    title: t('admin.cashier.checkoutBtn') || 'Ödeme Al',
+    message: t('admin.cashier.checkoutConfirm') || 'Tüm siparişler ödendi olarak işaretlenecek. Emin misiniz?',
+    confirmText: t('admin.cashier.checkoutBtn'),
+    onConfirm: async () => {
+      checkingOut.value = group.table
+      try {
+        // Update all orders in this group to payment_completed
+        const promises = group.orders.map((o: any) => orderStore.updateOrderStatus(o.id, 'payment_completed'))
+        await Promise.all(promises)
+        uiStore.success(t('admin.cashier.checkoutSuccess') || 'Ödeme tamamlandı.')
+      } catch (e: any) {
+        const errorMessage = e?.message || e?.toString() || t('admin.orders.updateError') || 'An error occurred.';
+        uiStore.error(errorMessage);
+      } finally {
+        checkingOut.value = null
+      }
+    }
+  })
 }
 
 useHead({
-  title: () => `${t('admin.cashier.title')} | Admin | feasymenu`
+  title: () => `${t('admin.cashier.title')} | Admin`
 })
 </script>
 

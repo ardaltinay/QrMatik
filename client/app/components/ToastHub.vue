@@ -8,24 +8,18 @@
       <div
         v-for="t in uiStore.toasts"
         :key="t.id"
-        class="pointer-events-auto glass-strong rounded-xl px-5 py-3  max-w-sm flex items-center gap-3 cursor-pointer"
+        class="pointer-events-auto bg-white rounded-2xl px-5 py-4 max-w-sm flex items-center gap-4 cursor-pointer shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-l-4 transition-all hover:scale-105 active:scale-95"
         :class="{
-          'border-green-500/30': t.type === 'success',
-          'border-red-500/30': t.type === 'error',
-          'border-brand-500/30': t.type === 'info',
+          'border-emerald-500': t.type === 'success',
+          'border-rose-500': t.type === 'error',
+          'border-brand-500': t.type === 'info',
         }"
         @click="uiStore.removeToast(t.id)"
       >
         <div class="text-lg" aria-hidden="true">
           {{ t.type === 'success' ? '✓' : t.type === 'error' ? '✕' : 'ℹ' }}
         </div>
-        <p class="text-sm leading-snug"
-          :class="{
-            'text-green-500': t.type === 'success',
-            'text-red-500': t.type === 'error',
-            'text-yellow-500': t.type === 'info',
-          }"
-        >{{ t.message }}</p>
+        <p class="text-sm font-bold text-slate-700 leading-tight">{{ t.message }}</p>
       </div>
     </TransitionGroup>
   </Teleport>

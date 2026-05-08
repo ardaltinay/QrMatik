@@ -111,7 +111,7 @@
             <div v-for="(product, idx) in topProducts" :key="idx" class="flex items-center gap-4">
               <div class="w-8 font-bold text-slate-300 text-lg">#{{ idx + 1 }}</div>
               <div class="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                <img v-if="product.image" :src="product.image" class="w-full h-full object-cover" />
+                <NuxtImg v-if="product.image" :src="product.image" format="webp" class="w-full h-full object-cover" loading="lazy" />
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-semibold text-slate-800 truncate">{{ product.name }}</div>
@@ -139,7 +139,7 @@ const { t } = useI18n()
 const uiStore = useUiStore()
 
 useHead({
-  title: () => `${t('admin.reports.title')} | Admin | feasymenu`
+  title: () => `${t('admin.reports.title')} | Admin`
 })
 
 // State

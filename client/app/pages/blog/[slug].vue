@@ -73,7 +73,7 @@ function formatDate(dateStr: string) {
 }
 
 useSeoMeta({
-  title: () => (post.value ? (locale.value === 'tr' ? post.value.titleTr : post.value.titleEn) : 'Blog') + ' | feasymenu',
+  title: () => (post.value ? (locale.value === 'tr' ? post.value.titleTr : post.value.titleEn) : 'Blog') + '',
   description: () => post.value ? (locale.value === 'tr' ? post.value.excerptTr : post.value.excerptEn) : '',
   ogImage: () => post.value?.imageUrl || 'https://feasymenu.com/og-image.jpg',
   twitterImage: () => post.value?.imageUrl || 'https://feasymenu.com/og-image.jpg',

@@ -20,4 +20,7 @@ public class TenantConfigDto {
     private String accentColor;
     private String locale; // e.g., tr-TR
     private String timeZone; // e.g., Europe/Istanbul
+    private String address;
+    private String phone;
+    private String ownerEmail;
 }

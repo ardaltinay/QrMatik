@@ -145,7 +145,7 @@ const uiStore = useUiStore()
 const authStore = useAuthStore()
 
 useHead({
-  title: () => `${t('admin.users.title')} | Admin | feasymenu`
+  title: () => `${t('admin.users.title')} | Admin`
 })
 
 // State
@@ -290,16 +290,22 @@ async function saveUser() {
 }
 
 async function confirmDelete(user: any) {
-  if (confirm(t('admin.users.deleteConfirm'))) {
-    try {
-      await fetchJson(`/api/users/${user.id}`, { method: 'DELETE' })
-      await loadUsers()
-    } catch (e: any) {
-      const errorMessage = e?.message || e?.toString() || t('common.error');
-      const translated = t(errorMessage);
-      uiStore.error(translated.includes('error.') ? errorMessage : translated);
+  uiStore.confirm({
+    title: t('admin.common.delete') || 'Sil',
+    message: t('admin.users.deleteConfirm') || 'Bu kullanıcıyı silmek istediğinize emin misiniz?',
+    isDanger: true,
+    onConfirm: async () => {
+      try {
+        await fetchJson(`/api/users/${user.id}`, { method: 'DELETE' })
+        await loadUsers()
+        uiStore.success(t('admin.common.deleted') || 'Silindi.')
+      } catch (e: any) {
+        const errorMessage = e?.message || e?.toString() || t('common.error');
+        const translated = t(errorMessage);
+        uiStore.error(translated.includes('error.') ? errorMessage : translated);
+      }
     }
-  }
+  })
 }
 
 onMounted(() => {

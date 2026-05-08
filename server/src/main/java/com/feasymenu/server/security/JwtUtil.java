@@ -56,13 +56,16 @@ public class JwtUtil {
         return this.key;
     }
 
-    public String generateToken(String username, String role, String tenant) {
+    public String generateToken(String username, String role, String tenantCode, String tenantId) {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
         Date expiry = new Date(now + expMinutes * 60_000);
         java.util.Map<String, Object> claims = new java.util.HashMap<>();
         claims.put("role", role);
-        claims.put("tenant", tenant);
+        claims.put("tenant", tenantCode);
+        if (tenantId != null) {
+            claims.put("tenantId", tenantId);
+        }
         
         var builder = Jwts.builder()
                 .subject(username)

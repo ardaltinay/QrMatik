@@ -32,6 +32,7 @@ useHead({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <ConfirmModal />
     <ToastHub />
   </div>
 </template>

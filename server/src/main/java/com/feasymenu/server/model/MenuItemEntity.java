@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "tenantFilter", condition = "tenant_id = (SELECT t.id FROM tenants t WHERE t.code = :tenantId)")
+@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 public class MenuItemEntity extends AbstractEntity {
     private String name;
 
@@ -46,6 +46,9 @@ public class MenuItemEntity extends AbstractEntity {
     private String subcategory;
 
     private String image;
+
+    @Column(name = "sort_order")
+    private Integer sortOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")

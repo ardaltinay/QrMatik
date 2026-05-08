@@ -9,6 +9,8 @@ import com.feasymenu.server.model.UserRole;
 import com.feasymenu.server.repository.TenantRepository;
 import com.feasymenu.server.repository.UserRepository;
 
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @jakarta.annotation.PostConstruct
+    @PostConstruct
     public void initSuperUser() {
         Optional<UserEntity> existing = repository.findByUsername(superUsername);
         if (existing.isEmpty()) {
@@ -77,6 +79,18 @@ public class UserService {
     }
 
     public UserEntity create(UserInsertRequest req, String tenant) {
+        // Check if username already exists in this tenant
+        if (tenant != null) {
+            if (repository.findByUsernameAndTenant_Code(req.getUsername(), tenant).isPresent()) {
+                throw new com.feasymenu.server.exception.BadRequestException("error.user.usernameExists");
+            }
+        } else {
+            // For superadmin/global users
+            if (repository.findByUsername(req.getUsername()).isPresent()) {
+                throw new com.feasymenu.server.exception.BadRequestException("error.user.usernameExists");
+            }
+        }
+
         // Enforce plan user limits in create method
         // Enforce FREE plan user limit: max 3 users
         if (tenant != null) {
@@ -123,8 +137,21 @@ public class UserService {
             if (code != null && !tenant.equals(code))
                 return Optional.empty();
         }
-        if (req.getUsername() != null && !req.getUsername().isBlank())
+        if (req.getUsername() != null && !req.getUsername().isBlank()) {
+            // If username is changing, check for uniqueness
+            if (!u.getUsername().equals(req.getUsername())) {
+                if (tenant != null) {
+                    if (repository.findByUsernameAndTenant_Code(req.getUsername(), tenant).isPresent()) {
+                        throw new com.feasymenu.server.exception.BadRequestException("error.user.usernameExists");
+                    }
+                } else {
+                    if (repository.findByUsername(req.getUsername()).isPresent()) {
+                        throw new com.feasymenu.server.exception.BadRequestException("error.user.usernameExists");
+                    }
+                }
+            }
             u.setUsername(req.getUsername());
+        }
         if (req.getRole() != null && !req.getRole().isBlank()) {
             // Update role logic
             var er = UserRole.fromString(req.getRole());

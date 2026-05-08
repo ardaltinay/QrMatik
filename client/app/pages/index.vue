@@ -1,7 +1,9 @@
 <template>
   <div>
     <LandingHero />
+    <LandingStats />
     <LandingHowItWorks />
+    <LandingFeaturesBento />
     <LandingPricing />
     <LandingFaq />
     <LandingCta />

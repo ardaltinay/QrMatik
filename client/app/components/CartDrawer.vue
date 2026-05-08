@@ -32,7 +32,11 @@
         <!-- Header -->
         <div class="px-8 py-6 border-b border-slate-50 flex items-center justify-between shrink-0 bg-white/80 backdrop-blur-md">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm text-white" :style="{ backgroundColor: tenantConfig?.primaryColor || '#0f172a' }">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm" 
+              :style="{ 
+                backgroundColor: effectivePrimaryColor,
+                color: getContrastColor(effectivePrimaryColor)
+              }">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -74,8 +78,11 @@
             <p class="text-sm text-slate-400 font-medium max-w-[250px]">{{ $t('menu.cartEmptyDesc') }}</p>
             <button 
               @click="$emit('update:isOpen', false)"
-              class="mt-10 px-8 py-3.5 rounded-2xl text-white font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all shadow-xl"
-              :style="{ backgroundColor: tenantConfig?.accentColor || tenantConfig?.primaryColor || '#0f172a' }"
+              class="mt-10 px-8 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all shadow-xl"
+              :style="{ 
+                backgroundColor: effectiveAccentColor,
+                color: getContrastColor(effectiveAccentColor)
+              }"
             >
               {{ $t('menu.viewMenu') }}
             </button>
@@ -88,7 +95,7 @@
               class="group flex gap-5 p-5 rounded-3xl bg-slate-50/50 border border-slate-100 relative hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300"
             >
               <div v-if="getMenuItem(cartItem.itemId)?.image" class="w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-sm">
-                <img :src="getMenuItem(cartItem.itemId)!.image" class="w-full h-full object-cover" />
+                <NuxtImg :src="getMenuItem(cartItem.itemId)!.image" format="webp" class="w-full h-full object-cover" loading="lazy" />
               </div>
               <div v-else class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0">
                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -148,12 +155,15 @@
           <button 
             @click="submitOrder"
             :disabled="isSubmitting"
-            class="w-full relative flex justify-center items-center px-8 py-5 rounded-[1.5rem] text-white font-black text-sm uppercase tracking-[0.2em] shadow-2xl hover:opacity-90 hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-70 disabled:hover:translate-y-0"
-            :style="{ backgroundColor: tenantConfig?.accentColor || tenantConfig?.primaryColor || '#0f172a' }"
+            class="w-full relative flex justify-center items-center px-8 py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] shadow-2xl hover:opacity-90 hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-70 disabled:hover:translate-y-0"
+            :style="{ 
+              backgroundColor: effectiveAccentColor,
+              color: getContrastColor(effectiveAccentColor)
+            }"
           >
             <span v-if="!isSubmitting">{{ $t('menu.placeOrder') }}</span>
             <div v-else class="flex items-center gap-3">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -171,7 +181,7 @@ import { useOrderStore } from '~/stores/order'
 import { useTenant } from '~/composables/useTenant'
 
 const { t, locale } = useI18n()
-const { tenantConfig } = useTenant()
+const { tenantConfig, isPaidPlan } = useTenant()
 
 const props = defineProps<{
   isOpen: boolean
@@ -186,6 +196,16 @@ const emit = defineEmits<{
 const orderStore = useOrderStore()
 const isSubmitting = ref(false)
 const uiStore = useUiStore()
+
+const effectivePrimaryColor = computed(() => {
+  if (tenantConfig.value?.plan === 'FREE') return '#94a684'
+  return tenantConfig.value?.primaryColor || '#94a684'
+})
+
+const effectiveAccentColor = computed(() => {
+  if (tenantConfig.value?.plan === 'FREE') return '#94a684'
+  return tenantConfig.value?.accentColor || tenantConfig.value?.primaryColor || '#94a684'
+})
 
 function getMenuItem(id: number) {
   return orderStore.menuItemById(id)
@@ -209,11 +229,19 @@ function getLocalizedItemPrice(item: any) {
 
 function formatPrice(p: number) {
   if (locale.value === 'en') {
-    // If the cart total itself is calculated as USD in orderStore, format it as USD here
-    // Notice: orderStore.cartTotal relies on orderStore's locale logic as well.
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(p)
   }
   return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(p)
+}
+
+function getContrastColor(hexcolor: string) {
+  if (!hexcolor) return 'white'
+  if (!hexcolor.startsWith('#')) return 'white'
+  const r = parseInt(hexcolor.substring(1, 3), 16)
+  const g = parseInt(hexcolor.substring(3, 5), 16)
+  const b = parseInt(hexcolor.substring(5, 7), 16)
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+  return (yiq >= 128) ? '#0f172a' : 'white'
 }
 
 async function submitOrder() {

@@ -27,7 +27,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,27 +43,30 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final TenantRepository tenantRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final com.feasymenu.server.converter.OrderConverter orderConverter;
 
     @Value("${app.table.linger-minutes:30}")
     private int tableLingerMinutes;
 
     public OrderService(OrderRepository orderRepository, TableRepository tableRepository,
             MenuItemRepository menuItemRepository, TenantRepository tenantRepository,
-            SimpMessagingTemplate messagingTemplate) {
+            SimpMessagingTemplate messagingTemplate, com.feasymenu.server.converter.OrderConverter orderConverter) {
         this.orderRepository = orderRepository;
         this.tableRepository = tableRepository;
         this.menuItemRepository = menuItemRepository;
         this.tenantRepository = tenantRepository;
         this.messagingTemplate = messagingTemplate;
+        this.orderConverter = orderConverter;
     }
 
     private void notifyUpdate(OrderEntity order) {
         if (order != null && order.getTenant() != null) {
             String tenantCode = order.getTenant().getCode();
+            com.feasymenu.server.dto.OrderDto dto = orderConverter.toDto(order);
             // Notify tenant-specific topic (e.g., for kitchen/admin dashboard)
-            messagingTemplate.convertAndSend("/topic/orders/" + tenantCode, order);
+            messagingTemplate.convertAndSend("/topic/orders/" + tenantCode, dto);
             // Notify session-specific topic (e.g., for customer mobile app)
-            messagingTemplate.convertAndSend("/topic/session/" + order.getSessionId(), order);
+            messagingTemplate.convertAndSend("/topic/session/" + order.getSessionId(), dto);
         }
     }
 
@@ -108,8 +113,8 @@ public class OrderService {
     public static record SessionViewResult(List<OrderEntity> orders, boolean anyNonExpired) {
     }
 
-    public SessionViewResult bySessionForView(String sessionId, String tenant, ZoneId zoneId) {
-        List<OrderEntity> entities = bySessionForTenant(sessionId, tenant);
+    public SessionViewResult bySessionForView(String sessionId, String tenant, ZoneId zoneId, String tableCode) {
+        List<OrderEntity> entities = bySessionForTenant(sessionId, tenant, tableCode);
         Instant now = Instant.now();
         boolean anyNonExpired = false;
         for (OrderEntity e : entities) {
@@ -128,13 +133,22 @@ public class OrderService {
         return orderRepository.findByTable_CodeAndTenant_Code(tableCode, tenant);
     }
 
-    public List<OrderEntity> bySessionForTenant(String sessionId, String tenant) {
+    public List<OrderEntity> bySessionForTenant(String sessionId, String tenant, String tableCode) {
+        if (tableCode != null && !tableCode.isBlank()) {
+            return (tenant == null)
+                    ? orderRepository.findBySessionIdAndTable_Code(sessionId, tableCode)
+                    : orderRepository.findBySessionIdAndTable_CodeAndTenant_Code(sessionId, tableCode, tenant);
+        }
         return (tenant == null)
                 ? orderRepository.findBySessionId(sessionId)
                 : orderRepository.findBySessionIdAndTenant_Code(sessionId, tenant);
     }
 
     public Optional<OrderEntity> updateStatus(String id, String tenant, String status) {
+        return updateStatus(id, tenant, status, null);
+    }
+
+    public Optional<OrderEntity> updateStatus(String id, String tenant, String status, String target) {
         Optional<OrderEntity> o = getById(id);
         if (o.isEmpty())
             return Optional.empty();
@@ -144,21 +158,65 @@ public class OrderService {
             if (oc != null && !tenant.equals(oc))
                 return Optional.empty();
         }
+        // Parse target status
         var parsed = OrderStatus.fromString(status);
-        if (parsed == null)
-            return Optional.empty();
+        if (parsed == null) return Optional.empty();
         OrderEntity order = o.get();
 
-        // Personel (ADMIN/KITCHEN/BAR) iptali: sadece NEW, PREPARING, READY
-        // durumlarında izin ver
-        if (parsed == OrderStatus.CANCELED) {
-            OrderStatus cur = order.getStatus();
-            if (cur != OrderStatus.NEW && cur != OrderStatus.PREPARING && cur != OrderStatus.READY) {
-                return Optional.empty();
+        if (target == null || target.isBlank()) {
+            // ADMIN UPDATE: Sync everything
+            order.setStatus(parsed);
+            boolean hasK = false;
+            boolean hasB = false;
+            if (order.getLines() != null) {
+                for (var line : order.getLines()) {
+                    String cat = (line.getCategorySnapshot() != null ? line.getCategorySnapshot().toLowerCase() : "");
+                    if (cat.contains("drink") || cat.contains("içecek")) hasB = true;
+                    else hasK = true;
+                }
+            }
+            if (parsed == OrderStatus.CANCELED) {
+                order.setKitchenStatus(OrderStatus.CANCELED);
+                order.setBarStatus(OrderStatus.CANCELED);
+            } else {
+                order.setKitchenStatus(hasK ? parsed : OrderStatus.READY);
+                order.setBarStatus(hasB ? parsed : OrderStatus.READY);
+            }
+        } else {
+            // UNIT UPDATE (KITCHEN/BAR)
+            if ("KITCHEN".equalsIgnoreCase(target)) {
+                order.setKitchenStatus(parsed);
+            } else if ("BAR".equalsIgnoreCase(target)) {
+                order.setBarStatus(parsed);
+            }
+
+            // Sync to global status based on contents
+            boolean needsK = false;
+            boolean needsB = false;
+            if (order.getLines() != null) {
+                for (var line : order.getLines()) {
+                    String cat = (line.getCategorySnapshot() != null ? line.getCategorySnapshot().toLowerCase() : "");
+                    if (cat.contains("drink") || cat.contains("içecek")) needsB = true;
+                    else needsK = true;
+                }
+            }
+
+            if (needsK && !needsB) {
+                order.setStatus(order.getKitchenStatus());
+            } else if (!needsK && needsB) {
+                order.setStatus(order.getBarStatus());
+            } else if (needsK && needsB) {
+                boolean kDone = order.getKitchenStatus() == OrderStatus.READY || order.getKitchenStatus() == OrderStatus.CANCELED;
+                boolean bDone = order.getBarStatus() == OrderStatus.READY || order.getBarStatus() == OrderStatus.CANCELED;
+
+                if (kDone && bDone) {
+                    order.setStatus(OrderStatus.READY);
+                } else if (order.getKitchenStatus() == OrderStatus.PREPARING || order.getBarStatus() == OrderStatus.PREPARING) {
+                    order.setStatus(OrderStatus.PREPARING);
+                }
             }
         }
 
-        order.setStatus(parsed);
         // adjust session expiry based on status
         if (parsed == OrderStatus.SERVED) {
             order.setSessionExpiresAt(Instant.now().plus(3, ChronoUnit.HOURS));
@@ -302,12 +360,14 @@ public class OrderService {
             // order.tenant öncelik: param -> tablonun tenantı
             if (tcode != null) {
                 tenantRepository.findByCode(tcode).ifPresent(t -> {
-                    if (!t.isActive()) throw new BadRequestException("error.tenant.suspended");
+                    if (!t.isActive())
+                        throw new BadRequestException("error.tenant.suspended");
                     input.setTenant(t);
                 });
             } else if (tableTenant != null) {
                 tenantRepository.findByCode(tableTenant).ifPresent(t -> {
-                    if (!t.isActive()) throw new BadRequestException("error.tenant.suspended");
+                    if (!t.isActive())
+                        throw new BadRequestException("error.tenant.suspended");
                     input.setTenant(t);
                 });
             }
@@ -349,9 +409,20 @@ public class OrderService {
 
         // Menü kalemleri tenant tutarlılığı kontrolü
         String orderTenant = (input.getTenant() != null ? input.getTenant().getCode() : null);
-        if (orderTenant != null) {
+
+        // Initialize Kitchen and Bar statuses based on content
+        boolean hasFood = false;
+        boolean hasDrink = false;
+        if (input.getLines() != null) {
             for (OrderItemEntity li : input.getLines()) {
-                if (li.getMenuItem() != null && li.getMenuItem().getTenant() != null) {
+                String cat = (li.getCategorySnapshot() != null ? li.getCategorySnapshot().toLowerCase() : "");
+                boolean isDrink = cat.contains("drink") || cat.contains("içecek");
+                if (isDrink)
+                    hasDrink = true;
+                else
+                    hasFood = true;
+
+                if (orderTenant != null && li.getMenuItem() != null && li.getMenuItem().getTenant() != null) {
                     String miTenant = li.getMenuItem().getTenant().getCode();
                     if (miTenant != null && !orderTenant.equals(miTenant)) {
                         throw new BadRequestException("error.order.tenantMismatch");
@@ -359,6 +430,8 @@ public class OrderService {
                 }
             }
         }
+        input.setKitchenStatus(hasFood ? OrderStatus.NEW : OrderStatus.READY);
+        input.setBarStatus(hasDrink ? OrderStatus.NEW : OrderStatus.READY);
 
         // Envanter düşümü (yalnız PRO plan & stok aktif kalemler)
         applyInventoryIfEligible(input);
@@ -394,6 +467,7 @@ public class OrderService {
         order.setStatus(OrderStatus.CANCELED);
         order.setSessionExpiresAt(now);
         OrderEntity saved = orderRepository.save(order);
+        notifyUpdate(saved);
         try {
             updateTableAvailabilityForTable(saved.getTable(), tenant);
         } catch (Exception ignore) {
@@ -428,7 +502,23 @@ public class OrderService {
         order.setStatus(OrderStatus.BILL_REQUESTED);
         // keep current session expiry; do not shorten here
         OrderEntity saved = orderRepository.save(order);
+        notifyUpdate(saved);
         return Optional.of(saved);
+    }
+
+    public void callWaiter(String tableCode, String tenant) {
+        if (tableCode == null || tableCode.isBlank())
+            return;
+        String tcode = (tenant != null && !tenant.isBlank()) ? tenant.trim() : null;
+        if (tcode == null)
+            return;
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("type", "WAITER_CALL");
+        payload.put("tableCode", tableCode);
+        payload.put("timestamp", Instant.now().toString());
+
+        messagingTemplate.convertAndSend("/topic/notifications/" + tcode, payload);
     }
 
     public int closeSessionsForTable(String tableCode, String tenant) {

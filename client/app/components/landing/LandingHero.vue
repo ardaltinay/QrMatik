@@ -13,29 +13,42 @@
       </svg>
     </div>
 
-    <div class="container-custom pt-32 text-center relative z-10">
-      <!-- Logo in Hero -->
+    <div class="container-custom pt-32 relative z-10">
+      <!-- Logo in Hero (Restored to Center) -->
       <div class="mb-20 flex justify-center">
         <Logo size="lg" hide-text animate />
       </div>
 
-      <h1 class="text-6xl sm:text-8xl font-bold text-slate-900 mb-8 max-w-5xl mx-auto leading-[0.9] tracking-tighter">
-        {{ $t('landing.hero.titleLine1') }} <br />
-        <span class="text-brand-500">{{ $t('landing.hero.titleLine2') }}</span>
-      </h1>
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+        <!-- Content Left -->
+        <div class="text-center lg:text-left">
+          <h1 class="text-6xl sm:text-7xl xl:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
+            {{ $t('landing.hero.titleLine1') }} <br />
+            <span class="text-brand-500">{{ $t('landing.hero.titleLine2') }}</span>
+          </h1>
 
-      <p class="text-xl sm:text-2xl text-slate-500 max-w-2xl mx-auto mb-16 font-medium leading-relaxed">
-        {{ $t('landing.hero.description') }}
-      </p>
+          <p class="text-xl sm:text-2xl text-slate-500 max-w-2xl lg:max-w-none mx-auto lg:mx-0 mb-12 font-medium leading-relaxed">
+            {{ $t('landing.hero.description') }}
+          </p>
 
-      <div class="flex justify-center mb-44">
-        <NuxtLink :to="localePath('/signup/tenant')" class="px-16 py-6 rounded-full bg-slate-950 text-white font-bold text-lg hover:bg-brand-950 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-black/30">
-          {{ $t('landing.hero.ctaPrimary') }}
-        </NuxtLink>
+          <div class="flex justify-center lg:justify-start gap-4 mb-16">
+            <NuxtLink :to="localePath('/signup/tenant')" class="px-12 py-5 rounded-2xl bg-slate-950 text-white font-bold text-lg hover:bg-brand-600 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/20">
+              {{ $t('landing.hero.ctaPrimary') }}
+            </NuxtLink>
+            <a href="#features" class="hidden sm:flex px-12 py-5 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold text-lg hover:bg-slate-50 transition-all">
+              {{ $t('landing.features.title') }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Phone Mockup Right -->
+        <div class="flex justify-center w-full mt-12 lg:mt-0 lg:block">
+          <LandingPhoneMockup />
+        </div>
       </div>
 
       <!-- Real Feature Grid (from feasymenu.com) -->
-      <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-6xl mx-auto mt-24">
+      <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-6xl mx-auto mt-40">
         <div v-for="feat in realFeatures" :key="feat.key" class="flex flex-col items-center text-center group">
           <div class="w-24 h-24 rounded-[3rem] bg-brand-50 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 shadow-sm border border-brand-100/50">
             <component :is="feat.icon" class="w-10 h-10 text-brand-500" />
@@ -44,6 +57,16 @@
           <p class="text-base text-slate-400 max-w-[280px] leading-relaxed font-medium">
             {{ $t(feat.descKey) }}
           </p>
+        </div>
+      </div>
+
+      <div class="mt-32 pt-16 border-t border-slate-100/50">
+        <p class="text-center text-sm font-bold text-slate-400 uppercase tracking-widest mb-10">{{ $t('landing.hero.trustedBy') }}</p>
+        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+          <div v-for="brand in mockBrands" :key="brand.name" class="flex items-center gap-3">
+            <component :is="brand.icon" class="w-6 h-6 text-slate-400" />
+            <span class="font-serif text-xl md:text-2xl font-medium tracking-tight text-slate-600">{{ brand.name }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -57,10 +80,23 @@ import {
   MonitorPlay, 
   Settings2, 
   BarChart3, 
-  Archive 
+  Archive,
+  Utensils,
+  Flame,
+  Coffee,
+  Fish,
+  Pizza
 } from 'lucide-vue-next'
 
 const localePath = useLocalePath()
+
+const mockBrands = [
+  { name: 'Le Bistro', icon: Utensils },
+  { name: 'Urban Grill', icon: Flame },
+  { name: 'Sunset Cafe', icon: Coffee },
+  { name: 'Sushi Zen', icon: Fish },
+  { name: 'Pizzeria Roma', icon: Pizza }
+]
 
 const realFeatures = [
   { key: 'f1', icon: QrCode, titleKey: 'landing.features.qrMenuTitle', descKey: 'landing.features.qrMenuDesc' },

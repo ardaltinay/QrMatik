@@ -91,6 +91,26 @@
           />
         </div>
 
+        <!-- Address -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.branding.address') }}</label>
+          <textarea 
+            v-model="form.address" 
+            rows="2"
+            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all resize-none" 
+          ></textarea>
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.branding.phone') }}</label>
+          <input 
+            v-model="form.phone" 
+            type="text" 
+            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" 
+          />
+        </div>
+
       </div>
 
       <!-- Preview Panel -->
@@ -115,7 +135,7 @@
               <div class="relative z-10 w-full">
                 <!-- Logo -->
                 <div v-if="form.logo" class="h-12 w-auto max-w-[150px] mb-4 bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                  <img :src="form.logo" class="h-full w-auto object-contain" />
+                  <NuxtImg :src="form.logo" format="webp" class="h-full w-auto object-contain" />
                 </div>
                 <div v-else class="h-12 w-12 bg-white/20 rounded-xl mb-4 backdrop-blur-sm flex items-center justify-center">
                   <span class="text-white font-bold text-xl">R</span>
@@ -172,7 +192,7 @@ const { fetchJson } = useApi()
 const uiStore = useUiStore()
 
 useHead({
-  title: () => `${t('admin.branding.title')} | Admin | feasymenu`
+  title: () => `${t('admin.branding.title')} | Admin`
 })
 
 // State
@@ -182,7 +202,9 @@ const form = ref({
   primaryColor: '#0f172a', // slate-900 default
   accentColor: '#6366f1',
   fontFamily: 'Inter, sans-serif',
-  welcomeMessage: t('admin.branding.defaultWelcomeLong')
+  welcomeMessage: t('admin.branding.defaultWelcomeLong'),
+  address: '',
+  phone: ''
 })
 
 // Methods
@@ -195,7 +217,9 @@ async function loadSettings() {
         primaryColor: data.primaryColor || form.value.primaryColor,
         accentColor: data.accentColor || form.value.accentColor,
         fontFamily: data.fontFamily || form.value.fontFamily,
-        welcomeMessage: data.welcomeMessage || form.value.welcomeMessage
+        welcomeMessage: data.welcomeMessage || form.value.welcomeMessage,
+        address: data.address || '',
+        phone: data.phone || ''
       }
     }
   } catch (e) {
@@ -214,7 +238,9 @@ async function saveSettings() {
         accentColor: form.value.accentColor,
         logoUrl: form.value.logo,
         welcomeMessage: form.value.welcomeMessage,
-        fontFamily: form.value.fontFamily
+        fontFamily: form.value.fontFamily,
+        address: form.value.address,
+        phone: form.value.phone
       })
     })
     

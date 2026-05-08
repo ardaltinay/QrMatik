@@ -44,10 +44,13 @@ public class TenantController {
             String logoUrl = req != null ? req.getOrDefault("logoUrl", null) : null;
             String welcomeMessage = req != null ? req.getOrDefault("welcomeMessage", null) : null;
             String fontFamily = req != null ? req.getOrDefault("fontFamily", null) : null;
+            String address = req != null ? req.getOrDefault("address", null) : null;
+            String phone = req != null ? req.getOrDefault("phone", null) : null;
             if (logoUrl != null && !logoUrl.trim().isEmpty()) {
                 planGuard.assertCanUploadLogo(tenant);
             }
-            var out = tenantService.updateBranding(tenant, primary, accent, logoUrl, welcomeMessage, fontFamily);
+            var out = tenantService.updateBranding(tenant, primary, accent, logoUrl, welcomeMessage, fontFamily,
+                    address, phone);
             return ResponseEntity.ok(out);
         } catch (BadRequestException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
@@ -58,4 +61,12 @@ public class TenantController {
         }
     }
 
+    @PutMapping("/category-order")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateCategoryOrder(@RequestBody Map<String, String> req) {
+        String tenant = TenantContext.getTenant();
+        String order = req != null ? req.get("order") : null;
+        tenantService.updateCategoryOrder(tenant, order);
+        return ResponseEntity.ok().build();
+    }
 }

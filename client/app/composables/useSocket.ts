@@ -15,7 +15,7 @@ const activeSubscriptions = new Set<string>()
 export function useSocket() {
   function connect(onConnect?: () => void) {
     if (import.meta.server) return
-    
+
     if (client.value?.active || connecting.value) {
       if (connected.value && onConnect) onConnect()
       return
@@ -27,7 +27,7 @@ export function useSocket() {
     if (import.meta.client) {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
-      
+
       // Development: Connect directly to 8080 if using localhost subdomains to avoid proxy issues
       if (import.meta.dev && host.includes('localhost')) {
         const hostname = window.location.hostname
@@ -64,7 +64,7 @@ export function useSocket() {
       debug: (str) => {
         // Only log in development and filter out heartbeats
         if (import.meta.dev && !str.includes('PONG') && !str.includes('PING')) {
-          // console.log('STOMP:', str)
+          //console.log('STOMP:', str)
         }
       }
     })
@@ -83,7 +83,7 @@ export function useSocket() {
   }
 
   function subscribe(topic: string, callback: (payload: any) => void) {
-    if (import.meta.server) return () => {}
+    if (import.meta.server) return () => { }
 
     let subscription: StompSubscription | null = null
 

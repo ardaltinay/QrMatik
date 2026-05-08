@@ -63,8 +63,9 @@ export const useAuthStore = defineStore('auth', () => {
     } catch { /* ignore */ }
 
     user.value = null
-    // Redirect to login or home
-    navigateTo('/admin')
+    // Redirect to login or home using localized path
+    const localePath = useLocalePath()
+    navigateTo(localePath('/admin'))
   }
 
   function normalizeRole(role: string): string {

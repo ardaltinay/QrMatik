@@ -1,6 +1,7 @@
 <template>
-  <div class="relative min-h-screen pt-32 pb-24 overflow-hidden">
-    <div class="absolute inset-0 bg-transparent"></div>
+  <div class="relative min-h-screen pt-32 pb-24 overflow-hidden bg-[#FAF9F6]">
+    <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-100/50 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3 -z-10"></div>
+    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-slate-100 rounded-full blur-3xl translate-y-1/3 translate-x-1/3 -z-10"></div>
 
     <div class="relative mx-auto max-w-2xl px-6">
       <header class="text-center mb-10">
@@ -19,19 +20,24 @@
             <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
               {{ $t('signup.fields.code') }} <span class="text-brand-600">*</span>
             </label>
-            <input
-              v-model="form.code"
-              :class="[
-                'w-full bg-slate-50 border rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium',
-                codeTouched && !codeValid ? 'border-red-200 focus:ring-red-500/10' : 'border-slate-100'
-              ]"
-              :placeholder="$t('signup.fields.codePlaceholder')"
-              required
-              :pattern="codePattern"
-              maxlength="63"
-              @input="onCodeInput"
-              @blur="codeTouched = true"
-            />
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Link class="w-5 h-5" :class="codeTouched && !codeValid ? 'text-red-400' : 'text-slate-400'" />
+              </div>
+              <input
+                v-model="form.code"
+                :class="[
+                  'w-full bg-slate-50 border rounded-2xl pl-11 pr-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium',
+                  codeTouched && !codeValid ? 'border-red-200 focus:ring-red-500/10' : 'border-slate-100'
+                ]"
+                :placeholder="$t('signup.fields.codePlaceholder')"
+                required
+                :pattern="codePattern"
+                maxlength="63"
+                @input="onCodeInput"
+                @blur="codeTouched = true"
+              />
+            </div>
             <p class="mt-2.5 text-xs text-slate-400 font-medium">
               {{ $t('signup.fields.codeHint') }}
               <code class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-mono ml-1 border border-slate-200/50">{{ exampleSubdomain }}</code>
@@ -46,7 +52,12 @@
             <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
               {{ $t('signup.fields.name') }}
             </label>
-            <input v-model="form.name" class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium" />
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Building class="w-5 h-5 text-slate-400" />
+              </div>
+              <input v-model="form.name" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-11 pr-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium" />
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -55,38 +66,53 @@
               <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
                 {{ $t('signup.fields.ownerName') }} <span class="text-brand-600">*</span>
               </label>
-              <input
-                v-model="form.ownerName"
-                class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
-                :placeholder="$t('signup.fields.ownerNamePlaceholder')"
-                required
-              />
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User class="w-5 h-5 text-slate-400" />
+                </div>
+                <input
+                  v-model="form.ownerName"
+                  class="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-11 pr-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
+                  :placeholder="$t('signup.fields.ownerNamePlaceholder')"
+                  required
+                />
+              </div>
             </div>
             <!-- Owner Email -->
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
                 {{ $t('signup.fields.ownerEmail') }} <span class="text-brand-600">*</span>
               </label>
-              <input
-                v-model="form.ownerEmail"
-                type="email"
-                class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
-                :placeholder="$t('signup.fields.ownerEmailPlaceholder')"
-                required
-              />
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail class="w-5 h-5 text-slate-400" />
+                </div>
+                <input
+                  v-model="form.ownerEmail"
+                  type="email"
+                  class="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-11 pr-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
+                  :placeholder="$t('signup.fields.ownerEmailPlaceholder')"
+                  required
+                />
+              </div>
             </div>
             <!-- Owner Password -->
-            <div>
+            <div class="md:col-span-2">
               <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
                 {{ $t('signup.fields.ownerPassword') }} <span class="text-brand-600">*</span>
               </label>
-              <input
-                v-model="form.ownerPassword"
-                type="password"
-                class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
-                :placeholder="$t('signup.fields.ownerPasswordPlaceholder')"
-                required
-              />
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock class="w-5 h-5 text-slate-400" />
+                </div>
+                <input
+                  v-model="form.ownerPassword"
+                  type="password"
+                  class="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-11 pr-5 py-4 text-slate-900 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all duration-300 outline-none font-medium"
+                  :placeholder="$t('signup.fields.ownerPasswordPlaceholder')"
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -166,7 +192,7 @@
           </details>
         </div>
 
-        <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-end">
+        <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center">
           <NuxtLink to="/" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
             {{ $t('signup.actions.cancel') }}
           </NuxtLink>
@@ -227,6 +253,8 @@
 </template>
 
 <script setup lang="ts">
+import { Link, Building, User, Mail, Lock } from 'lucide-vue-next'
+
 const { t } = useI18n()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
@@ -294,10 +322,10 @@ const exampleSubdomain = computed(() => {
       const parts = host.split(".")
       if (parts.length >= 2) baseDomain = parts.slice(-2).join(".")
     }
-    const sample = baseDomain === "localhost" ? "restoranim" : "benim-restoranim"
+    const sample = "my-bistro"
     return `${sample}.${baseDomain}`
   } catch {
-    return "benim-restoranim.feasymenu.com"
+    return "my-bistro.feasymenu.com"
   }
 })
 

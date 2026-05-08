@@ -48,7 +48,25 @@
             </div>
           </div>
 
-          <div class="p-5 flex-grow space-y-3">
+          <div class="p-5 flex-grow space-y-4">
+            <!-- Status Indicators -->
+            <div class="flex gap-2">
+              <div class="flex-1 flex flex-col gap-1">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('admin.kitchen.title') }}</span>
+                <div :class="getStatusBadgeClass(order.kitchenStatus)" class="px-2 py-1.5 rounded-lg border text-[10px] font-bold text-center">
+                  {{ $t(`order.statuses.${(order.kitchenStatus || 'new').toLowerCase()}`) }}
+                </div>
+              </div>
+              <div class="flex-1 flex flex-col gap-1">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('admin.bar.title') }}</span>
+                <div :class="getStatusBadgeClass(order.barStatus)" class="px-2 py-1.5 rounded-lg border text-[10px] font-bold text-center">
+                  {{ $t(`order.statuses.${(order.barStatus || 'new').toLowerCase()}`) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="h-px bg-slate-100 my-2"></div>
+
             <div v-for="(it, i) in (order.items || order.lines)" :key="i" class="flex items-start gap-3">
               <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center font-bold text-slate-700 shrink-0 text-sm">
                 {{ it.qty || it.quantity }}x
@@ -63,7 +81,13 @@
           <div class="p-5 bg-slate-50 border-t border-slate-100 mt-auto">
             <button 
               @click="serveOrder(order.id)" 
-              class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95 flex items-center justify-center gap-2"
+              :disabled="!isFullyReady(order)"
+              class="w-full py-3 font-black text-xs uppercase tracking-[0.2em] rounded-xl transition-all flex items-center justify-center gap-2"
+              :class="[
+                isFullyReady(order) 
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 active:scale-95' 
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              ]"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -136,7 +160,8 @@ onBeforeUnmount(() => {
 })
 
 const readyOrders = computed(() => {
-  return orderStore.orders.filter(o => (o.status || '').toLowerCase() === 'ready')
+  const activeStatuses = ['new', 'preparing', 'ready']
+  return orderStore.orders.filter(o => activeStatuses.includes((o.status || '').toLowerCase()))
 })
 
 const filteredReadyOrders = computed(() => {
@@ -158,6 +183,19 @@ async function serveOrder(id: string | number) {
   }
 }
 
+function isFullyReady(order: any) {
+  const kReady = (order.kitchenStatus || '').toLowerCase() === 'ready'
+  const bReady = (order.barStatus || '').toLowerCase() === 'ready'
+  return kReady && bReady
+}
+
+function getStatusBadgeClass(status?: string) {
+  const s = (status || 'new').toLowerCase()
+  if (s === 'ready') return 'bg-emerald-50 text-emerald-700 border-emerald-100'
+  if (s === 'preparing') return 'bg-indigo-50 text-indigo-700 border-indigo-100'
+  return 'bg-amber-50 text-amber-700 border-amber-100'
+}
+
 function menuItemName(id: number) {
   const i = orderStore.menuItemById(id)
   return i ? i.name : t('order.productFallback')
@@ -175,7 +213,7 @@ function timeAgo(dateString: string) {
 }
 
 useHead({
-  title: () => `${t('admin.saloon.title') || 'Salon'} | Admin | feasymenu`
+  title: () => `${t('admin.saloon.title') || 'Salon'} | Admin`
 })
 </script>
 

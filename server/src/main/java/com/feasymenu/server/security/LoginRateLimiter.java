@@ -17,10 +17,10 @@ public class LoginRateLimiter {
 
     private final Map<String, Attempt> attempts = new ConcurrentHashMap<>();
 
-    // Policy: 5 failed attempts within 10 minutes -> block for 10 minutes
-    private static final int MAX_FAILS = 5;
-    private static final long WINDOW_SEC = 10 * 60;
-    private static final long BLOCK_SEC = 10 * 60;
+    // Policy: 30 failed attempts within 1 minute -> block for 1 minute
+    private static final int MAX_FAILS = 30;
+    private static final long WINDOW_SEC = 60;
+    private static final long BLOCK_SEC = 60;
 
     public boolean isBlocked(String key) {
         Attempt a = attempts.get(key);

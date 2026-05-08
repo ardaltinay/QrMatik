@@ -36,6 +36,6 @@ definePageMeta({
 const { t } = useI18n()
 
 useHead({
-  title: () => `${t('admin.actions.tenantNotFound.title')} | feasymenu`
+  title: () => `${t('admin.actions.tenantNotFound.title')}`
 })
 </script>

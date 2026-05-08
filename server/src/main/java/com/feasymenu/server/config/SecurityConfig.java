@@ -1,6 +1,7 @@
 package com.feasymenu.server.config;
 
 import com.feasymenu.server.security.JwtAuthFilter;
+import com.feasymenu.server.security.RateLimitFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,12 +22,14 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final TenantFilter tenantFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     // Removed custom client origin wiring for callback per user's request
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter, RateLimitFilter rateLimitFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.tenantFilter = tenantFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -34,7 +37,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(request -> {
             var cb = new org.springframework.web.cors.CorsConfiguration();
-            cb.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://*.localhost:3000", "http://*.localhost", "https://feasymenu.com", "https://*.feasymenu.com"));
+            cb.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://*.localhost:3000", "http://*.localhost", "http://127.0.0.1:3000", "http://*.127.0.0.1:3000", "https://feasymenu.com", "https://*.feasymenu.com"));
             cb.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cb.setAllowedHeaders(java.util.List.of("*"));
             cb.setAllowCredentials(true);
@@ -47,17 +50,19 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/auth/**").permitAll()
                 .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/public/checkout/html").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/webhooks/lemonsqueezy").permitAll() // Lemon Squeezy Webhook
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/request-bill").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/orders/call-waiter").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER")
+                .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/orders").hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.PUT, "/api/orders/*/status")
-                .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER")
+                .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers("/api/tenants/**", "/api/admin/blog/**").hasRole("SUPERADMIN")
                 .requestMatchers("/api/users/**", "/api/qr/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/tables/**").hasRole("ADMIN")
@@ -65,10 +70,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/menu/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                .anyRequest().permitAll());
-        // Resolve tenant context early (from Host/X-Tenant/path) before JWT processing
-        http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated());
+        // Filter Order: RateLimit -> Tenant -> JwtAuth -> UsernamePasswordAuthentication
+        // By adding each before the same standard filter, the last one added becomes the first to run.
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

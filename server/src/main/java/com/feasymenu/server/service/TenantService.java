@@ -52,12 +52,23 @@ public class TenantService {
         out.put("pendingPlan", t.getPendingPlan() != null ? t.getPendingPlan().name() : null);
         out.put("pendingBillingPeriod", t.getPendingBillingPeriod());
         out.put("pendingEffectiveDate", t.getPendingEffectiveDate());
+        out.put("categoryOrder", t.getCategoryOrder());
+        out.put("address", t.getAddress());
+        out.put("phone", t.getPhone());
+        out.put("ownerEmail", t.getOwnerEmail());
         return out;
     }
 
     @CacheEvict(value = "tenants", key = "#tenantCode")
+    public void updateCategoryOrder(String tenantCode, String order) {
+        var t = repository.findByCode(tenantCode).orElseThrow(() -> new NotFoundException("Tenant not found"));
+        t.setCategoryOrder(order);
+        repository.save(t);
+    }
+
+    @CacheEvict(value = "tenants", key = "#tenantCode")
     public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor,
-            String logoUrl, String welcomeMessage, String fontFamily) {
+            String logoUrl, String welcomeMessage, String fontFamily, String address, String phone) {
         if (tenantCode == null || tenantCode.isBlank())
             throw new BadRequestException("Missing tenant");
         var t = repository.findByCode(tenantCode).orElseThrow(() -> new NotFoundException("Tenant not found"));
@@ -84,6 +95,14 @@ public class TenantService {
             String trimmed = fontFamily.trim();
             t.setFontFamily(trimmed.isEmpty() ? null : trimmed);
         }
+        if (address != null) {
+            String trimmed = address.trim();
+            t.setAddress(trimmed.isEmpty() ? null : trimmed);
+        }
+        if (phone != null) {
+            String trimmed = phone.trim();
+            t.setPhone(trimmed.isEmpty() ? null : trimmed);
+        }
         repository.save(t);
         Map<String, Object> out = new HashMap<>();
         out.put("code", t.getCode());
@@ -95,6 +114,9 @@ public class TenantService {
         out.put("plan", t.getPlan() != null ? t.getPlan().name() : null);
         out.put("locale", t.getLocale() != null ? t.getLocale() : "tr-TR");
         out.put("timeZone", t.getTimeZone() != null ? t.getTimeZone() : "Europe/Istanbul");
+        out.put("address", t.getAddress());
+        out.put("phone", t.getPhone());
+        out.put("ownerEmail", t.getOwnerEmail());
         return out;
     }
 }

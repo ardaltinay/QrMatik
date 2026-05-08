@@ -51,8 +51,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String role = roleObj instanceof String ? (String) roleObj : String.valueOf(roleObj);
                 Object tenantObj = claims.get("tenant");
                 String tenant = tenantObj instanceof String ? (String) tenantObj : null;
+                Object tenantIdObj = claims.get("tenantId");
+                String tenantId = tenantIdObj instanceof String ? (String) tenantIdObj : null;
+
                 if (tenant != null && !tenant.trim().isEmpty()) {
                     TenantContext.setTenant(tenant.trim());
+                    if (tenantId != null) {
+                        try {
+                            TenantContext.setTenantId(java.util.UUID.fromString(tenantId));
+                        } catch (Exception ignored) {}
+                    }
                 }
                 var authToken = new UsernamePasswordAuthenticationToken(username, null,
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));

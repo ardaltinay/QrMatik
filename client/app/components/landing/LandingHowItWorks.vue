@@ -4,7 +4,7 @@
     <div class="relative mx-auto max-w-7xl px-6">
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 mb-4 border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-accent-600">{{ $t('landing.howItWorks.badge') }}</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600">{{ $t('landing.howItWorks.badge') }}</span>
         </div>
         <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
           {{ $t('landing.howItWorks.title') }} <span class="text-brand-600">{{ $t('landing.howItWorks.titleHighlight') }}</span>
@@ -12,7 +12,7 @@
       </div>
 
       <div class="grid md:grid-cols-3 gap-8 relative">
-        <div class="hidden md:block absolute top-16 left-[20%] right-[20%] h-px bg-gradient-to-r from-brand-500/10 via-accent-500/20 to-brand-500/10"></div>
+        <div class="hidden md:block absolute top-16 left-[20%] right-[20%] h-px bg-gradient-to-r from-brand-500/10 via-brand-500/20 to-brand-500/10"></div>
 
         <div v-for="(step, i) in steps" :key="step.titleKey" class="relative text-center group">
           <div class="flex items-center justify-center mb-6">

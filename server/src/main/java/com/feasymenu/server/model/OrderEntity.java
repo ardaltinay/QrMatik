@@ -29,7 +29,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "tenantFilter", condition = "tenant_id = (SELECT t.id FROM tenants t WHERE t.code = :tenantId)")
+@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 public class OrderEntity extends AbstractEntity {
     private String sessionId; // simple session token for customer
 
@@ -37,6 +37,12 @@ public class OrderEntity extends AbstractEntity {
 
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatus status; // NEW, PREPARING, READY, SERVED, PAYMENT_COMPLETED
+
+    @Convert(converter = OrderStatusConverter.class)
+    private OrderStatus kitchenStatus;
+
+    @Convert(converter = OrderStatusConverter.class)
+    private OrderStatus barStatus;
 
     private BigDecimal total;
 

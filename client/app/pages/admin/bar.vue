@@ -232,6 +232,10 @@ function filterItems(items: any[]) {
 // Filter by search & bar category
 const filteredOrders = computed(() => {
   let list = orderStore.orders.filter(o => {
+    // Exclude finished orders
+    const s = (o.status || '').toLowerCase()
+    if (['payment_completed', 'canceled', 'expired'].includes(s)) return false
+
     const items = o.items || o.lines || []
     return filterItems(items).length > 0
   })
@@ -245,9 +249,9 @@ const filteredOrders = computed(() => {
   })
 })
 
-const newOrders = computed(() => filteredOrders.value.filter(o => (o.status || '').toLowerCase() === 'new'))
-const preparingOrders = computed(() => filteredOrders.value.filter(o => (o.status || '').toLowerCase() === 'preparing'))
-const readyOrders = computed(() => filteredOrders.value.filter(o => (o.status || '').toLowerCase() === 'ready'))
+const newOrders = computed(() => filteredOrders.value.filter(o => (o.barStatus || '').toLowerCase() === 'new'))
+const preparingOrders = computed(() => filteredOrders.value.filter(o => (o.barStatus || '').toLowerCase() === 'preparing'))
+const readyOrders = computed(() => filteredOrders.value.filter(o => (o.barStatus || '').toLowerCase() === 'ready'))
 
 function menuItemName(id: number) {
   const i = orderStore.menuItemById(id)
@@ -268,7 +272,7 @@ function timeAgo(dateString: string) {
 
 async function updateStatus(id: string | number, status: string) {
   try {
-    await orderStore.updateOrderStatus(id, status)
+    await orderStore.updateOrderStatus(id, status, 'BAR')
   } catch (e) {
     const errorMessage = e?.message || e?.toString() || t('admin.orders.updateError');
     uiStore.error(errorMessage);
@@ -276,7 +280,7 @@ async function updateStatus(id: string | number, status: string) {
 }
 
 useHead({
-  title: () => `${t('admin.bar.title')} | Admin | feasymenu`
+  title: () => `${t('admin.bar.title')} | Admin`
 })
 </script>
 
