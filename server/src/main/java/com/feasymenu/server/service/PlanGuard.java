@@ -75,6 +75,16 @@ public class PlanGuard {
         }
     }
 
+    public void assertPaidPlan(String tenantCode) {
+        TenantEntity t = tenantRepository.findByCode(tenantCode).orElse(null);
+        if (t == null)
+            return;
+        PlanType plan = t.getPlan() == null ? PlanType.FREE : t.getPlan();
+        if (plan == PlanType.FREE) {
+            throw new PlanFeatureUnavailableException("error.plan.paidPlanRequired");
+        }
+    }
+
     // ---- Helper limit calculators (centralized to avoid divergence) ----
     public long tableLimit(PlanType plan) {
         return switch (plan) {

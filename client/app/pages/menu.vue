@@ -358,7 +358,7 @@
           <div class="relative z-10 mb-8 pointer-events-none">
             <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 mb-4 border border-white/20">
               <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ $t('menu.featured') }}</span>
+              <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ $t('menu.featuredTag') }}</span>
             </div>
             <h2 class="text-3xl font-black text-white mb-2 leading-tight">{{ getLocalizedName(storyItems[activeStoryIndex]) }}</h2>
             <p class="text-white/80 font-medium text-sm line-clamp-3 mb-6">{{ getLocalizedDesc(storyItems[activeStoryIndex]) }}</p>

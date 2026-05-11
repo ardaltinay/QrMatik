@@ -61,6 +61,15 @@ public class MenuService {
         } else if (m.getTenant() != null && m.getTenant().getCode() != null) {
             planGuard.assertCanCreateMenuItem(m.getTenant().getCode());
         }
+
+        // Feature checks in create
+        if (Boolean.TRUE.equals(m.getStockEnabled())) {
+            planGuard.assertStockFeature(tenant != null ? tenant : m.getTenant().getCode());
+        }
+        if (Boolean.TRUE.equals(m.getIsFeatured())) {
+            planGuard.assertPaidPlan(tenant != null ? tenant : m.getTenant().getCode());
+        }
+
         return repository.save(m);
     }
 
@@ -91,8 +100,14 @@ public class MenuService {
             e.setImage(patch.getImage());
         if (patch.getSortOrder() != null)
             e.setSortOrder(patch.getSortOrder());
-        if (patch.getIsFeatured() != null)
+        if (patch.getIsFeatured() != null && !patch.getIsFeatured().equals(e.getIsFeatured())) {
+            if (tenant != null) {
+                planGuard.assertPaidPlan(tenant);
+            } else if (e.getTenant() != null && e.getTenant().getCode() != null) {
+                planGuard.assertPaidPlan(e.getTenant().getCode());
+            }
             e.setIsFeatured(patch.getIsFeatured());
+        }
         // Stock-related fields require plan check only if they are actually being changed/enabled
         boolean stockEnabledChanged = patch.getStockEnabled() != null && !patch.getStockEnabled().equals(e.getStockEnabled());
         boolean stockQuantityChanged = patch.getStockQuantity() != null && !patch.getStockQuantity().equals(e.getStockQuantity());

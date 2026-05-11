@@ -19,47 +19,56 @@ function handleConfirm() {
 
 <template>
   <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="uiStore.confirmData?.isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="handleCancel"></div>
+    <Transition name="modal-overlay">
+      <div v-if="uiStore.confirmData?.isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <!-- High-end Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-all duration-500" @click="handleCancel"></div>
 
-        <!-- Modal -->
-        <div class="bg-white/90 backdrop-blur-xl rounded-3xl w-full max-w-sm relative z-10 overflow-hidden shadow-2xl border border-white/20 animate-slide-up">
-          <div class="p-8 text-center">
-            <!-- Icon -->
+        <!-- Sleek Modal Box -->
+        <div class="relative w-full max-w-sm bg-white/95 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-modal-in">
+          <!-- Top Accent Line (Optional) -->
+          <div 
+            class="h-2 w-full"
+            :class="uiStore.confirmData.isDanger ? 'bg-rose-500' : 'bg-brand-500'"
+          ></div>
+
+          <div class="p-10 text-center">
+            <!-- Modern Icon Sphere -->
             <div 
-              class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+              class="w-20 h-20 mx-auto mb-8 rounded-[2rem] flex items-center justify-center shadow-inner relative group"
               :class="uiStore.confirmData.isDanger ? 'bg-rose-50 text-rose-500' : 'bg-brand-50 text-brand-500'"
             >
-              <svg v-if="uiStore.confirmData.isDanger" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <div class="absolute inset-0 rounded-[2rem] animate-pulse opacity-20" :class="uiStore.confirmData.isDanger ? 'bg-rose-400' : 'bg-brand-400'"></div>
+              <svg v-if="uiStore.confirmData.isDanger" class="w-10 h-10 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              <svg v-else class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg v-else class="w-10 h-10 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
 
-            <h3 class="text-xl font-black text-slate-900 mb-2 leading-tight">
+            <h3 class="text-2xl font-black text-slate-900 mb-3 tracking-tight leading-tight">
               {{ uiStore.confirmData.title }}
             </h3>
-            <p class="text-slate-500 font-medium leading-relaxed mb-8">
+            <p class="text-slate-500 font-medium leading-relaxed mb-10 px-2">
               {{ uiStore.confirmData.message }}
             </p>
 
-            <div class="grid grid-cols-2 gap-3">
-              <button 
-                @click="handleCancel" 
-                class="px-6 py-3.5 text-sm font-black text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-2xl transition-all active:scale-95"
-              >
-                {{ uiStore.confirmData.cancelText || t('admin.common.cancel') }}
-              </button>
+            <div class="flex flex-col gap-3">
               <button 
                 @click="handleConfirm" 
-                class="px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-brand-500/20 transition-all active:scale-95 rounded-2xl"
-                :class="uiStore.confirmData.isDanger ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/20' : 'bg-brand-500 hover:bg-brand-600'"
+                class="w-full py-4.5 px-6 text-sm font-black text-white shadow-[0_20px_40px_-10px] transition-all active:scale-95 rounded-2xl tracking-widest uppercase"
+                :class="uiStore.confirmData.isDanger 
+                  ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/40' 
+                  : 'bg-brand-600 hover:bg-brand-700 shadow-brand-500/40'"
               >
                 {{ uiStore.confirmData.confirmText || t('admin.common.confirm') || 'OK' }}
+              </button>
+              <button 
+                @click="handleCancel" 
+                class="w-full py-4 text-sm font-black text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-2xl transition-all uppercase tracking-widest"
+              >
+                {{ uiStore.confirmData.cancelText || t('admin.common.cancel') }}
               </button>
             </div>
           </div>
@@ -70,25 +79,31 @@ function handleConfirm() {
 </template>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
+.modal-overlay-enter-active, .modal-overlay-leave-active {
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.fade-enter-from, .fade-leave-to {
+.modal-overlay-enter-from, .modal-overlay-leave-to {
   opacity: 0;
 }
 
-@keyframes slide-up {
+@keyframes modal-in {
   from {
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(30px) scale(0.9) rotateX(-10deg);
     opacity: 0;
   }
   to {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0);
     opacity: 1;
   }
 }
 
-.animate-slide-up {
-  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.animate-modal-in {
+  animation: modal-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  perspective: 1000px;
+}
+
+.py-4\.5 {
+  padding-top: 1.125rem;
+  padding-bottom: 1.125rem;
 }
 </style>

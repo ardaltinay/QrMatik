@@ -45,6 +45,12 @@ public class MenuController {
         return menuService.listForTenant(tenant).stream().map(converter::toDto).toList();
     }
 
+    @GetMapping("/stock")
+    public List<MenuItemDto> stockList() {
+        String tenant = TenantContext.getTenant();
+        return menuService.listForStock(tenant).stream().map(converter::toDto).toList();
+    }
+
     @GetMapping("/popular")
     public List<MenuItemDto> popular(@RequestParam(name = "limit", defaultValue = "4") int limit) {
         String tenant = TenantContext.getTenant();
