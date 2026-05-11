@@ -158,6 +158,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const { fetchJson } = useApi()
 const uiStore = useUiStore()
 const authStore = useAuthStore()
 const localePath = useLocalePath()
@@ -232,6 +233,8 @@ watch(dateRange, () => {
 })
 
 onMounted(() => {
-  loadReport()
+  if (currentPlan.value !== 'FREE') {
+    loadReport()
+  }
 })
 </script>

@@ -538,7 +538,7 @@ onMounted(() => {
   
   // Check if loyalty is active
   try {
-    fetchJson('/api/loyalty/campaign/public').then(campaign => {
+    fetchJson('/api/loyalty/campaign').then(campaign => {
       isLoyaltyActive.value = campaign?.active || false
     })
   } catch {

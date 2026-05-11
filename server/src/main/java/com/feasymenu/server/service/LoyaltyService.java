@@ -3,8 +3,10 @@ package com.feasymenu.server.service;
 import com.feasymenu.server.dto.SpinRequestDto;
 import com.feasymenu.server.dto.ValidateCodeResponseDto;
 import com.feasymenu.server.exception.BadRequestException;
+import com.feasymenu.server.exception.PlanFeatureUnavailableException;
 import com.feasymenu.server.model.CustomerRewardEntity;
 import com.feasymenu.server.model.LoyaltyCampaignEntity;
+import com.feasymenu.server.model.PlanType;
 import com.feasymenu.server.model.TenantEntity;
 import com.feasymenu.server.repository.CustomerRewardRepository;
 import com.feasymenu.server.repository.LoyaltyCampaignRepository;
@@ -131,9 +133,9 @@ public class LoyaltyService {
         TenantEntity tenant = tenantRepository.findByCode(tenantCode)
                 .orElseThrow(() -> new BadRequestException("Tenant not found"));
 
-        // Plan check: Only PRO or higher can use Loyalty
-        if (tenant.getPlan() == null || tenant.getPlan() == com.feasymenu.server.model.PlanType.FREE) {
-            throw new com.feasymenu.server.exception.PlanFeatureUnavailableException(
+        // Plan check: Only PRO can use Loyalty
+        if (tenant.getPlan() != null && tenant.getPlan() != PlanType.PRO) {
+            throw new PlanFeatureUnavailableException(
                     "Sadakat programı sadece PRO paketlerde mevcuttur.");
         }
 

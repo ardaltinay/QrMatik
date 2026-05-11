@@ -293,7 +293,7 @@
 
           </div>
         </div>
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-center gap-3 shrink-0">
           <button @click="closeModal" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">
             {{ $t('admin.common.cancel') }}
           </button>
@@ -349,7 +349,7 @@
           </div>
         </div>
 
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-center gap-3">
           <button @click="isCategorySortModalOpen = false" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">
             {{ $t('admin.common.cancel') }}
           </button>
@@ -375,7 +375,7 @@ const { fetchJson } = useApi()
 const orderStore = useOrderStore()
 const uiStore = useUiStore()
 const authStore = useAuthStore()
-const { isProPlan, loadTenantConfig } = useTenant()
+const { isProPlan, isPaidPlan, loadTenantConfig } = useTenant()
 
 useHead({
   title: () => `${t('admin.menu.title')} | Admin`

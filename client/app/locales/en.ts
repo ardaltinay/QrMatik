@@ -448,6 +448,7 @@ export default {
       loading: 'Loading...',
       cancel: 'Cancel',
       save: 'Save',
+      edit: 'Edit',
       saving: 'Saving...',
       suspended: 'Suspended',
       active: 'Active',

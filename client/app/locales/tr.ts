@@ -472,6 +472,7 @@ export default {
       loading: 'Yükleniyor...',
       cancel: 'İptal',
       save: 'Kaydet',
+      edit: 'Düzenle',
       saving: 'Kaydediliyor...',
       suspended: 'Askıya Alındı',
       active: 'Aktif',

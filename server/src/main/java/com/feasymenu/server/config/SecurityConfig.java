@@ -37,7 +37,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(request -> {
             var cb = new org.springframework.web.cors.CorsConfiguration();
-            cb.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://*.localhost:3000", "http://*.localhost", "http://127.0.0.1:3000", "http://*.127.0.0.1:3000", "https://feasymenu.com", "https://*.feasymenu.com"));
+            cb.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://*.localhost:3000",
+                    "http://*.localhost", "http://127.0.0.1:3000", "http://*.127.0.0.1:3000", "https://feasymenu.com",
+                    "https://*.feasymenu.com"));
             cb.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cb.setAllowedHeaders(java.util.List.of("*"));
             cb.setAllowCredentials(true);
@@ -49,7 +51,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/auth/**").permitAll()
-                .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**", "/api/loyalty/campaign/public", "/api/loyalty/spin", "/ws/**", "/error").permitAll()
+                .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**", "/api/loyalty/campaign",
+                        "/api/loyalty/spin", "/ws/**", "/error")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/webhooks/lemonsqueezy").permitAll() // Lemon Squeezy Webhook
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")
@@ -61,7 +65,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
                 .requestMatchers("/api/loyalty/validate").hasAnyRole("ADMIN", "CASHIER", "SALOON")
-                .requestMatchers(HttpMethod.GET, "/api/orders").hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
+                .requestMatchers(HttpMethod.GET, "/api/orders")
+                .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.PUT, "/api/orders/*/status")
                 .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers("/api/tenants/**", "/api/admin/blog/**").hasRole("SUPERADMIN")
@@ -72,8 +77,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
-        // Filter Order: RateLimit -> Tenant -> JwtAuth -> UsernamePasswordAuthentication
-        // By adding each before the same standard filter, the last one added becomes the first to run.
+        // Filter Order: RateLimit -> Tenant -> JwtAuth ->
+        // UsernamePasswordAuthentication
+        // By adding each before the same standard filter, the last one added becomes
+        // the first to run.
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);

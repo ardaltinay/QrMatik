@@ -151,8 +151,12 @@ const maxDiscount = computed(() => {
 const saving = ref(false)
 
 onMounted(async () => {
+  if (currentPlan.value !== 'PRO') {
+    campaign.value.prizes = getDefaultPrizes()
+    return
+  }
   try {
-    const data = await fetchJson('/api/loyalty/campaign')
+    const data = await fetchJson('/api/admin/loyalty/campaign')
     if (data) {
       campaign.value.active = data.active
       const savedPrizes = data.prizesJson ? JSON.parse(data.prizesJson) : []
@@ -177,7 +181,7 @@ function mergeWithDefaults(saved: any[]) {
 async function saveSettings() {
   saving.value = true
   try {
-    await fetchJson('/api/loyalty/campaign', {
+    await fetchJson('/api/admin/loyalty/campaign', {
       method: 'POST',
       body: JSON.stringify({
         active: campaign.value.active,
