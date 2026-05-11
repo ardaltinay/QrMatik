@@ -30,7 +30,7 @@
             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-xs">{{ preparingOrders.length }}</div>
             <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $t('order.statuses.preparing') }}</span>
          </div>
-         <div class="relative w-full sm:w-64">
+         <div class="relative w-full lg:w-64 min-w-[240px]">
            <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
            </svg>

@@ -488,6 +488,11 @@ export default {
       confirm: 'Onayla',
       delete: 'Sil',
       deleted: 'Silindi.',
+      status: {
+        liveSync: 'CANLI SENKRONİZASYON',
+        barLive: 'BAR CANLI',
+        systemActive: 'SİSTEM AKTİF'
+      }
     },
     orders: {
       title: 'Siparişler',

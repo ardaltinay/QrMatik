@@ -28,7 +28,7 @@
         <!-- Live Status -->
         <div class="hidden lg:flex items-center gap-3 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 shrink-0">
            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-           <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">SİSTEM AKTİF</span>
+           <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{{ $t('admin.common.status.systemActive') }}</span>
         </div>
       </div>
     </div>
@@ -70,7 +70,10 @@
                     <span class="text-xl font-black text-slate-900 tracking-tight">#{{ orderCodeFromId(order.id) }}</span>
                  </div>
               </div>
-              <span class="text-[10px] font-bold text-slate-400 uppercase italic">{{ timeAgo(order.createdAt || order.createdTime) }}</span>
+              <div class="text-right shrink-0">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block leading-none mb-1">ZAMAN</span>
+                <span class="text-[10px] font-bold text-slate-900 italic">{{ timeAgo(order.createdAt || order.createdTime) }}</span>
+              </div>
             </div>
 
             <!-- Preparation Status Chips -->

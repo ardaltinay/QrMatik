@@ -28,7 +28,7 @@
         <!-- Live Indicator -->
         <div class="hidden lg:flex items-center gap-3 bg-emerald-50 px-6 py-3.5 rounded-2xl border border-emerald-100 shadow-sm shrink-0">
            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
-           <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">BAR LIVE</span>
+           <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{{ $t('admin.common.status.barLive') }}</span>
         </div>
       </div>
     </div>

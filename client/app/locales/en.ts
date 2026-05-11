@@ -464,6 +464,11 @@ export default {
       confirm: 'Confirm',
       delete: 'Delete',
       deleted: 'Deleted.',
+      status: {
+        liveSync: 'LIVE SYNC',
+        barLive: 'BAR LIVE',
+        systemActive: 'SYSTEM ACTIVE'
+      }
     },
     orders: {
       title: 'Orders Management',
