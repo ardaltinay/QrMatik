@@ -118,17 +118,23 @@ public class LoyaltyService {
 
     @Transactional(readOnly = true)
     public Optional<LoyaltyCampaignEntity> getCampaign(String tenantCode) {
-        return campaignRepository.findByTenant_Code(tenantCode);
+        Optional<LoyaltyCampaignEntity> campaign = campaignRepository.findByTenant_Code(tenantCode);
+        if (campaign.isPresent() && campaign.get().getActive() != null && !campaign.get().getActive()) {
+            return Optional.empty();
+        }
+        return campaign;
     }
 
     @Transactional
-    public LoyaltyCampaignEntity saveCampaign(String tenantCode, List<com.feasymenu.server.dto.LoyaltyPrizeDto> prizes, boolean active) {
+    public LoyaltyCampaignEntity saveCampaign(String tenantCode, List<com.feasymenu.server.dto.LoyaltyPrizeDto> prizes,
+            boolean active) {
         TenantEntity tenant = tenantRepository.findByCode(tenantCode)
                 .orElseThrow(() -> new BadRequestException("Tenant not found"));
 
         // Plan check: Only PRO or higher can use Loyalty
         if (tenant.getPlan() == null || tenant.getPlan() == com.feasymenu.server.model.PlanType.FREE) {
-            throw new com.feasymenu.server.exception.PlanFeatureUnavailableException("Sadakat programı sadece PRO paketlerde mevcuttur.");
+            throw new com.feasymenu.server.exception.PlanFeatureUnavailableException(
+                    "Sadakat programı sadece PRO paketlerde mevcuttur.");
         }
 
         LoyaltyCampaignEntity campaign = campaignRepository.findByTenant(tenant)

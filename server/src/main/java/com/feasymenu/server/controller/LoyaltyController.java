@@ -41,9 +41,13 @@ public class LoyaltyController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/campaign")
+    @GetMapping("/campaign/public")
     public ResponseEntity<com.feasymenu.server.model.LoyaltyCampaignEntity> getPublicCampaign() {
         String tenant = TenantContext.getTenant();
-        return ResponseEntity.of(loyaltyService.getCampaign(tenant));
+        var campaign = loyaltyService.getCampaign(tenant);
+        if (campaign.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(campaign.get());
     }
 }
