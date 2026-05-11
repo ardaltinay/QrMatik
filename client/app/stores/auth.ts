@@ -4,6 +4,11 @@ interface User {
   username: string
   role: string
   tenantCode?: string
+  tenant?: {
+    subscriptionPlan: string
+    logoUrl?: string
+    primaryColor?: string
+  }
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -25,7 +30,8 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = {
           username: data.username,
           role: data.role,
-          tenantCode: data.tenantCode
+          tenantCode: data.tenantCode,
+          tenant: data.tenant
         }
       }
     } catch { 
@@ -49,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
       username: data.user?.username || username,
       role: data.user?.role,
       tenantCode: data.user?.tenantCode,
+      tenant: data.user?.tenant
     }
 
     return data

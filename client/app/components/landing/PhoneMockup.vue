@@ -9,16 +9,20 @@
       <div class="w-full h-full bg-slate-50 rounded-[2.2rem] overflow-hidden relative border border-slate-200 flex flex-col">
         <!-- Mock Floating Header -->
         <div class="p-2 pt-6">
-          <div class="relative overflow-hidden rounded-[1.2rem] bg-gradient-to-br from-brand-400 to-brand-500 text-white p-2.5 shadow-lg border border-white/20 backdrop-blur-md flex items-center justify-between">
+          <div class="relative overflow-hidden rounded-[1.2rem] text-white p-2.5 shadow-lg border border-white/20 backdrop-blur-md flex items-center justify-between"
+               :style="{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)`, fontFamily: fontFamily }">
             <div class="absolute -top-10 -right-10 w-20 h-20 bg-white/20 blur-[20px] rounded-full"></div>
             
             <div class="relative z-10 flex items-center gap-2">
-              <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black text-sm border border-white/30 shadow-inner">
-                B
+              <div v-if="logoUrl" class="w-8 h-8 rounded-xl bg-white p-1 overflow-hidden shadow-inner border border-white/30">
+                <img :src="logoUrl" class="w-full h-full object-contain" />
+              </div>
+              <div v-else class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black text-sm border border-white/30 shadow-inner">
+                {{ (tenantName || 'B').charAt(0).toUpperCase() }}
               </div>
               <div class="flex flex-col">
                 <span class="text-[6px] uppercase tracking-widest font-black opacity-70 mb-0.5">{{ $t('common.menu') }}</span>
-                <span class="text-xs font-black tracking-tight leading-none">The Bistro</span>
+                <span class="text-xs font-black tracking-tight leading-none truncate max-w-[80px]">{{ tenantName || 'The Bistro' }}</span>
               </div>
             </div>
             <!-- Action Pill -->
@@ -33,7 +37,7 @@
         <!-- Story Highlights -->
         <div class="px-3 pt-3 pb-2 flex gap-3 overflow-hidden">
           <div v-for="i in 5" :key="i" class="flex flex-col items-center gap-1 shrink-0">
-            <div class="w-10 h-10 rounded-full p-[1.5px] bg-gradient-to-tr from-brand-400 to-amber-400">
+            <div class="w-10 h-10 rounded-full p-[1.5px]" :style="{ background: `linear-gradient(45deg, ${primaryColor}, ${accentColor})` }">
               <div class="w-full h-full rounded-full border-2 border-white bg-slate-100 overflow-hidden">
                 <div :class="['w-full h-full flex items-center justify-center text-[10px]', i === 1 ? 'bg-amber-100' : 'bg-slate-50']">
                   {{ i === 1 ? '🍔' : (i === 2 ? '🍕' : (i === 3 ? '🥗' : (i === 4 ? '🍹' : '🍰'))) }}
@@ -46,7 +50,7 @@
 
         <!-- Mock Categories -->
         <div class="px-2 pb-2 flex gap-1.5 overflow-hidden">
-          <div class="px-3 py-1.5 bg-brand-500 text-white text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Popular' : 'Popüler' }}</div>
+          <div class="px-3 py-1.5 text-white text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm" :style="{ backgroundColor: primaryColor }">{{ locale === 'en' ? 'Popular' : 'Popüler' }}</div>
           <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Burgers' : 'Burgerler' }}</div>
           <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Drinks' : 'İçecekler' }}</div>
         </div>
@@ -80,10 +84,10 @@
 
         <!-- Call Waiter Button Mock -->
         <div class="absolute bottom-4 left-4 w-10 h-10 bg-white rounded-full shadow-lg border border-slate-100 flex flex-col items-center justify-center scale-in" style="animation-delay: 1.2s">
-          <svg class="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <svg class="w-4 h-4" :style="{ color: primaryColor }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span class="text-[5px] font-black text-brand-600 uppercase">{{ locale === 'en' ? 'CALL' : 'GARSON' }}</span>
+          <span class="text-[5px] font-black uppercase" :style="{ color: primaryColor }">{{ locale === 'en' ? 'CALL' : 'GARSON' }}</span>
         </div>
       </div>
     </div>
@@ -115,6 +119,22 @@
 
 <script setup lang="ts">
 const { locale } = useI18n()
+
+interface Props {
+  primaryColor?: string
+  accentColor?: string
+  logoUrl?: string
+  tenantName?: string
+  fontFamily?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  primaryColor: '#6366f1',
+  accentColor: '#f97316',
+  logoUrl: '',
+  tenantName: 'The Bistro',
+  fontFamily: 'Inter, sans-serif'
+})
 
 const mockMenu = computed(() => {
   const isEn = locale.value === 'en'

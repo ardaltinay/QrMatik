@@ -9,6 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,10 +67,19 @@ public class AuthService {
         saveRefreshToken(u.getUsername(), refreshToken);
 
         String roleStr = (u.getRole() != null ? u.getRole().name().toLowerCase() : "user");
-        java.util.Map<String, Object> userMap = new java.util.HashMap<>();
+        Map<String, Object> userMap = new HashMap<>();
         userMap.put("username", u.getUsername());
         userMap.put("role", roleStr);
         userMap.put("tenantCode", tenantCode);
+
+        if (u.getTenant() != null) {
+            Map<String, Object> tenantMap = new HashMap<>();
+            tenantMap.put("subscriptionPlan",
+                    u.getTenant().getPlan() != null ? u.getTenant().getPlan().name() : "FREE");
+            tenantMap.put("logoUrl", u.getTenant().getLogoUrl());
+            tenantMap.put("primaryColor", u.getTenant().getPrimaryColor());
+            userMap.put("tenant", tenantMap);
+        }
 
         return Optional.of(Map.of("token", accessToken, "refreshToken", refreshToken, "user", userMap));
     }
@@ -75,13 +87,13 @@ public class AuthService {
     private void saveRefreshToken(String username, String token) {
         refreshTokenRepository.deleteByUsername(username); // One refresh token per user for simplicity
         var rt = RefreshTokenEntity.builder().username(username).token(token)
-                .expiryDate(java.time.Instant.now().plus(7, java.time.temporal.ChronoUnit.DAYS)).build();
+                .expiryDate(Instant.now().plus(7, ChronoUnit.DAYS)).build();
         refreshTokenRepository.save(rt);
     }
 
     public Optional<Map<String, String>> refresh(String refreshToken) {
         return refreshTokenRepository.findByToken(refreshToken)
-                .filter(rt -> !rt.isRevoked() && rt.getExpiryDate().isAfter(java.time.Instant.now())).map(rt -> {
+                .filter(rt -> !rt.isRevoked() && rt.getExpiryDate().isAfter(Instant.now())).map(rt -> {
                     var user = userRepository.findTopByUsernameOrderByCreatedTimeDesc(rt.getUsername()).orElseThrow();
                     String tenantCode = (user.getTenant() != null ? user.getTenant().getCode() : null);
                     String tenantId = (user.getTenant() != null ? user.getTenant().getId().toString() : null);

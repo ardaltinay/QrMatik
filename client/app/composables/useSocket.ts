@@ -38,8 +38,15 @@ export function useSocket() {
       }
     }
 
+    const token = useCookie('qm_token').value
+    const connectHeaders: Record<string, string> = {}
+    if (token) {
+      connectHeaders['Authorization'] = `Bearer ${token}`
+    }
+
     const stompClient = new Client({
       brokerURL: url,
+      connectHeaders,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -89,13 +96,20 @@ export function useSocket() {
 
     const doSub = () => {
       if (client.value?.connected && !activeSubscriptions.has(topic)) {
+        const token = useCookie('qm_token').value
+        const headers: Record<string, string> = {}
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`
+          headers['authorization'] = `Bearer ${token}`
+        }
+
         subscription = client.value.subscribe(topic, (message: IMessage) => {
           try {
             callback(JSON.parse(message.body))
           } catch (e) {
             callback(message.body)
           }
-        })
+        }, headers)
         activeSubscriptions.add(topic)
         return true
       }

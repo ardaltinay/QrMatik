@@ -106,6 +106,14 @@ public class OrderService {
             if (realSid == null || !realSid.equals(sid)) {
                 return Optional.empty();
             }
+        } else {
+            // IDOR Protection: If authenticated, ensure the order belongs to the user's tenant
+            String currentTenant = TenantContext.getTenant();
+            if (currentTenant != null && e.getTenant() != null && !currentTenant.equals(e.getTenant().getCode())) {
+                log.warn("IDOR attempt detected! User from tenant {} tried to access order {} from tenant {}",
+                        currentTenant, id, e.getTenant().getCode());
+                return Optional.empty();
+            }
         }
         return Optional.of(e);
     }

@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
+                .requestMatchers("/api/loyalty/validate").hasAnyRole("ADMIN", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.GET, "/api/orders").hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.PUT, "/api/orders/*/status")
                 .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")

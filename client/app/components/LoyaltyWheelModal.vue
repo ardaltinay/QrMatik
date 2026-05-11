@@ -206,15 +206,22 @@ const isValidForm = computed(() => {
 const customPrizes = ref<any[]>([])
 
 const prizes = computed(() => {
-  if (customPrizes.value && customPrizes.value.length > 0) return customPrizes.value
-  return [
-    { label: t('loyalty.prizes.discount15') || '%15 İndirim', color: '#f97316', discountPercent: 15 },
-    { label: t('loyalty.prizes.freeDrink') || 'Ücretsiz İçecek', color: '#fbbf24', discountPercent: 0 },
-    { label: t('loyalty.prizes.discount10') || '%10 İndirim', color: '#f97316', discountPercent: 10 }, 
-    { label: t('loyalty.prizes.surpriseDessert') || 'Sürpriz Tatlı', color: '#fbbf24', discountPercent: 0 },
-    { label: t('loyalty.prizes.discount20') || '%20 İndirim', color: '#ea580c', discountPercent: 20 },
-    { label: t('loyalty.prizes.pass') || 'Pas', color: '#94a3b8', discountPercent: 0 },
-  ]
+  const rawPrizes = (customPrizes.value && customPrizes.value.length > 0) 
+    ? customPrizes.value 
+    : [
+        { type: 'discount', label: t('admin.loyalty.prizes.percentageDiscount') || 'İndirim', color: '#f97316', discountPercent: 15 },
+        { type: 'freeDrink', label: t('admin.loyalty.prizes.freeDrink') || 'Ücretsiz İçecek', color: '#fbbf24', discountPercent: 0 },
+        { type: 'surpriseDessert', label: t('admin.loyalty.prizes.surpriseDessert') || 'Sürpriz Tatlı', color: '#ec4899', discountPercent: 0 }, 
+        { type: 'pass', label: t('admin.loyalty.prizes.pass') || 'Pas', color: '#94a3b8', discountPercent: 0 },
+      ]
+  
+  // Format labels to include percentage for discount types
+  return rawPrizes.map(p => {
+    if (p.type === 'discount' && p.discountPercent > 0) {
+      return { ...p, label: `%${p.discountPercent} ${p.label}` }
+    }
+    return p
+  })
 })
 
 onMounted(async () => {

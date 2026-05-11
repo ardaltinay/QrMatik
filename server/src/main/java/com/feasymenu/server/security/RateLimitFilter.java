@@ -47,6 +47,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
         else if (path.startsWith("/api/billing/checkout/init") && "GET".equalsIgnoreCase(method)) {
             limitType = RateLimitService.LimitType.BILLING_INIT;
         }
+        // 5. Sadakat Programı
+        else if (path.startsWith("/api/loyalty/spin") && "POST".equalsIgnoreCase(method)) {
+            limitType = RateLimitService.LimitType.LOYALTY_SPIN;
+        }
 
         if (limitType != null) {
             String ip = getClientIP(request);

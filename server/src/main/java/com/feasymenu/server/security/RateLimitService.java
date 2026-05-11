@@ -19,7 +19,8 @@ public class RateLimitService {
         AUTH(20, Duration.ofMinutes(5)), // 5 dakikada 20 giriş/kayıt denemesi
         FORGOT_PASS(3, Duration.ofHours(1)), // Saatte 3 şifre sıfırlama talebi
         BILLING_INIT(5, Duration.ofMinutes(1)), // Dakikada 5 ödeme başlatma
-        WAITER_CALL(1, Duration.ofMinutes(1)); // Dakikada 1 kez garson çağırma
+        WAITER_CALL(1, Duration.ofMinutes(1)), // Dakikada 1 kez garson çağırma
+        LOYALTY_SPIN(1, Duration.ofMinutes(1)); // Dakikada 1 kez çark çevirme
 
         final long capacity;
         final Duration duration;

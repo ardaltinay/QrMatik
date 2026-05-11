@@ -24,6 +24,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
     List<OrderEntity> findByTable_CodeAndTenant_Code(String tableCode, String tenantCode);
 
     List<OrderEntity> findBySessionIdAndTenant_Code(String sessionId, String tenantCode);
+    boolean existsBySessionIdAndTenant_Code(String sessionId, String tenantCode);
     List<OrderEntity> findBySessionIdAndTable_CodeAndTenant_Code(String sessionId, String tableCode, String tenantCode);
     List<OrderEntity> findBySessionIdAndTable_Code(String sessionId, String tableCode);
 

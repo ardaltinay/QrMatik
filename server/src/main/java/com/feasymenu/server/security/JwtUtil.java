@@ -6,11 +6,17 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import javax.crypto.SecretKey;
 
 @Component
 public class JwtUtil {
@@ -66,7 +72,7 @@ public class JwtUtil {
         if (tenantId != null) {
             claims.put("tenantId", tenantId);
         }
-        
+
         var builder = Jwts.builder()
                 .subject(username)
                 .claims(claims)
@@ -91,12 +97,38 @@ public class JwtUtil {
     }
 
     public Claims parseToken(String token) {
-        var parser = Jwts.parser().verifyWith((javax.crypto.SecretKey) getKey());
+        var parser = Jwts.parser().verifyWith((SecretKey) getKey());
         if (issuer != null && !issuer.isBlank())
             parser.requireIssuer(issuer.trim());
         if (audience != null && !audience.isBlank())
             parser.requireAudience(audience.trim());
         return parser.build().parseSignedClaims(token).getPayload();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            parseToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String extractTenant(String token) {
+        return parseToken(token).get("tenant", String.class);
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseToken(token);
+        String username = claims.getSubject();
+        String role = claims.get("role", String.class);
+        String tenant = claims.get("tenant", String.class);
+
+        var authority = new SimpleGrantedAuthority(role);
+        // We use a custom principal or just store tenant in the authentication details
+        var auth = new UsernamePasswordAuthenticationToken(username, null, List.of(authority));
+        auth.setDetails(Map.of("tenant", tenant));
+        return auth;
     }
 
     public long getExpMinutes() {

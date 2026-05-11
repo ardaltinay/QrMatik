@@ -403,12 +403,14 @@ export default {
       prizesTitle: 'Prizes',
       prizes: {
         discount15: '15% Discount',
-        freeDrink: 'Free Drink',
         discount10: '10% Discount',
-        surpriseDessert: 'Surprise Dessert',
         discount20: '20% Discount',
-        pass: 'Pass'
+        freeDrink: 'Free Drink',
+        surpriseDessert: 'Surprise Dessert',
+        pass: 'Pass (Try Again)',
+        percentageDiscount: 'Discount',
       },
+      discountHint: 'Set the discount percentage',
       addPrize: 'Add New Prize',
       label: 'Prize Label',
       discount: 'Discount Rate (%)',
@@ -421,6 +423,8 @@ export default {
       totalPrizes: 'Total Prizes',
       maxDiscount: 'Max Discount',
       unit: 'Units',
+      premiumTitle: 'Loyalty Program (PRO)',
+      premiumDesc: 'Spin-to-win and loyalty rewards are only available in the PRO plan.',
       proOnly: 'PRO Feature',
       upgradeMsg: 'Spin-to-win and Loyalty Program are only available on the Pro plan.',
       upgradeBtn: 'Upgrade Now',
@@ -554,6 +558,8 @@ export default {
       title: 'Stock Control',
       subtitle: 'Critical stock tracking and quick updates',
       searchPlaceholder: 'Search product name...',
+      premiumTitle: 'Advanced Stock Control (PRO)',
+      premiumDesc: 'Automatic stock tracking and critical stock alerts are only available in the PRO plan.',
       emptyState: 'No products with active stock tracking found.',
       columns: {
         name: 'Product Name',
@@ -589,6 +595,8 @@ export default {
     reports: {
       title: 'Reports',
       subtitle: 'Financial and operational summary',
+      premiumTitle: 'Advanced Reports',
+      premiumDesc: 'Sales analysis and performance reports are available in STANDARD and PRO plans.',
       dateRange: {
         today: 'Today',
         week: 'This Week',
@@ -646,6 +654,8 @@ export default {
       },
       defaultWelcome: 'Welcome',
       defaultWelcomeLong: 'Welcome to our world of flavors',
+      premiumTitle: 'Premium Branding',
+      premiumDesc: 'Logo and color customizations are only available in STANDARD and PRO plans.',
     },
     kitchen: {
       title: 'Kitchen (KDS)',
@@ -673,6 +683,7 @@ export default {
     upgrade: {
       title: 'Subscription & Plans',
       subtitle: 'Upgrade your plan to grow your business',
+      button: 'Upgrade Plan',
       currentPlan: 'Your Current Plan',
       upgradeBtn: 'Upgrade Plan',
       contactSales: 'Contact Sales',

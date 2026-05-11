@@ -13,7 +13,11 @@
           <option value="week">{{ $t('admin.reports.dateRange.week') }}</option>
           <option value="month">{{ $t('admin.reports.dateRange.month') }}</option>
         </select>
-        <button @click="exportReport" class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-colors shadow-sm flex items-center justify-center gap-2">
+        <button 
+          @click="exportReport" 
+          :disabled="currentPlan === 'FREE'"
+          class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
@@ -22,8 +26,25 @@
       </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="relative">
+      <!-- Premium Overlay for FREE Users -->
+      <div v-if="currentPlan === 'FREE'" class="absolute inset-0 z-50 backdrop-blur-[2px] bg-white/30 rounded-2xl flex items-center justify-center p-6 text-center">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 max-w-md animate-in fade-in zoom-in duration-300">
+          <div class="w-16 h-16 bg-brand-100 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">{{ $t('admin.reports.premiumTitle') }}</h3>
+          <p class="text-slate-500 mb-8">{{ $t('admin.reports.premiumDesc') }}</p>
+          <NuxtLink :to="localePath('/admin/upgrade')" class="inline-flex items-center justify-center px-8 py-3 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25">
+            {{ $t('admin.upgrade.button') }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Revenue -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden group hover:border-brand-300 transition-colors">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-brand-50 rounded-full group-hover:scale-150 transition-transform duration-500 z-0"></div>
@@ -127,6 +148,7 @@
       </div>
 
     </div>
+    </div>
   </div>
 </template>
 
@@ -137,6 +159,9 @@ definePageMeta({
 
 const { t } = useI18n()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
+const localePath = useLocalePath()
+const currentPlan = computed(() => authStore.user?.tenant?.subscriptionPlan || 'FREE')
 
 useHead({
   title: () => `${t('admin.reports.title')} | Admin`
