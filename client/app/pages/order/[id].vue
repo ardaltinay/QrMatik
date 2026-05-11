@@ -159,6 +159,29 @@
           </div>
         </TransitionGroup>
 
+        <!-- Gamification Banner (Spin the Wheel / Loyalty) -->
+        <div v-if="order?.status && ['payment_completed', 'served', 'bill_requested'].includes(order.status.toLowerCase()) && !hasSpunWheel && isLoyaltyActive" 
+             class="bg-gradient-to-r from-brand-400 to-brand-600 rounded-[2.5rem] p-8 sm:p-10 text-white shadow-2xl shadow-brand-500/30 relative overflow-hidden group cursor-pointer mb-10"
+             @click="openLoyaltyModal">
+          <!-- Decorative Background -->
+          <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 blur-2xl rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+          
+          <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+            <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/30 backdrop-blur-md">
+              <svg class="w-8 h-8 text-white animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-grow">
+              <h3 class="text-xl font-black mb-1 tracking-tight text-white">{{ $t('loyalty.wheel.title') }}</h3>
+              <p class="text-white/80 font-medium text-sm">{{ $t('loyalty.wheel.desc') }}</p>
+            </div>
+            <button class="shrink-0 bg-white text-brand-600 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-all">
+              {{ $t('loyalty.wheel.spinBtn') }}
+            </button>
+          </div>
+        </div>
+
         <!-- Order Items -->
         <div class="bg-white rounded-[2.5rem] p-8 sm:p-10 border border-slate-100 shadow-xl shadow-slate-200/50">
           <h3 class="text-xl font-black text-slate-900 mb-8 tracking-tight">{{ $t('order.contents') }}</h3>
@@ -235,6 +258,16 @@
       </div>
 
     </div>
+
+    <!-- Loyalty Modal -->
+    <LoyaltyWheelModal 
+      v-if="isLoyaltyModalOpen" 
+      :is-open="isLoyaltyModalOpen" 
+      :order-id="id"
+      @close="isLoyaltyModalOpen = false" 
+      @spun="onWheelSpun"
+    />
+
   </div>
 </template>
 
@@ -260,6 +293,11 @@ const isLoading = ref(true)
 const isRequestingBill = ref(false)
 const isCanceling = ref(false)
 const now = ref(Date.now())
+
+// Loyalty State
+const isLoyaltyModalOpen = ref(false)
+const hasSpunWheel = ref(false)
+const isLoyaltyActive = ref(false)
 
 let timer: any = null
 
@@ -469,6 +507,17 @@ function menuItemName(itemId: number) {
   return item ? item.name : t('common.product')
 }
 
+function openLoyaltyModal() {
+  isLoyaltyModalOpen.value = true
+}
+
+function onWheelSpun() {
+  hasSpunWheel.value = true
+  if (import.meta.client) {
+    localStorage.setItem(`qm_wheel_spun_${id}`, 'true')
+  }
+}
+
 let unsub: (() => void) | null = null
 
 onMounted(() => {
@@ -480,6 +529,20 @@ onMounted(() => {
     loadOrderData()
   } else {
     isLoading.value = false
+  }
+
+  // Load hasSpun status from localStorage
+  if (import.meta.client) {
+    hasSpunWheel.value = localStorage.getItem(`qm_wheel_spun_${id}`) === 'true'
+  }
+  
+  // Check if loyalty is active
+  try {
+    fetchJson('/api/loyalty/campaign/public').then(campaign => {
+      isLoyaltyActive.value = campaign?.active || false
+    })
+  } catch {
+    isLoyaltyActive.value = false
   }
   
   if (orderStore.menu.length === 0) {

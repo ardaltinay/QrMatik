@@ -8,9 +8,11 @@ const head = useLocaleHead({
 const route = useRoute()
 const canonicalUrl = computed(() => `https://feasymenu.com${route.path}`)
 
+const { locale } = useI18n()
+
 useHead({
   htmlAttrs: {
-    lang: head.value.htmlAttrs?.lang,
+    lang: locale,
     dir: head.value.htmlAttrs?.dir
   },
   link: [

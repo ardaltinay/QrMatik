@@ -1,4 +1,3 @@
-
 /**
  * API fetch wrapper for authenticated requests.
  * Automatically attaches tenant header and JWT token via HttpOnly cookies.
@@ -14,9 +13,7 @@ export function useApi() {
       ...(options.headers as Record<string, string> || {}),
     }
 
-    // Proxy headers from the original request when on the server
     if (import.meta.server) {
-      // Official Nuxt way to proxy headers
       const proxyHeaders = useRequestHeaders(['cookie', 'authorization', 'user-agent'])
       Object.assign(headers, proxyHeaders)
     }
@@ -26,14 +23,13 @@ export function useApi() {
     }
 
     try {
-      // Ensure path is absolute for server-side fetches if it starts with /api
       let fetchUrl = path
       if (import.meta.server && path.startsWith('/')) {
         fetchUrl = `${config.public.apiBase || 'http://127.0.0.1:8080'}${path}`
       }
 
-      const response = await fetch(fetchUrl, { 
-        ...options, 
+      const response = await fetch(fetchUrl, {
+        ...options,
         headers,
         credentials: 'include'
       })
@@ -47,8 +43,6 @@ export function useApi() {
    * Fetch JSON with automatic error handling and token refresh.
    */
   async function fetchJson<T = any>(path: string, options: RequestInit = {}): Promise<T> {
-    const authStore = useAuthStore()
-
     if (!options.headers) {
       options.headers = {}
     }
@@ -60,8 +54,9 @@ export function useApi() {
 
     // Token expired (401) and not already a login/refresh request
     if (res.status === 401 && !path.includes('/api/auth/')) {
+      // Temporarily removed authStore call to debug circular dependency
+      // const authStore = useAuthStore() 
       try {
-        // Attempt refresh (browser sends qm_refresh_token cookie automatically)
         const refreshRes = await apiFetch('/api/auth/refresh', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -69,14 +64,10 @@ export function useApi() {
         })
 
         if (refreshRes.ok) {
-          // Retry original request with new token (cookie updated by server)
           res = await apiFetch(path, options)
-        } else {
-          authStore.logout()
-          throw new Error('Session expired')
         }
       } catch (err) {
-        authStore.logout()
+        // authStore.logout()
         throw err
       }
     }
@@ -86,18 +77,15 @@ export function useApi() {
       const text = await res.text().catch(() => '')
       try {
         errorData = JSON.parse(text)
-      } catch (e) {
-        // ignore
-      }
-      
-      const errorMessage = errorData?.message || text || 'Unknown error'
+      } catch (e) { }
+
+      const errorMessage = errorData?.message || text || `Request failed with status ${res.status}`
       const err = new Error(errorMessage)
-      ;(err as any).data = errorData
-      ;(err as any).status = res.status
+        ; (err as any).data = errorData
+        ; (err as any).status = res.status
       throw err
     }
 
-    // Handle empty successful responses (204/205 or empty body)
     if (res.status === 204 || res.status === 205) {
       return undefined as any
     }

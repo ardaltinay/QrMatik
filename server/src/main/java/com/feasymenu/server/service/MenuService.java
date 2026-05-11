@@ -89,6 +89,10 @@ public class MenuService {
             e.setSubcategory(patch.getSubcategory());
         if (patch.getImage() != null)
             e.setImage(patch.getImage());
+        if (patch.getSortOrder() != null)
+            e.setSortOrder(patch.getSortOrder());
+        if (patch.getIsFeatured() != null)
+            e.setIsFeatured(patch.getIsFeatured());
         // Stock-related fields require plan check only if they are actually being changed/enabled
         boolean stockEnabledChanged = patch.getStockEnabled() != null && !patch.getStockEnabled().equals(e.getStockEnabled());
         boolean stockQuantityChanged = patch.getStockQuantity() != null && !patch.getStockQuantity().equals(e.getStockQuantity());

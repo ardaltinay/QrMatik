@@ -23,6 +23,8 @@ public class MenuItemConverter {
         d.setImage(normalizeImage(e.getImage()));
         d.setStockEnabled(e.getStockEnabled());
         d.setStockQuantity(e.getStockQuantity());
+        d.setSortOrder(e.getSortOrder());
+        d.setIsFeatured(e.getIsFeatured());
         return d;
     }
 

@@ -42,19 +42,6 @@
           
           <!-- Action Buttons Pill -->
           <div class="flex items-center gap-1 bg-black/10 p-1.5 rounded-full backdrop-blur-md border border-white/10 shadow-inner">
-            <!-- Call Waiter Button -->
-            <button 
-              @click="handleCallWaiter"
-              :disabled="isWaiterCooldown"
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all duration-300 relative group overflow-hidden"
-              :class="[isWaiterCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20 active:scale-90']"
-              :title="$t('menu.callWaiter')"
-            >
-              <div v-if="!isWaiterCooldown" class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors"></div>
-              <svg v-if="!isWaiterCooldown" class="w-5 h-5 relative z-10" :style="{ color: headerTextColor }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-              <span v-else class="text-[11px] font-black relative z-10" :style="{ color: headerTextColor }">{{ waiterCooldownSeconds }}</span>
-            </button>
-
             <!-- Info Button -->
             <button 
               @click="isInfoOpen = true"
@@ -78,6 +65,28 @@
         </div>
       </div>
     </header>
+
+    <!-- Story Highlights (Featured Menu Items) -->
+    <div v-if="storyItems?.length > 0" class="pt-6 pb-2 pl-4 sm:pl-6 overflow-x-auto scrollbar-hide flex items-center gap-4">
+      <div 
+        v-for="(story, idx) in storyItems" 
+        :key="idx" 
+        @click="openStory(idx)"
+        class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"
+      >
+        <div 
+          class="w-20 h-20 rounded-full p-[3px] transition-transform duration-300 group-hover:scale-105"
+          :style="{ background: `linear-gradient(45deg, ${effectiveColor || '#f43f5e'}, #fbbf24, #f43f5e)` }"
+        >
+          <div class="w-full h-full rounded-full border-[3px] border-slate-50 overflow-hidden bg-white">
+            <NuxtImg :src="story.image" class="w-full h-full object-cover" />
+          </div>
+        </div>
+        <span class="text-[10px] font-black uppercase tracking-widest text-slate-700 w-20 text-center truncate drop-shadow-sm">
+          {{ getLocalizedName(story) }}
+        </span>
+      </div>
+    </div>
 
     <!-- Categories Navigation (Immediately below header) -->
     <nav class="sticky top-[112px] sm:top-[128px] z-30 w-full bg-slate-50/90 backdrop-blur-xl border-b border-slate-200/50 py-3 px-4 sm:px-6 overflow-hidden shadow-sm">
@@ -142,6 +151,33 @@
         </div>
       </div>
     </main>
+
+    <!-- Floating Call Waiter Button (Bottom Left) -->
+    <div class="fixed bottom-8 left-8 z-50">
+      <button 
+        @click="handleCallWaiter"
+        :disabled="isWaiterCooldown"
+        class="relative w-18 h-18 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-[0_15px_40px_rgba(245,158,11,0.4)] transition-all duration-500 overflow-hidden group active:scale-95"
+        :class="[isWaiterCooldown ? 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-80' : 'bg-gradient-to-br from-amber-400 to-orange-600 text-white hover:scale-110']"
+      >
+        <!-- Animated Background Rings -->
+        <div v-if="!isWaiterCooldown" class="absolute inset-0 z-0">
+          <div class="absolute inset-0 bg-white/20 animate-ping duration-[3000ms] rounded-full"></div>
+          <div class="absolute inset-0 bg-white/10 animate-pulse duration-[2000ms] rounded-full scale-125"></div>
+        </div>
+
+        <div v-if="!isWaiterCooldown" class="relative z-10 flex flex-col items-center">
+          <svg class="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-widest mt-1 text-white drop-shadow-sm">{{ $t('menu.callWaiter') }}</span>
+        </div>
+        <div v-else class="flex flex-col items-center">
+          <span class="text-xl font-black leading-none">{{ waiterCooldownSeconds }}</span>
+          <span class="text-[7px] font-black uppercase tracking-tighter opacity-50">SEC</span>
+        </div>
+      </button>
+    </div>
 
     <!-- Floating Action Button (FAB) for Cart -->
     <Transition name="scale">
@@ -289,6 +325,57 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Story Viewer Modal -->
+    <Transition
+      enter-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-300"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="activeStoryIndex !== null && storyItems[activeStoryIndex]" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col">
+        <!-- Progress Bars -->
+        <div class="flex gap-1 p-4 pt-6 shrink-0 absolute top-0 inset-x-0 z-10">
+          <div v-for="(story, idx) in storyItems" :key="idx" class="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
+            <div 
+              class="h-full bg-white" 
+              :style="{ width: getStoryProgress(idx) + '%' }"
+            ></div>
+          </div>
+        </div>
+        <!-- Close Button -->
+        <button @click="closeStory" class="absolute top-12 right-4 z-10 w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+
+        <!-- Story Content -->
+        <div class="flex-1 relative flex flex-col justify-end p-8" @click="handleStoryTap">
+          <NuxtImg :src="storyItems[activeStoryIndex].image" class="absolute inset-0 w-full h-full object-cover opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none"></div>
+          
+          <div class="relative z-10 mb-8 pointer-events-none">
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 mb-4 border border-white/20">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span class="text-[10px] font-black uppercase tracking-widest text-white">{{ $t('menu.featured') }}</span>
+            </div>
+            <h2 class="text-3xl font-black text-white mb-2 leading-tight">{{ getLocalizedName(storyItems[activeStoryIndex]) }}</h2>
+            <p class="text-white/80 font-medium text-sm line-clamp-3 mb-6">{{ getLocalizedDesc(storyItems[activeStoryIndex]) }}</p>
+            <div class="flex items-center gap-4 pointer-events-auto">
+              <span class="text-2xl font-black text-white">{{ formatPrice(getLocalizedItemPrice(storyItems[activeStoryIndex])) }}</span>
+              <button 
+                @click.stop="addStoryToCart(storyItems[activeStoryIndex])"
+                class="flex-1 py-4 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors active:scale-95"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                {{ $t('menu.addToCart') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -410,7 +497,7 @@ async function loadData() {
 
 function formatCategoryName(cat: string) {
   if (!cat) return ''
-  return cat.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+  return cat.split('_').map(word => word.charAt(0).toLocaleUpperCase(locale.value) + word.slice(1).toLocaleLowerCase(locale.value)).join(' ')
 }
 
 const categories = computed(() => {
@@ -422,7 +509,6 @@ const categories = computed(() => {
   
   if (tenantConfig.value?.categoryOrder) {
     const order = tenantConfig.value.categoryOrder.split(',')
-    // Sort according to order, items not in order go to the end
     return allCats.sort((a, b) => {
       let idxA = order.indexOf(a)
       let idxB = order.indexOf(b)
@@ -435,6 +521,100 @@ const categories = computed(() => {
   
   return allCats.sort((a, b) => a.localeCompare(b))
 })
+
+// --- Story Feature Logic ---
+const storyItems = computed(() => {
+  if (!orderStore.menu) return []
+  
+  // Only show stories if on a paid plan (optional, depends on policy)
+  // if (tenantConfig.value?.plan === 'FREE') return []
+
+  const withImages = orderStore.menu.filter(m => m.image && m.price > 0)
+  
+  // Prioritize "isFeatured" items, then fallback to others
+  return withImages.sort((a, b) => {
+    if (a.isFeatured && !b.isFeatured) return -1
+    if (!a.isFeatured && b.isFeatured) return 1
+    return 0
+  }).slice(0, 8)
+})
+
+const activeStoryIndex = ref<number | null>(null)
+let storyInterval: any = null
+const storyProgress = ref(0) // 0 to 100
+
+function openStory(idx: number) {
+  activeStoryIndex.value = idx
+  startStoryTimer()
+}
+
+function closeStory() {
+  activeStoryIndex.value = null
+  if (storyInterval) clearInterval(storyInterval)
+}
+
+function handleStoryTap(e: MouseEvent) {
+  const width = window.innerWidth
+  const x = e.clientX
+  if (x > width * 0.7) {
+    nextStory()
+  } else if (x < width * 0.3) {
+    prevStory()
+  }
+}
+
+function nextStory() {
+  if (activeStoryIndex.value === null) return
+  if (activeStoryIndex.value < storyItems.value.length - 1) {
+    activeStoryIndex.value++
+    startStoryTimer()
+  } else {
+    closeStory()
+  }
+}
+
+function prevStory() {
+  if (activeStoryIndex.value === null) return
+  if (activeStoryIndex.value > 0) {
+    activeStoryIndex.value--
+    startStoryTimer()
+  }
+}
+
+function startStoryTimer() {
+  if (storyInterval) clearInterval(storyInterval)
+  storyProgress.value = 0
+  
+  storyInterval = setInterval(() => {
+    storyProgress.value += 100 / (3000 / 50)
+    if (storyProgress.value >= 100) {
+      nextStory()
+    }
+  }, 50)
+}
+
+function getStoryProgress(idx: number) {
+  if (activeStoryIndex.value === null) return 0
+  if (idx < activeStoryIndex.value) return 100
+  if (idx === activeStoryIndex.value) return storyProgress.value
+  return 0
+}
+
+function addStoryToCart(item: any) {
+  orderStore.addToCart(item.id, 1)
+  uiStore.success(locale.value === 'en' ? `Added ${getLocalizedName(item)} to cart` : `${getLocalizedName(item)} sepete eklendi`)
+  closeStory()
+  isCartOpen.value = true
+}
+
+function getLocalizedDesc(item: any) {
+  if (!item) return ''
+  if (locale.value === 'en' && item.descriptionEn) {
+    return item.descriptionEn
+  }
+  return item.description
+}
+// --- End Story Feature Logic ---
 
 const selectedCategory = ref<string>('')
 watch(categories, (cats) => {

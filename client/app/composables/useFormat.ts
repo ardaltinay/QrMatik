@@ -3,6 +3,10 @@
  * Provides money, date, label formatting helpers.
  */
 export function useFormat() {
+  const { $i18n } = useNuxtApp()
+  const t = ($i18n as any).t
+  const locale = computed(() => ($i18n as any).locale.value)
+
   function formatMoney(value: number | string, currency = 'TRY'): string {
     try {
       const num = typeof value === 'number' ? value : Number(value || 0)
@@ -39,8 +43,7 @@ export function useFormat() {
   }
 
   function statusLabel(s: string): string {
-    const { t } = useI18n()
-    const key = String(s || '').toLowerCase()
+    const key = String(s || '').toLocaleLowerCase(locale.value)
     const statusMap: Record<string, string> = {
       new: t('order.statuses.new'),
       preparing: t('order.statuses.preparing'),
@@ -55,8 +58,7 @@ export function useFormat() {
   }
 
   function categoryLabel(cat: string): string {
-    const { t } = useI18n()
-    const key = String(cat || '').toLowerCase()
+    const key = String(cat || '').toLocaleLowerCase(locale.value)
     const map: Record<string, string> = {
       food: t('menu.categories.food'),
       drink: t('menu.categories.drink'),
@@ -66,8 +68,7 @@ export function useFormat() {
   }
 
   function subLabel(s: string): string {
-    const { t } = useI18n()
-    const key = String(s || '').toLowerCase()
+    const key = String(s || '').toLocaleLowerCase(locale.value)
     try {
       const translated = t(`menu.subcategories.${key}`)
       // If key doesn't exist, vue-i18n returns the key path
@@ -81,7 +82,7 @@ export function useFormat() {
     const s = id != null ? String(id) : ''
     if (!s) return '-'
     if (/^\d+$/.test(s)) return s
-    return s.replace(/-/g, '').slice(-6).toUpperCase()
+    return s.replace(/-/g, '').slice(-6).toLocaleUpperCase(locale.value)
   }
 
   return {

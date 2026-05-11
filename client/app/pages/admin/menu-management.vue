@@ -1,32 +1,32 @@
 <template>
   <div class="p-6 md:p-8 max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">{{ $t('admin.menu.title') }}</h1>
-        <p class="text-slate-500 text-sm mt-1">{{ $t('admin.menu.subtitle') }}</p>
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight">{{ $t('admin.menu.title') }}</h1>
+        <p class="text-slate-500 font-medium mt-1">{{ $t('admin.menu.subtitle') }}</p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-        <div class="relative w-full sm:w-64">
-          <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <div class="relative w-full sm:w-72">
+          <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input 
             v-model="searchQuery" 
             type="text" 
             :placeholder="$t('admin.menu.searchPlaceholder')"
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none shadow-sm"
+            class="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none shadow-sm font-medium"
           />
         </div>
-        <button @click="openModal()" class="w-full sm:w-auto px-4 py-2.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-colors shadow-sm  flex items-center justify-center gap-2">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <button @click="openModal()" class="w-full sm:w-auto px-6 py-3 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-700 hover:-translate-y-0.5 transition-all shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           {{ $t('admin.menu.addItem') }}
         </button>
-        <button @click="openCategorySortModal" class="w-full sm:w-auto px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <button @click="openCategorySortModal" class="w-full sm:w-auto px-5 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-2xl hover:bg-slate-50 hover:-translate-y-0.5 transition-all shadow-sm flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h13M3 8h13M3 12h13M3 16h13" />
           </svg>
           {{ $t('admin.menu.sortCategories') }}
@@ -34,71 +34,132 @@
       </div>
     </div>
 
+    <!-- Bento Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 flex items-center gap-5 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 border border-brand-100">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+        </div>
+        <div>
+          <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.menu.totalItems') }}</p>
+          <h3 class="text-4xl font-black text-slate-900 tracking-tight">{{ menuItems.length }}</h3>
+        </div>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 flex items-center gap-5 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0 border border-amber-100">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" /></svg>
+        </div>
+        <div>
+          <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.menu.totalCategories') }}</p>
+          <h3 class="text-4xl font-black text-slate-900 tracking-tight">{{ availableCategories.length }}</h3>
+        </div>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 flex items-center gap-5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+        <div v-if="!isProPlan" class="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div class="bg-brand-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider mb-1">PRO PLAN</div>
+          <span class="text-xs font-bold text-slate-600">{{ $t('admin.menu.proPlanRequiredStock') || 'Sadece Pro\'da' }}</span>
+        </div>
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border transition-colors"
+          :class="isProPlan ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-slate-50 text-slate-400 border-slate-200'">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        </div>
+        <div :class="!isProPlan ? 'opacity-40 blur-[1px]' : ''">
+          <div class="flex items-center gap-2 mb-1">
+             <p class="text-xs font-black text-slate-400 uppercase tracking-widest">{{ $t('admin.menu.outOfStock') }}</p>
+             <span v-if="!isProPlan" class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded uppercase">PRO</span>
+          </div>
+          <h3 class="text-4xl font-black text-slate-900 tracking-tight">{{ isProPlan ? menuItems.filter(i => i.stockEnabled && i.stockQuantity <= 0).length : '0' }}</h3>
+        </div>
+      </div>
+    </div>
+
     <!-- Table -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-              <th class="px-6 py-4 font-semibold w-24">{{ $t('admin.menu.columns.image') }}</th>
-              <th class="px-6 py-4 font-semibold">{{ $t('admin.menu.columns.name') }}</th>
-              <th class="px-6 py-4 font-semibold">{{ $t('admin.menu.columns.category') }}</th>
-              <th class="px-6 py-4 font-semibold">{{ $t('admin.menu.columns.price') }}</th>
-              <th class="px-6 py-4 font-semibold">{{ $t('admin.menu.columns.stock') }}</th>
-              <th class="px-6 py-4 font-semibold text-right">{{ $t('admin.menu.columns.actions') }}</th>
+            <tr class="bg-slate-50/50 border-b border-slate-100 text-slate-400 text-xs font-black uppercase tracking-widest">
+              <th class="px-8 py-5 w-28">{{ $t('admin.menu.columns.image') }}</th>
+              <th class="px-8 py-5">{{ $t('admin.menu.columns.name') }}</th>
+              <th class="px-8 py-5">{{ $t('admin.menu.columns.category') }}</th>
+              <th class="px-8 py-5">{{ $t('admin.menu.columns.price') }}</th>
+              <th class="px-8 py-5">{{ $t('admin.menu.columns.stock') }}</th>
+              <th class="px-8 py-5 text-right">{{ $t('admin.menu.columns.actions') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr v-if="loading" class="animate-pulse">
-              <td colspan="6" class="px-6 py-8 text-center text-slate-400">{{ $t('admin.common.loading') }}</td>
-            </tr>
+            <!-- Skeleton Loader -->
+            <template v-if="loading">
+              <tr v-for="i in 5" :key="i" class="animate-pulse">
+                <td class="px-8 py-5"><div class="w-14 h-14 bg-slate-100 rounded-xl"></div></td>
+                <td class="px-8 py-5"><div class="w-32 h-4 bg-slate-100 rounded-full mb-2"></div><div class="w-24 h-3 bg-slate-50 rounded-full"></div></td>
+                <td class="px-8 py-5"><div class="w-20 h-6 bg-slate-100 rounded-lg"></div></td>
+                <td class="px-8 py-5"><div class="w-16 h-5 bg-slate-100 rounded-md"></div></td>
+                <td class="px-8 py-5"><div class="w-12 h-6 bg-slate-100 rounded-full"></div></td>
+                <td class="px-8 py-5 text-right"><div class="w-8 h-8 bg-slate-100 rounded-lg ml-auto"></div></td>
+              </tr>
+            </template>
+            
+            <!-- Empty State -->
             <tr v-else-if="filteredMenu.length === 0">
-              <td colspan="6" class="px-6 py-8 text-center text-slate-400">{{ $t('admin.menu.emptyState') }}</td>
+              <td colspan="6" class="px-8 py-20 text-center">
+                <div class="flex flex-col items-center justify-center">
+                  <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                    <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-900 mb-1">{{ $t('admin.menu.emptyState') }}</h3>
+                  <p class="text-slate-500 font-medium text-sm max-w-sm">Sonuç bulunamadı. Yeni bir ürün ekleyebilir veya aramayı temizleyebilirsiniz.</p>
+                </div>
+              </td>
             </tr>
-            <tr v-for="item in filteredMenu" :key="item.id" class="hover:bg-slate-50/80 transition-colors">
-              <td class="px-6 py-4">
-                <div v-if="item.image" class="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden border border-slate-200">
+
+            <!-- Data Rows -->
+            <tr v-for="item in filteredMenu" :key="item.id" class="hover:bg-slate-50/50 transition-colors group">
+              <td class="px-8 py-4">
+                <div v-if="item.image" class="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                   <NuxtImg :src="item.image" :alt="item.name" format="webp" class="w-full h-full object-cover" loading="lazy" />
                 </div>
-                <div v-else class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
+                <div v-else class="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center text-slate-300 shadow-inner">
                   <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
               </td>
-              <td class="px-6 py-4">
-                <div class="font-semibold text-slate-800">{{ item.name }}</div>
-                <div v-if="item.description" class="text-xs text-slate-500 mt-1 line-clamp-1 max-w-[200px]" :title="item.description">{{ item.description }}</div>
+              <td class="px-8 py-4">
+                <div class="font-black text-slate-900">{{ item.name }}</div>
+                <div v-if="item.description" class="text-xs font-medium text-slate-500 mt-1 line-clamp-1 max-w-[200px]" :title="item.description">{{ item.description }}</div>
               </td>
-              <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                  {{ $te(`menu.categories.${item.category}`) ? $t(`menu.categories.${item.category}`) : item.category }}
-                </span>
-                <span v-if="item.subcategory" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-500 border border-slate-200 ml-1">
-                  {{ $te(`menu.subcategories.${item.subcategory}`) ? $t(`menu.subcategories.${item.subcategory}`) : item.subcategory }}
-                </span>
+              <td class="px-8 py-4">
+                <div class="flex flex-wrap gap-2">
+                  <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600">
+                    {{ $te(`menu.categories.${item.category}`) ? $t(`menu.categories.${item.category}`) : item.category }}
+                  </span>
+                  <span v-if="item.subcategory" class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-500 shadow-sm">
+                    {{ $te(`menu.subcategories.${item.subcategory}`) ? $t(`menu.subcategories.${item.subcategory}`) : item.subcategory }}
+                  </span>
+                </div>
               </td>
-              <td class="px-6 py-4 font-bold text-slate-800">
+              <td class="px-8 py-4 font-black text-slate-900 text-base">
                 {{ formatPrice(item.price) }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-8 py-4">
                 <div v-if="item.stockEnabled">
-                  <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold border min-w-[3.5rem]" 
-                    :class="item.stockQuantity && item.stockQuantity > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'">
+                  <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-xs font-black min-w-[3.5rem] shadow-sm" 
+                    :class="item.stockQuantity && item.stockQuantity > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
                     {{ item.stockQuantity || 0 }}
                   </span>
                 </div>
-                <span v-else class="text-xs text-slate-400">-</span>
+                <span v-else class="text-sm font-bold text-slate-300">-</span>
               </td>
-              <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors" :title="$t('admin.menu.editItem')">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <td class="px-8 py-4 text-right">
+                <div class="flex items-center justify-end gap-1">
+                  <button @click="openModal(item)" class="p-2.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-all" :title="$t('admin.menu.editItem')">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button @click="confirmDelete(item)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" :title="$t('admin.menu.deleteItem')">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <button @click="confirmDelete(item)" class="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all" :title="$t('admin.menu.deleteItem')">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
@@ -182,25 +243,51 @@
               <input v-model="form.image" type="text" placeholder="https://" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
             </div>
 
-            <div class="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200 mt-2 relative overflow-hidden">
-              <div v-if="!isProPlan" class="absolute inset-0 z-20 bg-slate-100/70 backdrop-blur-sm flex items-center justify-center">
-                <NuxtLink to="/admin/upgrade" class="px-5 py-2.5 bg-amber-500 text-white text-xs font-black tracking-widest uppercase rounded-xl shadow-lg hover:bg-amber-600 hover:scale-105 transition-all flex items-center gap-2">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                  {{ $t('admin.menu.proPlanRequiredStock') }}
-                </NuxtLink>
+            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Stock Control -->
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 relative group/stock overflow-hidden">
+                <!-- Simple PRO Indicator -->
+                <div v-if="!isProPlan" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[2px] p-2 transition-all group-hover/stock:backdrop-blur-[4px]">
+                  <NuxtLink to="/admin/upgrade" class="flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white text-[9px] font-black tracking-widest rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" /></svg>
+                    {{ $upper('PRO: ' + $t('admin.menu.proPlanRequiredStock')) }}
+                  </NuxtLink>
+                </div>
+
+                <label class="flex items-center gap-3 mb-3" :class="!isProPlan ? 'opacity-40' : 'cursor-pointer'">
+                  <div class="relative">
+                    <input type="checkbox" v-model="form.stockEnabled" class="sr-only peer" :disabled="!isProPlan" />
+                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+                  </div>
+                  <span class="text-sm font-semibold text-slate-700">{{ $t('admin.menu.modal.stockEnabled') }}</span>
+                </label>
+
+                <div v-if="form.stockEnabled">
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.menu.modal.stockQuantity') }}</label>
+                  <input v-model.number="form.stockQuantity" type="number" min="0" :disabled="!isProPlan" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all disabled:opacity-50" />
+                </div>
               </div>
 
-              <label class="flex items-center gap-3 mb-3" :class="!isProPlan ? 'opacity-50' : 'cursor-pointer'">
-                <div class="relative">
-                  <input type="checkbox" v-model="form.stockEnabled" class="sr-only peer" :disabled="!isProPlan" />
-                  <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+              <!-- Featured Toggle (Story Control) -->
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-center relative overflow-hidden group/featured">
+                <!-- Simple PAID Indicator -->
+                <div v-if="!isPaidPlan" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[2px] p-2 transition-all group-hover/featured:backdrop-blur-[4px]">
+                  <NuxtLink to="/admin/upgrade" class="flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white text-[9px] font-black tracking-widest rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" /></svg>
+                    {{ $upper($t('admin.menu.standartOrProPlanRequiredFeatured') || 'Sadece Ücretli Planlarda') }}
+                  </NuxtLink>
                 </div>
-                <span class="text-sm font-semibold text-slate-700">{{ $t('admin.menu.modal.stockEnabled') }}</span>
-              </label>
 
-              <div v-if="form.stockEnabled">
-                <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $t('admin.menu.modal.stockQuantity') }}</label>
-                <input v-model.number="form.stockQuantity" type="number" min="0" :disabled="!isProPlan" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all disabled:opacity-50" />
+                <label class="flex items-center gap-3" :class="!isPaidPlan ? 'opacity-40' : 'cursor-pointer'">
+                  <div class="relative">
+                    <input type="checkbox" v-model="form.isFeatured" class="sr-only peer" :disabled="!isPaidPlan" />
+                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                  </div>
+                  <div>
+                    <span class="text-sm font-semibold text-slate-700 block">{{ $t('admin.menu.modal.isFeatured') || 'Öne Çıkar (Story)' }}</span>
+                    <span class="text-[10px] text-slate-500 font-medium">{{ $t('admin.menu.modal.isFeaturedDesc') || 'Bu ürünü hikayelerde gösterir.' }}</span>
+                  </div>
+                </label>
               </div>
             </div>
 
@@ -389,6 +476,7 @@ function openModal(item?: any) {
       sortOrder: null,
       stockEnabled: false,
       stockQuantity: 0,
+      isFeatured: false,
     }
   }
   isModalOpen.value = true
@@ -455,7 +543,8 @@ async function saveItem() {
       image: form.value.image,
       sortOrder: form.value.sortOrder,
       stockEnabled: form.value.stockEnabled,
-      stockQuantity: form.value.stockQuantity
+      stockQuantity: form.value.stockQuantity,
+      isFeatured: form.value.isFeatured || false
     }
 
     if (isEditing.value) {

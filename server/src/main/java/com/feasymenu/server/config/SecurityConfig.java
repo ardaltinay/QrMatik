@@ -49,7 +49,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/auth/**").permitAll()
-                .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**").permitAll()
+                .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**", "/ws/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/webhooks/lemonsqueezy").permitAll() // Lemon Squeezy Webhook
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")

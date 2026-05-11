@@ -128,12 +128,11 @@
         <div class="p-4 border-t border-slate-200 shrink-0 bg-slate-50/50">
           <div class="flex items-center gap-3 mb-4 px-2">
             <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">
-              {{ authStore.user.username.charAt(0).toUpperCase() }}
+              {{ $upper(authStore.user.username.charAt(0)) }}
             </div>
             <div class="min-w-0 flex-1">
               <p class="text-sm font-bold text-slate-900 truncate">{{ authStore.user.username }}</p>
-              <p class="text-xs text-slate-500 truncate capitalize">{{ roleLabel(authStore.user.role).toUpperCase() }}</p>
-
+              <p class="text-xs text-slate-500 truncate capitalize">{{ $upper(roleLabel(authStore.user.role)) }}</p>
             </div>
           </div>
           <div class="flex gap-2">
@@ -437,6 +436,12 @@ const navItems = computed(() => [
     path: '/admin/branding', 
     roles: ['admin'],
     icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>'
+  },
+  { 
+    name: t('admin.nav.loyalty') || 'Sadakat Programı', 
+    path: '/admin/loyalty', 
+    roles: ['admin'],
+    icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
   },
   { 
     name: t('admin.nav.kitchen'), 

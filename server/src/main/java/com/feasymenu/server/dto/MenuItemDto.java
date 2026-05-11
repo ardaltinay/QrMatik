@@ -25,4 +25,6 @@ public class MenuItemDto {
     private String image;
     private Boolean stockEnabled;
     private Integer stockQuantity;
+    private Integer sortOrder;
+    private Boolean isFeatured;
 }

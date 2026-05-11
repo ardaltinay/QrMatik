@@ -67,13 +67,16 @@ export function useTenant() {
 
   const hasTenant = computed(() => !!tenantCode.value)
 
+  const { $i18n } = useNuxtApp()
+  const locale = computed(() => ($i18n as any).locale.value)
+
   const isPaidPlan = computed(() => {
-    const plan = String(tenantConfig.value?.plan || '').toUpperCase()
+    const plan = String(tenantConfig.value?.plan || '').toLocaleUpperCase(locale.value)
     return plan !== '' && plan !== 'FREE'
   })
 
   const isProPlan = computed(() => {
-    return String(tenantConfig.value?.plan || '').toUpperCase() === 'PRO'
+    return String(tenantConfig.value?.plan || '').toLocaleUpperCase(locale.value) === 'PRO'
   })
 
   /**

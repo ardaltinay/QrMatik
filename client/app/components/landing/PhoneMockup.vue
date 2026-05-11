@@ -30,6 +30,20 @@
           </div>
         </div>
 
+        <!-- Story Highlights -->
+        <div class="px-3 pt-3 pb-2 flex gap-3 overflow-hidden">
+          <div v-for="i in 5" :key="i" class="flex flex-col items-center gap-1 shrink-0">
+            <div class="w-10 h-10 rounded-full p-[1.5px] bg-gradient-to-tr from-brand-400 to-amber-400">
+              <div class="w-full h-full rounded-full border-2 border-white bg-slate-100 overflow-hidden">
+                <div :class="['w-full h-full flex items-center justify-center text-[10px]', i === 1 ? 'bg-amber-100' : 'bg-slate-50']">
+                  {{ i === 1 ? '🍔' : (i === 2 ? '🍕' : (i === 3 ? '🥗' : (i === 4 ? '🍹' : '🍰'))) }}
+                </div>
+              </div>
+            </div>
+            <div class="w-8 h-1 bg-slate-200 rounded-full"></div>
+          </div>
+        </div>
+
         <!-- Mock Categories -->
         <div class="px-2 pb-2 flex gap-1.5 overflow-hidden">
           <div class="px-3 py-1.5 bg-brand-500 text-white text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Popular' : 'Popüler' }}</div>
@@ -62,6 +76,14 @@
         <div class="absolute bottom-4 right-4 w-10 h-10 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/40 flex items-center justify-center text-white scale-in">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
           <div class="absolute -top-1 -right-1 w-4 h-4 bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] font-black border border-white shadow-sm">2</div>
+        </div>
+
+        <!-- Call Waiter Button Mock -->
+        <div class="absolute bottom-4 left-4 w-10 h-10 bg-white rounded-full shadow-lg border border-slate-100 flex flex-col items-center justify-center scale-in" style="animation-delay: 1.2s">
+          <svg class="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span class="text-[5px] font-black text-brand-600 uppercase">{{ locale === 'en' ? 'CALL' : 'GARSON' }}</span>
         </div>
       </div>
     </div>

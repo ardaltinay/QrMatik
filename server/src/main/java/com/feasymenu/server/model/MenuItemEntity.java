@@ -62,4 +62,7 @@ public class MenuItemEntity extends AbstractEntity {
 
     @Column(name = "stock_qty")
     private Integer stockQuantity; // null => sınırsız
+
+    @Column(name = "is_featured")
+    private Boolean isFeatured; // Story'de öncelikli gösterilmesi için
 }

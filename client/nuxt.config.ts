@@ -50,6 +50,8 @@ export default defineNuxtConfig({
       alwaysRedirect: true,
       fallbackLocale: 'tr',
       redirectOn: 'root',
+      cookieDomain: process.env.NODE_ENV === 'production' ? '.feasymenu.com' : undefined,
+      cookieCrossOrigin: true,
     },
   },
 

@@ -143,6 +143,38 @@
               </div>
             </div>
           </div>
+
+          <!-- Recommendations (Upsell) Section -->
+          <div v-if="orderStore.cart.length > 0" class="mt-12 mb-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="h-px bg-slate-100 grow"></div>
+              <h5 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 whitespace-nowrap">{{ $t('menu.popularItems') }}</h5>
+              <div class="h-px bg-slate-100 grow"></div>
+            </div>
+            
+            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+              <div 
+                v-for="item in recommendations" 
+                :key="item.id"
+                class="w-40 shrink-0 bg-slate-50/50 rounded-3xl p-4 border border-slate-100 group hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300"
+              >
+                <div class="w-full h-24 rounded-2xl overflow-hidden mb-3 relative">
+                  <NuxtImg v-if="item.image" :src="item.image" format="webp" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div v-else class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  </div>
+                  <button 
+                    @click="orderStore.addToCart(item.id, 1)"
+                    class="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white text-slate-900 shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
+                  >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M12 4v16m8-8H4" /></svg>
+                  </button>
+                </div>
+                <h6 class="text-[11px] font-bold text-slate-900 truncate mb-1">{{ getLocalizedName(item) }}</h6>
+                <p class="text-[11px] font-black text-brand-600">{{ formatPrice(getLocalizedItemPrice(item)) }}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Footer -->
@@ -266,6 +298,14 @@ async function submitOrder() {
     isSubmitting.value = false
   }
 }
+
+const recommendations = computed(() => {
+  const cartIds = orderStore.cart.map(c => c.itemId)
+  return orderStore.menu
+    .filter(m => !cartIds.includes(m.id) && m.image) // Only show items with images and not in cart
+    .sort((a, b) => (b.sortOrder || 0) - (a.sortOrder || 0))
+    .slice(0, 6)
+})
 </script>
 
 <style scoped>

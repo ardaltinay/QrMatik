@@ -109,7 +109,7 @@ public class OrderController {
         String tenant = TenantContext.getTenant();
         var res = orderService.bySessionForView(sessionId, tenant, appZoneId, tableCode);
         if (!res.orders().isEmpty() && !res.anyNonExpired()) {
-            return ResponseEntity.status(410).build();
+            return ResponseEntity.status(410).body(Map.of("message", "session.expired"));
         }
         return ResponseEntity.ok(res.orders().stream().map(converter::toDto).collect(Collectors.toList()));
     }
