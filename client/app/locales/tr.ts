@@ -706,8 +706,20 @@ export default {
       url: 'Yönlendirilecek URL',
       download: 'Görseli İndir',
       print: 'Yazdır',
+      printAll: 'TÜMÜNÜ YAZDIR',
+      generalTab: 'GENEL QR',
+      tablesTab: 'MASA QR KODLARI',
       tablesTabTitle: 'Masa Sipariş Kodları',
-      tablesTabSubtitle: 'Her masaya özel sipariş linkleri oluşturun ve yazdırın.'
+      tablesTabSubtitle: 'Her masaya özel sipariş linkleri oluşturun ve yazdırın.',
+      tipTitle: 'QR İPUCU',
+      tipDesc: 'Logonuzun QR kodun okunabilirliğini etkilememesi için merkeze yerleştirilmesini sağlıyoruz. Yüksek kontrastlı renkler kullanmanızı öneririz.',
+      loading: 'Masalar Yükleniyor...',
+      emptyTables: 'Henüz tanımlı masa bulunamadı. Lütfen önce masalarınızı ekleyin.',
+      goToTables: 'MASA YÖNETİMİNE GİT',
+      tableCodeLabel: 'MASA KODU',
+      scanForOrder: 'Lütfen sipariş için kodu okutun',
+      allTablesPrintTitle: 'Tüm Masalar QR',
+      tableLabel: 'MASA'
     },
     branding: {
       title: 'Marka & Tema Yönetimi',

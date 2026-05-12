@@ -698,8 +698,20 @@ export default {
       url: 'Target URL',
       download: 'Download Image',
       print: 'Print',
+      printAll: 'PRINT ALL',
+      generalTab: 'GENERAL QR',
+      tablesTab: 'TABLE QR CODES',
       tablesTabTitle: 'Table Order Codes',
-      tablesTabSubtitle: 'Create and print unique order links for each table.'
+      tablesTabSubtitle: 'Create and print unique order links for each table.',
+      tipTitle: 'QR TIP',
+      tipDesc: 'To ensure logo doesn\'t affect QR readability, we center it. We recommend using high-contrast colors.',
+      loading: 'Loading Tables...',
+      emptyTables: 'No tables found. Please add your tables first.',
+      goToTables: 'GO TO TABLE MANAGEMENT',
+      tableCodeLabel: 'TABLE CODE',
+      scanForOrder: 'Please scan for order',
+      allTablesPrintTitle: 'All Tables QR',
+      tableLabel: 'TABLE'
     },
     branding: {
       title: 'Branding & Theme Management',
