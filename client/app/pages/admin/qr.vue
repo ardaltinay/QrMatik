@@ -12,13 +12,27 @@
         </div>
       </div>
       
-      <div class="flex items-center gap-3 bg-emerald-50 px-6 py-3.5 rounded-2xl border border-emerald-100 shadow-sm shrink-0">
-         <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
-         <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{{ $t('admin.qr.generatorLabel') || 'QR GENERATOR' }}</span>
+      <!-- Tab Switcher -->
+      <div class="flex p-1.5 bg-slate-100 rounded-2xl w-full lg:w-auto">
+        <button 
+          @click="activeTab = 'general'"
+          class="flex-1 lg:flex-none px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="activeTab === 'general' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'"
+        >
+          GENEL QR
+        </button>
+        <button 
+          @click="activeTab = 'tables'"
+          class="flex-1 lg:flex-none px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="activeTab === 'tables' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'"
+        >
+          MASA QR KODLARI
+        </button>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <!-- GENERAL QR TAB -->
+    <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-12 gap-10">
       <!-- Settings Panel -->
       <div class="lg:col-span-5 xl:col-span-4 space-y-6">
         <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-8">
@@ -116,6 +130,56 @@
         </div>
       </div>
     </div>
+
+    <!-- TABLES QR TAB -->
+    <div v-else class="space-y-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-black text-slate-900 tracking-tight">{{ $t('admin.qr.tablesTabTitle') || 'Masa Sipariş Kodları' }}</h2>
+          <p class="text-sm font-medium text-slate-500">{{ $t('admin.qr.tablesTabSubtitle') || 'Her masaya özel sipariş linkleri oluşturun.' }}</p>
+        </div>
+        <button 
+          @click="printAllTableQRs"
+          class="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-slate-800 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+          TÜMÜNÜ YAZDIR
+        </button>
+      </div>
+
+      <div v-if="loadingTables" class="py-20 flex flex-col items-center justify-center bg-white rounded-[2.5rem] border border-slate-100 shadow-xl">
+        <div class="w-12 h-12 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+        <p class="text-xs font-black text-slate-400 uppercase tracking-widest italic">Masalar Yükleniyor...</p>
+      </div>
+
+      <div v-else-if="tables.length === 0" class="py-20 text-center bg-white rounded-[2.5rem] border border-slate-100 shadow-xl">
+        <p class="text-slate-400 font-bold tracking-tight">Henüz tanımlı masa bulunamadı. Lütfen önce masalarınızı ekleyin.</p>
+        <NuxtLink :to="localePath('/admin/tables')" class="mt-4 inline-flex text-indigo-600 font-black text-xs uppercase tracking-widest border-b-2 border-indigo-100 hover:border-indigo-500 transition-all">MASA YÖNETİMİNE GİT</NuxtLink>
+      </div>
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div v-for="table in tables" :key="table.id" class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group overflow-hidden relative">
+           <div class="absolute -right-10 -bottom-10 w-24 h-24 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50"></div>
+           <div class="flex items-center gap-6 relative z-10">
+              <div class="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center p-2 border border-slate-100 group-hover:bg-white transition-colors duration-500">
+                <img :src="getTableQRUrl(table.code)" class="w-full h-full object-contain" />
+              </div>
+              <div class="flex-1">
+                <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-1 block">MASA KODU</span>
+                <h4 class="text-2xl font-black text-slate-900 tracking-tighter mb-3">{{ table.code }}</h4>
+                <div class="flex gap-2">
+                  <button @click="downloadTableQR(table.code)" class="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all active:scale-90" title="İndir">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  </button>
+                  <button @click="printTableQR(table.code)" class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center hover:bg-indigo-100 transition-all active:scale-90" title="Yazdır">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                  </button>
+                </div>
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -124,16 +188,33 @@ definePageMeta({ layout: 'admin' })
 
 const { t } = useI18n()
 const uiStore = useUiStore()
+const { fetchJson } = useApi()
+const localePath = useLocalePath()
 
 useHead({ title: () => `${t('admin.qr.title')} | Admin` })
 
+const activeTab = ref('general')
 const url = ref('https://feasymenu.com/menu')
-const color = ref('#0f172a')
+const color = ref('#1a1c18') // Default brand charcoal
 const logo = ref('')
 
-onMounted(() => {
+const tables = ref<any[]>([])
+const loadingTables = ref(false)
+
+onMounted(async () => {
   if (import.meta.client) url.value = window.location.origin + '/menu'
+  loadTables()
 })
+
+async function loadTables() {
+  loadingTables.value = true
+  try {
+    const data = await fetchJson('/api/tables')
+    tables.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('Failed to load tables', e)
+  } finally { loadingTables.value = false }
+}
 
 const qrApiUrl = computed(() => {
   const safeUrl = encodeURIComponent(url.value || 'https://feasymenu.com')
@@ -141,12 +222,18 @@ const qrApiUrl = computed(() => {
   return `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${safeUrl}&color=${safeColor}&bgcolor=ffffff`
 })
 
+function getTableQRUrl(code: string) {
+  const tableUrl = `${window.location.origin}/menu?table=${encodeURIComponent(code)}`
+  const safeColor = color.value.replace('#', '') || '000000'
+  return `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(tableUrl)}&color=${safeColor}&bgcolor=ffffff`
+}
+
 function handleLogoError() {
   logo.value = ''
   uiStore.error('Logo yüklenemedi.')
 }
 
-async function getCombinedQRDataURL(): Promise<string> {
+async function getCombinedQRDataURL(customUrl?: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -169,7 +256,8 @@ async function getCombinedQRDataURL(): Promise<string> {
         logoImg.src = logo.value
       } else resolve(canvas.toDataURL('image/png'))
     }
-    qrImg.onerror = reject; qrImg.src = qrApiUrl.value
+    qrImg.onerror = reject; 
+    qrImg.src = customUrl ? customUrl : qrApiUrl.value
   })
 }
 
@@ -191,6 +279,93 @@ async function printQR() {
       printWindow.document.close()
     }
   } catch (e) { uiStore.error('Hata oluştu.') }
+}
+
+async function downloadTableQR(code: string) {
+  try {
+    const dataUrl = await getCombinedQRDataURL(getTableQRUrl(code))
+    const a = document.createElement('a'); a.href = dataUrl; a.download = `QR-${code}.png`
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
+  } catch (e) { uiStore.error('İndirme başarısız.') }
+}
+
+async function printTableQR(code: string) {
+  try {
+    const dataUrl = await getCombinedQRDataURL(getTableQRUrl(code))
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>${code}</title>
+            <style>
+              body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #f8fafc; }
+              .qr-card { background: white; padding: 40px; border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; }
+              img { width: 400px; height: 400px; margin-bottom: 20px; }
+              h1 { font-size: 72px; margin: 0; font-weight: 900; color: #0f172a; letter-spacing: -2px; }
+              p { font-size: 20px; color: #64748b; margin-top: 10px; font-weight: 600; }
+              .brand { margin-top: 30px; font-size: 14px; color: #94a684; font-weight: 900; letter-spacing: 2px; }
+            </style>
+          </head>
+          <body>
+            <div class="qr-card">
+              <img src="${dataUrl}" />
+              <h1>${code}</h1>
+              <p>Lütfen sipariş için kodu okutun</p>
+              <div class="brand">FEASYMENU</div>
+            </div>
+            <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 100); }<\/script>
+          </body>
+        </html>
+      `)
+      printWindow.document.close()
+    }
+  } catch (e) { uiStore.error('Yazdırma başarısız.') }
+}
+
+async function printAllTableQRs() {
+  try {
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+    
+    let html = `
+      <html>
+        <head>
+          <title>Tüm Masalar QR</title>
+          <style>
+            body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 20px; background: white; }
+            .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            .qr-item { border: 1px solid #eee; padding: 30px; border-radius: 30px; text-align: center; page-break-inside: avoid; }
+            img { width: 250px; height: 250px; }
+            h2 { font-size: 48px; margin: 10px 0; font-weight: 900; color: #0f172a; }
+            p { font-size: 14px; color: #64748b; margin: 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+          </style>
+        </head>
+        <body>
+          <div class="grid">
+    `
+    
+    for (const table of tables.value) {
+      const dataUrl = await getCombinedQRDataURL(getTableQRUrl(table.code))
+      html += `
+        <div class="qr-item">
+          <p>MASA</p>
+          <h2>${table.code}</h2>
+          <img src="${dataUrl}" />
+          <p style="margin-top: 15px; color: #94a684;">feasymenu.com</p>
+        </div>
+      `
+    }
+    
+    html += `
+          </div>
+          <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 100); }<\/script>
+        </body>
+      </html>
+    `
+    printWindow.document.write(html)
+    printWindow.document.close()
+  } catch (e) { uiStore.error('Toplu yazdırma başarısız.') }
 }
 </script>
 

@@ -696,8 +696,8 @@ export default {
       exportSuccess: 'Dışa aktarma işlemi başlatıldı.',
     },
     qr: {
-      title: 'QR Kod Oluşturucu',
-      subtitle: 'Özel tasarımlı QR kodlarınızı üretin',
+      title: 'QR Kod Yönetimi',
+      subtitle: 'Özel tasarımlı QR kodlarınızı ve masa linklerinizi yönetin',
       generatorLabel: 'QR OLUŞTURUCU',
       settings: 'Tasarım Ayarları',
       preview: 'Önizleme',
@@ -706,6 +706,8 @@ export default {
       url: 'Yönlendirilecek URL',
       download: 'Görseli İndir',
       print: 'Yazdır',
+      tablesTabTitle: 'Masa Sipariş Kodları',
+      tablesTabSubtitle: 'Her masaya özel sipariş linkleri oluşturun ve yazdırın.'
     },
     branding: {
       title: 'Marka & Tema Yönetimi',

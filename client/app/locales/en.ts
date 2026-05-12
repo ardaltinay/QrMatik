@@ -688,8 +688,9 @@ export default {
       exportSuccess: 'Export process started.',
     },
     qr: {
-      title: 'QR Code Generator',
-      subtitle: 'Generate custom designed QR codes',
+      title: 'QR Code Management',
+      subtitle: 'Manage your custom QR codes and table order links',
+      generatorLabel: 'QR GENERATOR',
       settings: 'Design Settings',
       preview: 'Preview',
       color: 'QR Color',
@@ -697,6 +698,8 @@ export default {
       url: 'Target URL',
       download: 'Download Image',
       print: 'Print',
+      tablesTabTitle: 'Table Order Codes',
+      tablesTabSubtitle: 'Create and print unique order links for each table.'
     },
     branding: {
       title: 'Branding & Theme Management',
