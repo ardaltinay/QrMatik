@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <!-- Initializing State -->
-    <template v-if="authStore.initializing">
+    <template v-if="authStore.initializing || initializing">
       <div class="flex min-h-screen items-center justify-center bg-white">
          <div class="flex flex-col items-center gap-4">
            <Logo size="lg" animate shadow />
@@ -288,6 +288,22 @@ import { useNotificationStore } from '~/stores/notification'
 import { useSocket } from '~/composables/useSocket'
 
 const authStore = useAuthStore()
+const initializing = ref(true)
+
+onMounted(async () => {
+  // Ensure we only clear initializing on client side after authStore is ready
+  if (authStore.initializing) {
+    // Wait for authStore.init to finish if it's already running
+    const checkInit = setInterval(() => {
+      if (!authStore.initializing) {
+        initializing.value = false
+        clearInterval(checkInit)
+      }
+    }, 100)
+  } else {
+    initializing.value = false
+  }
+})
 const orderStore = useOrderStore()
 const notifStore = useNotificationStore()
 const uiStore = useUiStore()
