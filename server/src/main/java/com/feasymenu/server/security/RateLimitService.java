@@ -24,15 +24,17 @@ public class RateLimitService {
     @Value("${spring.data.redis.port:6379}")
     private int redisPort;
 
-    @Value("${spring.data.redis.password:}")
+    @Value("${spring.data.redis.password:${REDIS_PASSWORD:${REDIS_PASS:}}}")
     private String redisPassword;
 
     private ProxyManager<byte[]> proxyManager;
 
     public enum LimitType {
         ORDER(1, Duration.ofMinutes(1)), AUTH(20, Duration.ofMinutes(5)), FORGOT_PASS(3,
-                Duration.ofHours(1)), BILLING_INIT(5, Duration.ofMinutes(1)), WAITER_CALL(1,
-                        Duration.ofMinutes(1)), LOYALTY_SPIN(1, Duration.ofMinutes(1));
+                Duration.ofHours(1)),
+        BILLING_INIT(5, Duration.ofMinutes(1)), WAITER_CALL(1,
+                Duration.ofMinutes(1)),
+        LOYALTY_SPIN(1, Duration.ofMinutes(1));
 
         final long capacity;
         final Duration duration;
@@ -45,17 +47,29 @@ public class RateLimitService {
 
     @PostConstruct
     public void init() {
-        RedisURI.Builder builder = RedisURI.builder().withHost(redisHost).withPort(redisPort);
+        try {
+            System.out.println("DEBUG: RateLimitService init started");
+            System.out.println("DEBUG: Redis Host: " + redisHost);
+            System.out.println("DEBUG: Redis Port: " + redisPort);
 
-        if (redisPassword != null && !redisPassword.isBlank()) {
-            builder.withPassword(redisPassword.toCharArray());
+            RedisURI.Builder builder = RedisURI.builder().withHost(redisHost).withPort(redisPort);
+
+            if (redisPassword != null && !redisPassword.isBlank()) {
+                builder.withPassword(redisPassword.toCharArray());
+                System.out.println("DEBUG: Redis Password set");
+            }
+
+            RedisClient redisClient = RedisClient.create(builder.build());
+            this.proxyManager = LettuceBasedProxyManager.builderFor(redisClient)
+                    .withClientSideConfig(ClientSideConfig.getDefault().withExpirationAfterWriteStrategy(
+                            ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofHours(1))))
+                    .build();
+            System.out.println("DEBUG: RateLimitService initialized successfully");
+        } catch (Exception e) {
+            System.err.println("CRITICAL ERROR: RateLimitService failed to initialize!");
+            e.printStackTrace();
+            throw e;
         }
-
-        RedisClient redisClient = RedisClient.create(builder.build());
-        this.proxyManager = LettuceBasedProxyManager.builderFor(redisClient)
-                .withClientSideConfig(ClientSideConfig.getDefault().withExpirationAfterWriteStrategy(
-                        ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofHours(1))))
-                .build();
     }
 
     public Bucket resolveBucket(String ip, LimitType type) {
