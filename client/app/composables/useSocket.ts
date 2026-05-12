@@ -38,8 +38,20 @@ export function useSocket() {
       }
     }
 
-    const token = useCookie('qm_token').value
+    const token = useCookie('fm_token').value
     const connectHeaders: Record<string, string> = {}
+    
+    // Add X-Tenant header based on subdomain
+    if (import.meta.client) {
+      const host = window.location.hostname
+      const parts = host.split('.')
+      if (parts.length >= 2 && !host.includes('localhost') && host !== 'feasymenu.com') {
+        connectHeaders['X-Tenant'] = parts[0]
+      } else if (host.includes('localhost') && parts.length > 1) {
+        connectHeaders['X-Tenant'] = parts[0]
+      }
+    }
+
     if (token) {
       connectHeaders['Authorization'] = `Bearer ${token}`
     }
@@ -96,8 +108,19 @@ export function useSocket() {
 
     const doSub = () => {
       if (client.value?.connected && !activeSubscriptions.has(topic)) {
-        const token = useCookie('qm_token').value
+        const token = useCookie('fm_token').value
         const headers: Record<string, string> = {}
+        
+        if (import.meta.client) {
+          const host = window.location.hostname
+          const parts = host.split('.')
+          if (parts.length >= 2 && !host.includes('localhost') && host !== 'feasymenu.com') {
+            headers['X-Tenant'] = parts[0]
+          } else if (host.includes('localhost') && parts.length > 1) {
+            headers['X-Tenant'] = parts[0]
+          }
+        }
+
         if (token) {
           headers['Authorization'] = `Bearer ${token}`
           headers['authorization'] = `Bearer ${token}`

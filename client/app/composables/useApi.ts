@@ -18,6 +18,17 @@ export function useApi() {
       Object.assign(headers, proxyHeaders)
     }
 
+    // Explicitly add X-Tenant header from subdomain if on client
+    if (import.meta.client) {
+      const host = window.location.hostname
+      const parts = host.split('.')
+      if (parts.length >= 2 && !host.includes('localhost') && host !== 'feasymenu.com') {
+        headers['X-Tenant'] = parts[0]
+      } else if (host.includes('localhost') && parts.length > 1) {
+        headers['X-Tenant'] = parts[0]
+      }
+    }
+
     if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json'
     }

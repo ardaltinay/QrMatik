@@ -8,6 +8,7 @@ import com.feasymenu.server.service.TenantService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -34,6 +35,9 @@ public class AuthController {
     private final LoginRateLimiter rateLimiter;
     private final JwtUtil jwtUtil;
     private final TenantService tenantService;
+
+    @Value("${app.cookie-domain:}")
+    private String cookieDomain;
 
     public AuthController(AuthService authService, LoginRateLimiter rateLimiter, JwtUtil jwtUtil,
             TenantService tenantService) {
@@ -75,11 +79,21 @@ public class AuthController {
             boolean isSecure = (origin != null && origin.startsWith("https"))
                     || "https".equalsIgnoreCase(forwardedProto);
 
-            var cookie = ResponseCookie.from("qm_token", token).httpOnly(true).secure(isSecure).path("/")
-                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Strict").build();
+            var cookieBuilder = ResponseCookie.from("fm_token", token).httpOnly(true).secure(isSecure).path("/")
+                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Lax");
 
-            var refreshCookie = ResponseCookie.from("qm_refresh_token", refreshToken).httpOnly(true).secure(isSecure)
-                    .path("/").maxAge(jwtUtil.getRefreshExpDays() * 24 * 3600).sameSite("Strict").build();
+            if (cookieDomain != null && !cookieDomain.isBlank()) {
+                cookieBuilder.domain(cookieDomain);
+            }
+            var cookie = cookieBuilder.build();
+
+            var refreshCookieBuilder = ResponseCookie.from("fm_refresh_token", refreshToken).httpOnly(true)
+                    .secure(isSecure).path("/").maxAge(jwtUtil.getRefreshExpDays() * 24 * 3600).sameSite("Lax");
+
+            if (cookieDomain != null && !cookieDomain.isBlank()) {
+                refreshCookieBuilder.domain(cookieDomain);
+            }
+            var refreshCookie = refreshCookieBuilder.build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
@@ -103,7 +117,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@CookieValue(name = "qm_refresh_token", required = false) String refreshToken,
+    public ResponseEntity<?> refresh(@CookieValue(name = "fm_refresh_token", required = false) String refreshToken,
             HttpServletRequest request, HttpServletResponse response) {
         if (refreshToken == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Refresh token bulunamadı"));
@@ -116,8 +130,12 @@ public class AuthController {
             boolean isSecure = (origin != null && origin.startsWith("https"))
                     || "https".equalsIgnoreCase(forwardedProto);
 
-            var cookie = ResponseCookie.from("qm_token", token).httpOnly(true).secure(isSecure).path("/")
-                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Strict").build();
+            var cookieBuilder = ResponseCookie.from("fm_token", token).httpOnly(true).secure(isSecure).path("/")
+                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Lax");
+            if (cookieDomain != null && !cookieDomain.isBlank()) {
+                cookieBuilder.domain(cookieDomain);
+            }
+            var cookie = cookieBuilder.build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             return ResponseEntity.ok(Map.of("message", "Token yenilendi"));
         }).orElse(ResponseEntity.status(401).body(Map.of("error", "Geçersiz refresh token")));
@@ -134,13 +152,17 @@ public class AuthController {
         String forwardedProto = request.getHeader("X-Forwarded-Proto");
         boolean isSecure = (origin != null && origin.startsWith("https")) || "https".equalsIgnoreCase(forwardedProto);
 
-        var cookie = ResponseCookie.from("qm_token", "").httpOnly(true).secure(isSecure).path("/").maxAge(0).build();
+        var cookieBuilder = ResponseCookie.from("fm_token", "").httpOnly(true).secure(isSecure).path("/").maxAge(0);
+        var refreshCookieBuilder = ResponseCookie.from("fm_refresh_token", "").httpOnly(true).secure(isSecure).path("/")
+                .maxAge(0);
 
-        var refreshCookie = ResponseCookie.from("qm_refresh_token", "").httpOnly(true).secure(isSecure).path("/")
-                .maxAge(0).build();
+        if (cookieDomain != null && !cookieDomain.isBlank()) {
+            cookieBuilder.domain(cookieDomain);
+            refreshCookieBuilder.domain(cookieDomain);
+        }
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieBuilder.build().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookieBuilder.build().toString());
 
         return ResponseEntity.ok(Map.of("message", "Başarıyla çıkış yapıldı"));
     }

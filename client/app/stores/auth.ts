@@ -13,6 +13,7 @@ interface User {
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
+  const initializing = ref(true)
 
   const isLoggedIn = computed(() => !!user.value)
   const isAdmin = computed(() => hasRole('admin'))
@@ -23,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function init() {
     const { fetchJson } = useApi()
+    initializing.value = true
     try {
       // Restore user info from server using the HttpOnly cookie
       const data = await fetchJson('/api/auth/me')
@@ -37,6 +39,8 @@ export const useAuthStore = defineStore('auth', () => {
     } catch { 
       // Not logged in or session expired
       user.value = null
+    } finally {
+      initializing.value = false
     }
   }
 
@@ -93,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
+    initializing,
     isLoggedIn,
     isAdmin,
     isSuperAdmin,

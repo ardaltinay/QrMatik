@@ -1,7 +1,17 @@
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <!-- Initializing State -->
+    <div v-if="authStore.initializing" class="flex min-h-screen items-center justify-center bg-white">
+       <div class="flex flex-col items-center gap-4">
+         <Logo size="lg" animate shadow />
+         <div class="w-32 h-1 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full bg-brand-600 animate-progress"></div>
+         </div>
+       </div>
+    </div>
+
     <!-- Unauthenticated State (Login Form) -->
-    <div v-if="!authStore.user" class="flex min-h-screen flex-col items-center justify-center p-4">
+    <div v-else-if="!authStore.user" class="flex min-h-screen flex-col items-center justify-center p-4">
       <div class="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100">
         <div class="text-center mb-8">
           <Logo size="lg" animate shadow />
@@ -570,5 +580,13 @@ const navItems = computed(() => [
 .list-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-progress {
+  animation: progress 2s infinite linear;
 }
 </style>

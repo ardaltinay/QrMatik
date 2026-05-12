@@ -57,8 +57,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             Cookie[] cookies = servletRequest.getCookies();
                             if (cookies != null) {
                                 for (Cookie cookie : cookies) {
-                                    if ("qm_token".equals(cookie.getName())) {
-                                        attributes.put("qm_token", cookie.getValue());
+                                    if ("fm_token".equals(cookie.getName())) {
+                                        attributes.put("fm_token", cookie.getValue());
                                     }
                                 }
                             }
@@ -90,8 +90,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     } else {
                         // 1. Try from handshake attributes (Set by HandshakeInterceptor)
                         var attributes = accessor.getSessionAttributes();
-                        if (attributes != null && attributes.containsKey("qm_token")) {
-                            token = (String) attributes.get("qm_token");
+                        if (attributes != null && attributes.containsKey("fm_token")) {
+                            token = (String) attributes.get("fm_token");
                         }
 
                         // 2. Fallback: Check cookies in native headers (Sometimes available)
@@ -99,7 +99,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             String cookieHeader = accessor.getFirstNativeHeader("Cookie");
                             if (cookieHeader != null) {
                                 token = java.util.Arrays.stream(cookieHeader.split(";")).map(String::trim)
-                                        .filter(c -> c.startsWith("qm_token=")).map(c -> c.substring(9)).findFirst()
+                                        .filter(c -> c.startsWith("fm_token=")).map(c -> c.substring(9)).findFirst()
                                         .orElse(null);
                             }
                         }

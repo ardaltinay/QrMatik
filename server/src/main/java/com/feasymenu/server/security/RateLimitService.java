@@ -31,10 +31,8 @@ public class RateLimitService {
 
     public enum LimitType {
         ORDER(1, Duration.ofMinutes(1)), AUTH(20, Duration.ofMinutes(5)), FORGOT_PASS(3,
-                Duration.ofHours(1)),
-        BILLING_INIT(5, Duration.ofMinutes(1)), WAITER_CALL(1,
-                Duration.ofMinutes(1)),
-        LOYALTY_SPIN(1, Duration.ofMinutes(1));
+                Duration.ofHours(1)), BILLING_INIT(5, Duration.ofMinutes(1)), WAITER_CALL(1,
+                        Duration.ofMinutes(1)), LOYALTY_SPIN(1, Duration.ofMinutes(1));
 
         final long capacity;
         final Duration duration;
