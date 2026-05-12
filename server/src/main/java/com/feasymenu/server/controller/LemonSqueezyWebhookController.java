@@ -106,20 +106,23 @@ public class LemonSqueezyWebhookController {
 
             // LS dates might have spaces instead of T, ensure ISO compatibility
             String isoDate = renewsAtStr.replace(" ", "T");
-            if (!isoDate.contains("Z") && !isoDate.contains("+")) isoDate += "Z";
+            if (!isoDate.contains("Z") && !isoDate.contains("+"))
+                isoDate += "Z";
 
             Instant LSInstant = Instant.parse(isoDate);
 
             if (t.getPlanPaidUntil() != null && t.getPlanPaidUntil().isAfter(Instant.now())) {
                 // Extend from current expiration
-                newExpiration = isYearly ? t.getPlanPaidUntil().plus(365, ChronoUnit.DAYS)
+                newExpiration = isYearly
+                        ? t.getPlanPaidUntil().plus(365, ChronoUnit.DAYS)
                         : t.getPlanPaidUntil().plus(30, ChronoUnit.DAYS);
             } else {
                 // Start fresh from what LS says
                 newExpiration = LSInstant;
                 // If it's a one-time order and LS gave created_at, add the period
                 if (attributes.containsKey("created_at") && renewsAtStr.equals(attributes.get("created_at"))) {
-                    newExpiration = isYearly ? LSInstant.plus(365, ChronoUnit.DAYS)
+                    newExpiration = isYearly
+                            ? LSInstant.plus(365, ChronoUnit.DAYS)
                             : LSInstant.plus(30, ChronoUnit.DAYS);
                 }
             }

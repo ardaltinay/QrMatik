@@ -24,18 +24,14 @@ public class PricingService {
     }
 
     public PricingDto currentPricing() {
-        return PricingDto.builder().currency(props.getCurrency()).note(props.getNote())
-                .tiers(List.of(
-                        PricingTierDto.builder().name("Ücretsiz").monthly(0.0).yearly(0.0).build(),
-                        PricingTierDto.builder().name("Standart").monthly(props.getStandardMonthly())
-                                .yearly(props.getStandardYearly())
-                                .variantMonthly(lsProps.getVariant().getStandardMonthly())
-                                .variantYearly(lsProps.getVariant().getStandardYearly())
-                                .build(),
-                        PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
-                                .variantMonthly(lsProps.getVariant().getProMonthly())
-                                .variantYearly(lsProps.getVariant().getProYearly())
-                                .build()))
+        return PricingDto.builder().currency(props.getCurrency()).note(props.getNote()).tiers(List.of(
+                PricingTierDto.builder().name("Ücretsiz").monthly(0.0).yearly(0.0).build(),
+                PricingTierDto.builder().name("Standart").monthly(props.getStandardMonthly())
+                        .yearly(props.getStandardYearly()).variantMonthly(lsProps.getVariant().getStandardMonthly())
+                        .variantYearly(lsProps.getVariant().getStandardYearly()).build(),
+                PricingTierDto.builder().name("Pro").monthly(props.getProMonthly()).yearly(props.getProYearly())
+                        .variantMonthly(lsProps.getVariant().getProMonthly())
+                        .variantYearly(lsProps.getVariant().getProYearly()).build()))
                 .build();
     }
 

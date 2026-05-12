@@ -3,7 +3,7 @@
     <div 
       class="relative flex items-center justify-center shrink-0 transition-all duration-700"
       :class="[
-        size === 'sm' ? 'w-10 h-10' : size === 'lg' ? 'w-24 h-24' : 'w-16 h-16',
+        size === 'xs' ? 'w-8 h-8' : size === 'sm' ? 'w-10 h-10' : size === 'lg' ? 'w-24 h-24' : 'w-16 h-16',
       ]"
     >
       <!-- Enhanced Background Glow -->
@@ -25,7 +25,7 @@
       <span 
         class="font-black text-slate-900 tracking-[-0.04em] leading-none transition-colors"
         :class="[
-          size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-5xl' : 'text-4xl',
+          size === 'xs' ? 'text-xl' : size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-5xl' : 'text-4xl',
           dark ? 'text-white' : ''
         ]"
       >
@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   hideText?: boolean
   showTagline?: boolean
   className?: string

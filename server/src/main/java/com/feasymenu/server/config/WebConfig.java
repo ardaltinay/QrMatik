@@ -42,12 +42,10 @@ public class WebConfig {
                 } else {
                     // Safer dev fallback: restrict to common local dev origins instead of allowing
                     // all
-                    mapping.allowedOrigins(
-                            "http://localhost:3000", "http://127.0.0.1:3000",
-                            "http://localhost:5173", "http://127.0.0.1:5173");
+                    mapping.allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173",
+                            "http://127.0.0.1:5173");
                     // allow wildcard subdomains like http://{tenant}.localhost:3000
-                    mapping.allowedOriginPatterns(
-                            "http://*.localhost:3000", "http://*.localhost",
+                    mapping.allowedOriginPatterns("http://*.localhost:3000", "http://*.localhost",
                             "http://*.localhost:5173");
                 }
                 // Note: callback mapping already configured above

@@ -48,13 +48,12 @@ public class SecurityConfig {
         // Allow framing from same origin (needed for certain PSP callbacks/embeds)
         http.headers(h -> h.frameOptions(f -> f.sameOrigin()));
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/auth/**").permitAll()
                 .requestMatchers("/files/**", "/api/tenant/config", "/api/public/**", "/api/loyalty/campaign",
                         "/api/loyalty/spin", "/ws/**", "/error")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/webhooks/lemonsqueezy").permitAll() // Lemon Squeezy Webhook
+                .permitAll().requestMatchers(HttpMethod.POST, "/api/webhooks/lemonsqueezy").permitAll() // Lemon Squeezy
+                                                                                                        // Webhook
                 .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stock/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
@@ -63,9 +62,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/orders/call-waiter").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/orders/session/**", "/api/orders/*").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "CASHIER", "SALOON")
-                .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll()
-                .requestMatchers("/api/loyalty/validate").hasAnyRole("ADMIN", "CASHIER", "SALOON")
-                .requestMatchers(HttpMethod.GET, "/api/orders")
+                .requestMatchers(HttpMethod.GET, "/api/qr/image").permitAll().requestMatchers("/api/loyalty/validate")
+                .hasAnyRole("ADMIN", "CASHIER", "SALOON").requestMatchers(HttpMethod.GET, "/api/orders")
                 .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
                 .requestMatchers(HttpMethod.PUT, "/api/orders/*/status")
                 .hasAnyRole("ADMIN", "KITCHEN", "BAR", "CASHIER", "SALOON")
@@ -75,8 +73,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/tables/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/menu/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                .anyRequest().authenticated());
+                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN").anyRequest().authenticated());
         // Filter Order: RateLimit -> Tenant -> JwtAuth ->
         // UsernamePasswordAuthentication
         // By adding each before the same standard filter, the last one added becomes

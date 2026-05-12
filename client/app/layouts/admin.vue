@@ -84,29 +84,55 @@
       </div>
       
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 shrink-0">
-        <!-- Brand -->
-        <div class="h-16 flex items-center px-6 border-b border-slate-100 shrink-0">
-          <button @click="redirectByRole" class="text-left focus:outline-none">
-            <Logo size="sm" shadow />
+      <aside 
+        class="hidden lg:flex flex-col bg-white border-r border-slate-200 shrink-0 transition-all duration-300 ease-in-out relative"
+        :class="isSidebarCollapsed ? 'w-20' : 'w-64'"
+      >
+        <!-- Brand & Toggle -->
+        <div class="h-16 flex items-center border-b border-slate-100 shrink-0 overflow-hidden" :class="isSidebarCollapsed ? 'justify-center px-0' : 'justify-between px-6'">
+          <button @click="redirectByRole" class="text-left focus:outline-none transition-all duration-300" :class="isSidebarCollapsed ? 'scale-75' : ''">
+            <Logo :size="isSidebarCollapsed ? 'xs' : 'sm'" :hideText="isSidebarCollapsed" shadow />
+          </button>
+          
+          <button 
+            @click="toggleSidebar" 
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm border border-slate-200"
+            :class="isSidebarCollapsed ? 'absolute -right-4 top-20 z-10' : ''"
+          >
+            <svg 
+              class="w-4 h-4 transition-transform duration-300" 
+              :class="isSidebarCollapsed ? 'rotate-180' : ''"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
         </div>
 
         <!-- Navigation -->
-        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1 scrollbar-thin">
-          <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{{ $t('admin.sidebar.title') }}</p>
+        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1 scrollbar-thin overflow-x-hidden">
+          <p 
+            v-if="!isSidebarCollapsed"
+            class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 animate-in fade-in duration-500"
+          >
+            {{ $t('admin.sidebar.title') }}
+          </p>
           
           <template v-for="item in navItems" :key="item.path">
             <NuxtLink 
               v-if="authStore.hasRole(...item.roles)"
               :to="item.path"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors"
-              :class="isActive(item.path) ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="flex items-center gap-3 py-2.5 rounded-xl font-medium transition-all duration-200 group relative"
+              :class="[
+                isActive(item.path) ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                isSidebarCollapsed ? 'px-0 justify-center' : 'px-3'
+              ]"
+              :title="isSidebarCollapsed ? item.name : ''"
             >
-              <div class="w-5 h-5 flex items-center justify-center shrink-0">
+              <div class="w-5 h-5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
                 <span v-html="item.icon"></span>
               </div>
-              {{ item.name }}
+              <span v-if="!isSidebarCollapsed" class="truncate animate-in slide-in-from-left-2 duration-300">{{ item.name }}</span>
             </NuxtLink>
           </template>
 
@@ -114,34 +140,47 @@
 
           <NuxtLink 
             to="/admin/upgrade"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+            class="flex items-center gap-3 py-2.5 rounded-xl font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-600 transition-all group"
+            :class="isSidebarCollapsed ? 'px-0 justify-center' : 'px-3'"
             v-show="isAdmin"
+            :title="isSidebarCollapsed ? $t('admin.sidebar.upgrade') : ''"
           >
-            <div class="w-5 h-5 flex items-center justify-center shrink-0 text-amber-500">
+            <div class="w-5 h-5 flex items-center justify-center shrink-0 text-amber-500 transition-transform group-hover:scale-110">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             </div>
-            {{ $t('admin.sidebar.upgrade') }}
+            <span v-if="!isSidebarCollapsed" class="truncate animate-in slide-in-from-left-2 duration-300">{{ $t('admin.sidebar.upgrade') }}</span>
           </NuxtLink>
         </div>
 
         <!-- User Profile Footer -->
-        <div class="p-4 border-t border-slate-200 shrink-0 bg-slate-50/50">
-          <div class="flex items-center gap-3 mb-4 px-2">
-            <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">
+        <div class="p-4 border-t border-slate-200 shrink-0 bg-slate-50/50 transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4 transition-all" :class="isSidebarCollapsed ? 'px-0 justify-center' : 'px-2'">
+            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 font-bold shrink-0">
               {{ $upper(authStore.user.username.charAt(0)) }}
             </div>
-            <div class="min-w-0 flex-1">
+            <div v-if="!isSidebarCollapsed" class="min-w-0 flex-1 animate-in fade-in duration-500">
               <p class="text-sm font-bold text-slate-900 truncate">{{ authStore.user.username }}</p>
               <p class="text-xs text-slate-500 truncate capitalize">{{ $upper(roleLabel(authStore.user.role)) }}</p>
             </div>
           </div>
-          <div class="flex gap-2">
-            <button @click="toggleLanguage" class="flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm" title="Change Language">
+          
+          <div class="flex gap-2 transition-all" :class="isSidebarCollapsed ? 'flex-col items-center' : ''">
+            <button 
+              @click="toggleLanguage" 
+              class="flex items-center justify-center h-10 transition-all font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm"
+              :class="isSidebarCollapsed ? 'w-10' : 'px-3 py-2 text-sm'"
+              :title="isSidebarCollapsed ? (locale === 'tr' ? 'English' : 'Türkçe') : ''"
+            >
               <span class="uppercase font-bold">{{ locale === 'tr' ? 'EN' : 'TR' }}</span>
             </button>
-            <button @click="handleLogout" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-rose-600 transition-colors shadow-sm">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-              {{ $t('auth.logoutButton') }}
+            <button 
+              @click="handleLogout" 
+              class="flex items-center justify-center h-10 transition-all font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-rose-600 shadow-sm"
+              :class="isSidebarCollapsed ? 'w-10' : 'flex-1 gap-2 px-4 py-2 text-sm'"
+              :title="isSidebarCollapsed ? $t('auth.logoutButton') : ''"
+            >
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              <span v-if="!isSidebarCollapsed" class="truncate">{{ $t('auth.logoutButton') }}</span>
             </button>
           </div>
         </div>
@@ -162,7 +201,7 @@
 
         <!-- Main Scroll Area -->
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
-          <div class="max-w-6xl mx-auto">
+          <div class="max-w-[1600px] mx-auto transition-all duration-300">
             <slot />
           </div>
         </main>
@@ -240,6 +279,18 @@ const route = useRoute()
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
+const isSidebarCollapsed = ref(false)
+
+// Load collapsed state from localStorage on mount
+onMounted(() => {
+  const saved = localStorage.getItem('admin_sidebar_collapsed')
+  if (saved !== null) isSidebarCollapsed.value = saved === 'true'
+})
+
+function toggleSidebar() {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value
+  localStorage.setItem('admin_sidebar_collapsed', isSidebarCollapsed.value.toString())
+}
 const { connect, subscribe } = useSocket()
 let unsubNotif: (() => void) | null = null
 

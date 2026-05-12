@@ -11,12 +11,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import javax.crypto.SecretKey;
 
 @Component
 public class JwtUtil {
@@ -73,11 +72,7 @@ public class JwtUtil {
             claims.put("tenantId", tenantId);
         }
 
-        var builder = Jwts.builder()
-                .subject(username)
-                .claims(claims)
-                .issuedAt(issuedAt)
-                .expiration(expiry);
+        var builder = Jwts.builder().subject(username).claims(claims).issuedAt(issuedAt).expiration(expiry);
         if (issuer != null && !issuer.isBlank())
             builder.issuer(issuer.trim());
         if (audience != null && !audience.isBlank())

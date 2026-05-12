@@ -107,7 +107,8 @@ public class OrderService {
                 return Optional.empty();
             }
         } else {
-            // IDOR Protection: If authenticated, ensure the order belongs to the user's tenant
+            // IDOR Protection: If authenticated, ensure the order belongs to the user's
+            // tenant
             String currentTenant = TenantContext.getTenant();
             if (currentTenant != null && e.getTenant() != null && !currentTenant.equals(e.getTenant().getCode())) {
                 log.warn("IDOR attempt detected! User from tenant {} tried to access order {} from tenant {}",
@@ -168,7 +169,8 @@ public class OrderService {
         }
         // Parse target status
         var parsed = OrderStatus.fromString(status);
-        if (parsed == null) return Optional.empty();
+        if (parsed == null)
+            return Optional.empty();
         OrderEntity order = o.get();
 
         if (target == null || target.isBlank()) {
@@ -179,8 +181,10 @@ public class OrderService {
             if (order.getLines() != null) {
                 for (var line : order.getLines()) {
                     String cat = (line.getCategorySnapshot() != null ? line.getCategorySnapshot().toLowerCase() : "");
-                    if (cat.contains("drink") || cat.contains("içecek")) hasB = true;
-                    else hasK = true;
+                    if (cat.contains("drink") || cat.contains("içecek"))
+                        hasB = true;
+                    else
+                        hasK = true;
                 }
             }
             if (parsed == OrderStatus.CANCELED) {
@@ -204,8 +208,10 @@ public class OrderService {
             if (order.getLines() != null) {
                 for (var line : order.getLines()) {
                     String cat = (line.getCategorySnapshot() != null ? line.getCategorySnapshot().toLowerCase() : "");
-                    if (cat.contains("drink") || cat.contains("içecek")) needsB = true;
-                    else needsK = true;
+                    if (cat.contains("drink") || cat.contains("içecek"))
+                        needsB = true;
+                    else
+                        needsK = true;
                 }
             }
 
@@ -214,12 +220,15 @@ public class OrderService {
             } else if (!needsK && needsB) {
                 order.setStatus(order.getBarStatus());
             } else if (needsK && needsB) {
-                boolean kDone = order.getKitchenStatus() == OrderStatus.READY || order.getKitchenStatus() == OrderStatus.CANCELED;
-                boolean bDone = order.getBarStatus() == OrderStatus.READY || order.getBarStatus() == OrderStatus.CANCELED;
+                boolean kDone = order.getKitchenStatus() == OrderStatus.READY
+                        || order.getKitchenStatus() == OrderStatus.CANCELED;
+                boolean bDone = order.getBarStatus() == OrderStatus.READY
+                        || order.getBarStatus() == OrderStatus.CANCELED;
 
                 if (kDone && bDone) {
                     order.setStatus(OrderStatus.READY);
-                } else if (order.getKitchenStatus() == OrderStatus.PREPARING || order.getBarStatus() == OrderStatus.PREPARING) {
+                } else if (order.getKitchenStatus() == OrderStatus.PREPARING
+                        || order.getBarStatus() == OrderStatus.PREPARING) {
                     order.setStatus(OrderStatus.PREPARING);
                 }
             }
@@ -400,6 +409,24 @@ public class OrderService {
         // En az 1 satır zorunlu
         if (req.getLines() == null || req.getLines().isEmpty()) {
             throw new BadRequestException("error.order.atLeastOneLineRequired");
+        }
+
+        // Location Check (Geofencing)
+        if (tcode != null) {
+            tenantRepository.findByCode(tcode).ifPresent(t -> {
+                if (t.getLatitude() != null && t.getLongitude() != null && t.getLocationThreshold() != null) {
+                    if (req.getLatitude() == null || req.getLongitude() == null) {
+                        throw new BadRequestException("errors.order.locationRequired");
+                    }
+                    double distance = calculateDistance(t.getLatitude(), t.getLongitude(), req.getLatitude(),
+                            req.getLongitude());
+                    if (distance > t.getLocationThreshold()) {
+                        log.warn("Order rejected due to distance: {}m (threshold: {}m) for tenant {}", (int) distance,
+                                t.getLocationThreshold(), tcode);
+                        throw new BadRequestException("errors.order.tooFar");
+                    }
+                }
+            });
         }
 
         buildOrderLinesFromRequest(input, (input.getTenant() != null ? input.getTenant().getCode() : tcode), req);
@@ -754,5 +781,15 @@ public class OrderService {
                 tableRepository.save(table);
             }
         }
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth radius in km
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c * 1000; // convert to meters
     }
 }

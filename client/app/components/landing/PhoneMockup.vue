@@ -129,11 +129,11 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  primaryColor: '#6366f1',
-  accentColor: '#f97316',
+  primaryColor: '#94a684', // FeasyMenu Sage Green
+  accentColor: '#5e6d51',  // Darker Sage
   logoUrl: '',
   tenantName: 'The Bistro',
-  fontFamily: 'Inter, sans-serif'
+  fontFamily: 'Plus Jakarta Sans, sans-serif'
 })
 
 const mockMenu = computed(() => {

@@ -1,34 +1,32 @@
 package com.feasymenu.server.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.feasymenu.server.repository.OrderRepository;
+import com.feasymenu.server.security.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import com.feasymenu.server.repository.OrderRepository;
-import com.feasymenu.server.security.JwtUtil;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.config.ChannelRegistration;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.core.Authentication;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -48,14 +46,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
-        registry.addEndpoint("/ws/raw")
-                .setAllowedOriginPatterns("*")
+        registry.addEndpoint("/ws/raw").setAllowedOriginPatterns("*")
                 .addInterceptors(new HttpSessionHandshakeInterceptor() {
                     @Override
-                    public boolean beforeHandshake(ServerHttpRequest request,
-                            ServerHttpResponse response,
-                            WebSocketHandler wsHandler,
-                            Map<String, Object> attributes) throws Exception {
+                    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                            WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
                         if (request instanceof ServletServerHttpRequest) {
                             HttpServletRequest servletRequest = ((ServletServerHttpRequest) request)
                                     .getServletRequest();
@@ -103,11 +98,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         if (token == null) {
                             String cookieHeader = accessor.getFirstNativeHeader("Cookie");
                             if (cookieHeader != null) {
-                                token = java.util.Arrays.stream(cookieHeader.split(";"))
-                                        .map(String::trim)
-                                        .filter(c -> c.startsWith("qm_token="))
-                                        .map(c -> c.substring(9))
-                                        .findFirst()
+                                token = java.util.Arrays.stream(cookieHeader.split(";")).map(String::trim)
+                                        .filter(c -> c.startsWith("qm_token=")).map(c -> c.substring(9)).findFirst()
                                         .orElse(null);
                             }
                         }
@@ -205,8 +197,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                         log.debug("WebSocket Sub Check: userTenant={}, targetTenant={}", userTenant, tenantCode);
                         if (userTenant == null || !userTenant.equals(tenantCode)) {
-                            log.warn("Unauthorized! Admin {} (tenant: {}) tried to subscribe to: {}",
-                                    auth.getName(), userTenant, tenantCode);
+                            log.warn("Unauthorized! Admin {} (tenant: {}) tried to subscribe to: {}", auth.getName(),
+                                    userTenant, tenantCode);
                             throw new RuntimeException("Unauthorized");
                         }
                     }

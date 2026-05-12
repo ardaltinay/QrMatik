@@ -97,8 +97,8 @@ public class AuthService {
                     var user = userRepository.findTopByUsernameOrderByCreatedTimeDesc(rt.getUsername()).orElseThrow();
                     String tenantCode = (user.getTenant() != null ? user.getTenant().getCode() : null);
                     String tenantId = (user.getTenant() != null ? user.getTenant().getId().toString() : null);
-                    String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name(),
-                            tenantCode, tenantId);
+                    String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name(), tenantCode,
+                            tenantId);
                     return Map.of("token", newAccessToken);
                 });
     }

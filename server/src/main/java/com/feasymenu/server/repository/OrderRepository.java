@@ -2,7 +2,6 @@ package com.feasymenu.server.repository;
 
 import com.feasymenu.server.model.OrderEntity;
 import com.feasymenu.server.model.OrderStatus;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
@@ -32,8 +31,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
 
     List<OrderEntity> findByTable_Id(UUID tableId);
 
-    List<OrderEntity> findByTenant_CodeAndCreatedTimeBetween(String tenantCode, Instant start,
-            Instant end);
+    List<OrderEntity> findByTenant_CodeAndCreatedTimeBetween(String tenantCode, Instant start, Instant end);
 
     @Modifying
     @Transactional

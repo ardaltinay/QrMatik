@@ -265,6 +265,8 @@ export default {
     waiterCalled: 'Waiter has been notified.',
     waiterCallError: 'An error occurred while calling the waiter.',
     waiterCallCooldown: 'Please wait a moment and try again.',
+    locationDenied: 'You must grant location permission to place an order.',
+    locationError: 'Could not get your location, please try again.',
   },
 
   // ── Orders ──────────────────────────────────────────────
@@ -358,6 +360,8 @@ export default {
       tableNotFound: 'Invalid table code. Please scan the QR code again.',
       sessionMismatch: 'Session belongs to a different business.',
       insufficientStock: 'Insufficient stock.',
+      tooFar: 'You are too far from the restaurant. Please place your order while at the restaurant.',
+      locationRequired: 'You must share your location to order from this restaurant.',
     },
     general: {
       invalidRequest: 'Invalid request.',
@@ -732,8 +736,14 @@ export default {
       accentColor: 'Accent Color',
       fontFamily: 'Font Family',
       welcomeMessage: 'Welcome Message',
-      address: 'Business Address',
       phone: 'Contact Phone',
+      locationTitle: 'Location & Geofencing',
+      locationDesc: 'Enter location info to ensure orders can only be placed while near the restaurant.',
+      latitude: 'Latitude',
+      longitude: 'Longitude',
+      threshold: 'Order Distance (Meters)',
+      thresholdHint: 'If left blank, location check is disabled.',
+      useCurrentLocation: 'USE MY CURRENT LOCATION',
       preview: 'Live Preview',
       saveSuccess: 'Theme settings saved successfully.',
       saveFailure: 'Failed to save theme settings. Please try again.',
@@ -954,6 +964,10 @@ export default {
       billBentoDesc: 'Customers can request the bill without leaving their table.',
       waiterBentoTitle: 'Call Waiter',
       waiterBentoDesc: 'Instant waiter call notifications with one click.',
+      geofencingTitle: 'Geofencing Security',
+      geofencingDesc: 'Prevent abuse by ensuring orders are only placed from within your restaurant.',
+      loyaltyTitle: 'Loyalty & Gamification',
+      loyaltyDesc: 'Increase customer retention with spin-to-win rewards and loyalty systems.',
     },
     howItWorks: {
       badge: 'Process',
@@ -999,6 +1013,8 @@ export default {
         unlimitedUsers: 'Unlimited Users',
         kitchenBarCashierBoards: 'Kitchen, Bar & Cashier Boards',
         stockControl: 'Instant Stock Control',
+        loyaltySystem: 'Loyalty & Gamification',
+        geofencing: 'Geofencing Security',
       }
     },
     faq: {

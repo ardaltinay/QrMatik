@@ -110,7 +110,7 @@ export const useOrderStore = defineStore('order', () => {
   })
 
   // ── Orders ──────────────────────────────────────────────
-  async function createOrder(tableCode: string) {
+  async function createOrder(tableCode: string, latitude?: number, longitude?: number) {
     if (cart.value.length === 0) return null
     const { fetchJson } = useApi()
 
@@ -118,6 +118,8 @@ export const useOrderStore = defineStore('order', () => {
     const body = {
       tableCode,
       sessionId,
+      latitude,
+      longitude,
       lines: cart.value.map(c => ({
         itemId: c.itemId,
         quantity: c.qty,

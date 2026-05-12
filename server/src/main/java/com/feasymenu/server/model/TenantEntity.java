@@ -96,6 +96,14 @@ public class TenantEntity extends AbstractEntity {
     @Builder.Default
     private Boolean active = true;
 
+    // Geolocation for geofencing (optional)
+    private Double latitude;
+    private Double longitude;
+
+    // Threshold in meters (e.g. 500 = 500m)
+    @Column(name = "location_threshold")
+    private Integer locationThreshold;
+
     public boolean isActive() {
         return active == null || active;
     }

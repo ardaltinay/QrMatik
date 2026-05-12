@@ -48,7 +48,7 @@
       </div>
 
       <!-- Real Feature Grid (from feasymenu.com) -->
-      <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-6xl mx-auto mt-40">
+      <div id="features" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 max-w-7xl mx-auto mt-40">
         <div v-for="feat in realFeatures" :key="feat.key" class="flex flex-col items-center text-center group">
           <div class="w-24 h-24 rounded-[3rem] bg-brand-50 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 shadow-sm border border-brand-100/50">
             <component :is="feat.icon" class="w-10 h-10 text-brand-500" />
@@ -85,7 +85,9 @@ import {
   Flame,
   Coffee,
   Fish,
-  Pizza
+  Pizza,
+  ShieldCheck,
+  Gift
 } from 'lucide-vue-next'
 
 const localePath = useLocalePath()
@@ -104,6 +106,8 @@ const realFeatures = [
   { key: 'f3', icon: MonitorPlay, titleKey: 'landing.features.kitchenBarTitle', descKey: 'landing.features.kitchenBarDesc' },
   { key: 'f4', icon: Settings2, titleKey: 'landing.features.adminTitle', descKey: 'landing.features.adminDesc' },
   { key: 'f5', icon: BarChart3, titleKey: 'landing.features.reportsTitle', descKey: 'landing.features.reportsDesc' },
-  { key: 'f6', icon: Archive, titleKey: 'landing.features.stockTitle', descKey: 'landing.features.stockDesc' },
+  { key: 'f6', icon: ShieldCheck, titleKey: 'landing.features.geofencingTitle', descKey: 'landing.features.geofencingDesc' },
+  { key: 'f7', icon: Gift, titleKey: 'landing.features.loyaltyTitle', descKey: 'landing.features.loyaltyDesc' },
+  { key: 'f8', icon: Archive, titleKey: 'landing.features.stockTitle', descKey: 'landing.features.stockDesc' },
 ]
 </script>

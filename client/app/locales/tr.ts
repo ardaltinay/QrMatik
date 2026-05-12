@@ -266,6 +266,8 @@ export default {
     waiterCalled: 'Garson bilgilendirildi.',
     waiterCallError: 'Garson çağrılırken bir hata oluştu.',
     waiterCallCooldown: 'Lütfen biraz bekleyin ve tekrar deneyin.',
+    locationDenied: 'Sipariş vermek için konum izni vermelisiniz.',
+    locationError: 'Konumunuz alınamadı, lütfen tekrar deneyin.',
   },
 
   // ── Orders ──────────────────────────────────────────────
@@ -361,6 +363,8 @@ export default {
       tableNotFound: 'Geçersiz masa kodu. Lütfen QR kodu tekrar taratın.',
       sessionMismatch: 'Oturum farklı bir işletmeye ait.',
       insufficientStock: 'Yetersiz stok.',
+      tooFar: 'Restorana çok uzaktasınız. Lütfen restoran içerisinden sipariş veriniz.',
+      locationRequired: 'Bu restorandan sipariş vermek için konumunuzu paylaşmalısınız.',
     },
     general: {
       invalidRequest: 'Geçersiz istek.',
@@ -742,6 +746,13 @@ export default {
       welcomeMessage: 'Karşılama Mesajı',
       address: 'İşletme Adresi',
       phone: 'İletişim Telefonu',
+      locationTitle: 'Konum & Coğrafi Sınır',
+      locationDesc: 'Siparişlerin sadece restoran yakınındayken verilebilmesini sağlamak için konum bilgilerini girin.',
+      latitude: 'Enlem',
+      longitude: 'Boylam',
+      threshold: 'Sipariş Mesafesi (Metre)',
+      thresholdHint: 'Boş bırakılırsa konum kontrolü devre dışı kalır.',
+      useCurrentLocation: 'ŞUANKİ KONUMUMU KULLAN',
       preview: 'Canlı Önizleme',
       saveSuccess: 'Tema ayarları başarıyla kaydedildi.',
       saveFailure: 'Tema ayarları kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.',
@@ -959,6 +970,10 @@ export default {
       billBentoDesc: 'Müşterileriniz masadan kalkmadan hesap isteyebilir.',
       waiterBentoTitle: 'Garson Çağır',
       waiterBentoDesc: 'Tek tıkla garson çağırma bildirimleri.',
+      geofencingTitle: 'Coğrafi Güvenlik',
+      geofencingDesc: 'Siparişlerin sadece restoran sınırları içerisinden verilebilmesini sağlayarak suistimalleri önleyin.',
+      loyaltyTitle: 'Sadakat & Oyunlaştırma',
+      loyaltyDesc: 'Çarkıfelek ödülleri ve sadakat sistemiyle müşterilerinizin geri dönüş oranını artırın.',
     },
     howItWorks: {
       badge: 'Süreç',
@@ -1004,6 +1019,8 @@ export default {
         unlimitedUsers: 'Sınırsız Kullanıcı',
         kitchenBarCashierBoards: 'Mutfak, Bar & Kasa Panoları',
         stockControl: 'Anlık Stok Kontrolü',
+        loyaltySystem: 'Sadakat & Oyunlaştırma',
+        geofencing: 'Coğrafi Sınır Güvenliği',
       }
     },
     faq: {

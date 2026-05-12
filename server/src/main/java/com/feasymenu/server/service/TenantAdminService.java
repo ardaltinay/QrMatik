@@ -58,10 +58,8 @@ public class TenantAdminService {
         stats.put("standardTenants", standard);
         stats.put("freeTenants", free);
         stats.put("mrr", mrr);
-        stats.put("trialCount",
-                all.stream().filter(
-                        t -> t.getPlanPaidUntil() != null && t.getPlanPaidUntil().isAfter(Instant.now()))
-                        .count());
+        stats.put("trialCount", all.stream()
+                .filter(t -> t.getPlanPaidUntil() != null && t.getPlanPaidUntil().isAfter(Instant.now())).count());
 
         return stats;
     }

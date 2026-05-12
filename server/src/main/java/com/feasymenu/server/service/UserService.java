@@ -8,9 +8,7 @@ import com.feasymenu.server.model.UserEntity;
 import com.feasymenu.server.model.UserRole;
 import com.feasymenu.server.repository.TenantRepository;
 import com.feasymenu.server.repository.UserRepository;
-
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

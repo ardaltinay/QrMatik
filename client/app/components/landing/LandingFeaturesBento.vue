@@ -129,6 +129,44 @@
             {{ $t('landing.features.waiterBentoDesc') }}
           </p>
         </div>
+
+        <!-- 5. Geofencing Security (Wide) -->
+        <div class="md:col-span-6 md:row-span-1 bg-emerald-50 rounded-[2.5rem] p-8 sm:p-10 border border-emerald-100 group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+           <div class="flex-1">
+             <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm border border-emerald-200 transform transition-transform group-hover:scale-110">
+               <ShieldCheck class="w-7 h-7 text-emerald-600" />
+             </div>
+             <h3 class="text-2xl font-bold text-slate-900 mb-3">{{ $t('landing.features.geofencingTitle') }}</h3>
+             <p class="text-slate-500 text-base font-medium leading-relaxed max-w-sm">
+               {{ $t('landing.features.geofencingDesc') }}
+             </p>
+           </div>
+           <div class="hidden sm:flex items-center gap-2">
+              <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                 <MapPin class="w-6 h-6" />
+              </div>
+              <div class="h-0.5 w-12 bg-slate-200 dashed"></div>
+              <div class="w-12 h-12 rounded-full bg-white border-2 border-emerald-500 flex items-center justify-center text-emerald-500">
+                 <Smartphone class="w-6 h-6" />
+              </div>
+           </div>
+        </div>
+
+        <!-- 6. Loyalty & Games (Wide) -->
+        <div class="md:col-span-6 md:row-span-1 bg-brand-600 rounded-[2.5rem] p-8 sm:p-10 overflow-hidden relative group">
+           <!-- Decorative Wheel Background -->
+           <div class="absolute -right-20 -bottom-20 w-64 h-64 border-[16px] border-white/10 rounded-full opacity-20 group-hover:rotate-45 transition-transform duration-1000"></div>
+           
+           <div class="relative z-10">
+             <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm">
+               <Gift class="w-7 h-7 text-brand-600" />
+             </div>
+             <h3 class="text-2xl font-bold text-white mb-3">{{ $t('landing.features.loyaltyTitle') }}</h3>
+             <p class="text-brand-100 text-base font-medium leading-relaxed max-w-sm">
+               {{ $t('landing.features.loyaltyDesc') }}
+             </p>
+           </div>
+        </div>
       </div>
     </div>
   </section>
@@ -142,7 +180,11 @@ import {
   BellRing,
   Utensils,
   Users,
-  Settings
+  Settings,
+  ShieldCheck,
+  Gift,
+  MapPin,
+  Smartphone
 } from 'lucide-vue-next'
 
 const { locale } = useI18n()

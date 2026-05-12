@@ -75,21 +75,11 @@ public class AuthController {
             boolean isSecure = (origin != null && origin.startsWith("https"))
                     || "https".equalsIgnoreCase(forwardedProto);
 
-            var cookie = ResponseCookie.from("qm_token", token)
-                    .httpOnly(true)
-                    .secure(isSecure)
-                    .path("/")
-                    .maxAge(jwtUtil.getExpMinutes() * 60)
-                    .sameSite("Strict")
-                    .build();
+            var cookie = ResponseCookie.from("qm_token", token).httpOnly(true).secure(isSecure).path("/")
+                    .maxAge(jwtUtil.getExpMinutes() * 60).sameSite("Strict").build();
 
-            var refreshCookie = ResponseCookie.from("qm_refresh_token", refreshToken)
-                    .httpOnly(true)
-                    .secure(isSecure)
-                    .path("/")
-                    .maxAge(jwtUtil.getRefreshExpDays() * 24 * 3600)
-                    .sameSite("Strict")
-                    .build();
+            var refreshCookie = ResponseCookie.from("qm_refresh_token", refreshToken).httpOnly(true).secure(isSecure)
+                    .path("/").maxAge(jwtUtil.getRefreshExpDays() * 24 * 3600).sameSite("Strict").build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());

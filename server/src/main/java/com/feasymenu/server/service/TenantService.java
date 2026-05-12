@@ -56,6 +56,9 @@ public class TenantService {
         out.put("address", t.getAddress());
         out.put("phone", t.getPhone());
         out.put("ownerEmail", t.getOwnerEmail());
+        out.put("latitude", t.getLatitude());
+        out.put("longitude", t.getLongitude());
+        out.put("locationThreshold", t.getLocationThreshold());
         return out;
     }
 
@@ -68,7 +71,8 @@ public class TenantService {
 
     @CacheEvict(value = "tenants", key = "#tenantCode")
     public Map<String, Object> updateBranding(String tenantCode, String primaryColor, String accentColor,
-            String logoUrl, String welcomeMessage, String fontFamily, String address, String phone) {
+            String logoUrl, String welcomeMessage, String fontFamily, String address, String phone, Double latitude,
+            Double longitude, Integer locationThreshold) {
         if (tenantCode == null || tenantCode.isBlank())
             throw new BadRequestException("Missing tenant");
         var t = repository.findByCode(tenantCode).orElseThrow(() -> new NotFoundException("Tenant not found"));
@@ -103,6 +107,12 @@ public class TenantService {
             String trimmed = phone.trim();
             t.setPhone(trimmed.isEmpty() ? null : trimmed);
         }
+        if (latitude != null)
+            t.setLatitude(latitude);
+        if (longitude != null)
+            t.setLongitude(longitude);
+        if (locationThreshold != null)
+            t.setLocationThreshold(locationThreshold);
         repository.save(t);
         Map<String, Object> out = new HashMap<>();
         out.put("code", t.getCode());
@@ -117,6 +127,9 @@ public class TenantService {
         out.put("address", t.getAddress());
         out.put("phone", t.getPhone());
         out.put("ownerEmail", t.getOwnerEmail());
+        out.put("latitude", t.getLatitude());
+        out.put("longitude", t.getLongitude());
+        out.put("locationThreshold", t.getLocationThreshold());
         return out;
     }
 }

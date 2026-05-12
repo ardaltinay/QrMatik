@@ -36,21 +36,36 @@ public class TenantController {
 
     @PutMapping("/branding")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateBranding(@RequestBody Map<String, String> req) {
+    public ResponseEntity<?> updateBranding(@RequestBody Map<String, Object> req) {
         try {
             String tenant = TenantContext.getTenant();
-            String primary = req != null ? req.getOrDefault("primaryColor", null) : null;
-            String accent = req != null ? req.getOrDefault("accentColor", null) : null;
-            String logoUrl = req != null ? req.getOrDefault("logoUrl", null) : null;
-            String welcomeMessage = req != null ? req.getOrDefault("welcomeMessage", null) : null;
-            String fontFamily = req != null ? req.getOrDefault("fontFamily", null) : null;
-            String address = req != null ? req.getOrDefault("address", null) : null;
-            String phone = req != null ? req.getOrDefault("phone", null) : null;
+            String primary = req != null ? (String) req.getOrDefault("primaryColor", null) : null;
+            String accent = req != null ? (String) req.getOrDefault("accentColor", null) : null;
+            String logoUrl = req != null ? (String) req.getOrDefault("logoUrl", null) : null;
+            String welcomeMessage = req != null ? (String) req.getOrDefault("welcomeMessage", null) : null;
+            String fontFamily = req != null ? (String) req.getOrDefault("fontFamily", null) : null;
+            String address = req != null ? (String) req.getOrDefault("address", null) : null;
+            String phone = req != null ? (String) req.getOrDefault("phone", null) : null;
+
+            // New Geo fields
+            Double latitude = null;
+            Double longitude = null;
+            Integer locationThreshold = null;
+
+            if (req != null) {
+                if (req.get("latitude") != null)
+                    latitude = Double.valueOf(req.get("latitude").toString());
+                if (req.get("longitude") != null)
+                    longitude = Double.valueOf(req.get("longitude").toString());
+                if (req.get("locationThreshold") != null)
+                    locationThreshold = Integer.valueOf(req.get("locationThreshold").toString());
+            }
+
             if (logoUrl != null && !logoUrl.trim().isEmpty()) {
                 planGuard.assertCanUploadLogo(tenant);
             }
             var out = tenantService.updateBranding(tenant, primary, accent, logoUrl, welcomeMessage, fontFamily,
-                    address, phone);
+                    address, phone, latitude, longitude, locationThreshold);
             return ResponseEntity.ok(out);
         } catch (BadRequestException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());

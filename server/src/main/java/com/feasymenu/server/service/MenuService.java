@@ -1,5 +1,7 @@
 package com.feasymenu.server.service;
 
+import com.feasymenu.server.converter.MenuItemConverter;
+import com.feasymenu.server.dto.MenuItemDto;
 import com.feasymenu.server.model.MenuItemEntity;
 import com.feasymenu.server.model.OrderStatus;
 import com.feasymenu.server.model.PlanType;
@@ -7,6 +9,8 @@ import com.feasymenu.server.model.TenantEntity;
 import com.feasymenu.server.repository.MenuItemRepository;
 import com.feasymenu.server.repository.OrderItemRepository;
 import com.feasymenu.server.repository.TenantRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +33,16 @@ public class MenuService {
     private final TenantRepository tenantRepository;
     private final OrderItemRepository orderItemRepository;
     private final PlanGuard planGuard;
+    private final MenuItemConverter converter;
 
     public MenuService(MenuItemRepository repository, ImageService imageService, TenantRepository tenantRepository,
-            OrderItemRepository orderItemRepository, PlanGuard planGuard) {
+            OrderItemRepository orderItemRepository, PlanGuard planGuard, MenuItemConverter converter) {
         this.repository = repository;
         this.imageService = imageService;
         this.tenantRepository = tenantRepository;
         this.orderItemRepository = orderItemRepository;
         this.planGuard = planGuard;
+        this.converter = converter;
     }
 
     public List<MenuItemEntity> listForTenant(String tenant) {
@@ -47,6 +53,12 @@ public class MenuService {
         return repository.findByTenant_Code(tenant);
     }
 
+    @Cacheable(value = "menuItems", key = "#tenant")
+    public List<MenuItemDto> listForTenantDto(String tenant) {
+        return listForTenant(tenant).stream().map(converter::toDto).toList();
+    }
+
+    @CacheEvict(value = "menuItems", key = "#tenant != null ? #tenant : (#m.tenant != null ? #m.tenant.code : null)")
     public MenuItemEntity create(MenuItemEntity m, String tenant) {
         if (tenant != null && (m.getTenant() == null || m.getTenant().getCode() == null)) {
             try {
@@ -73,6 +85,7 @@ public class MenuService {
         return repository.save(m);
     }
 
+    @CacheEvict(value = "menuItems", key = "#tenant")
     public Optional<MenuItemEntity> update(UUID id, MenuItemEntity patch, String tenant) {
         Optional<MenuItemEntity> opt = repository.findById(id);
         if (opt.isEmpty())
@@ -108,10 +121,13 @@ public class MenuService {
             }
             e.setIsFeatured(patch.getIsFeatured());
         }
-        // Stock-related fields require plan check only if they are actually being changed/enabled
-        boolean stockEnabledChanged = patch.getStockEnabled() != null && !patch.getStockEnabled().equals(e.getStockEnabled());
-        boolean stockQuantityChanged = patch.getStockQuantity() != null && !patch.getStockQuantity().equals(e.getStockQuantity());
-        
+        // Stock-related fields require plan check only if they are actually being
+        // changed/enabled
+        boolean stockEnabledChanged = patch.getStockEnabled() != null
+                && !patch.getStockEnabled().equals(e.getStockEnabled());
+        boolean stockQuantityChanged = patch.getStockQuantity() != null
+                && !patch.getStockQuantity().equals(e.getStockQuantity());
+
         if (stockEnabledChanged || stockQuantityChanged) {
             // will throw PlanFeatureUnavailableException when not allowed
             if (tenant != null) {
@@ -127,6 +143,7 @@ public class MenuService {
         return Optional.of(repository.save(e));
     }
 
+    @CacheEvict(value = "menuItems", key = "#tenant")
     public Map<String, Object> uploadImage(UUID id, MultipartFile file, String tenant) throws IOException {
         // Basic validation moved to service layer for reusability
         if (file == null || file.isEmpty()) {
@@ -156,6 +173,7 @@ public class MenuService {
         return Map.of("medium", saved.mediumUrl(), "thumb", saved.thumbUrl(), "image", item.getImage());
     }
 
+    @CacheEvict(value = "menuItems", key = "#tenant")
     public boolean delete(UUID id, String tenant) {
         Optional<MenuItemEntity> opt = repository.findById(id);
         if (opt.isEmpty())

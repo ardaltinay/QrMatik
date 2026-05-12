@@ -13,7 +13,6 @@ import com.feasymenu.server.repository.LoyaltyCampaignRepository;
 import com.feasymenu.server.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -65,8 +64,7 @@ public class LoyaltyService {
         // Generate a random 6-character alphanumeric code
         String code = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
-        CustomerRewardEntity reward = CustomerRewardEntity.builder().email(email)
-                .sessionId(sessionId)
+        CustomerRewardEntity reward = CustomerRewardEntity.builder().email(email).sessionId(sessionId)
                 .prizeLabel(request.getPrizeLabel()).discountPercent(request.getDiscountPercent()).rewardCode(code)
                 .isUsed(false).tenant(tenant).build();
 
@@ -135,8 +133,7 @@ public class LoyaltyService {
 
         // Plan check: Only PRO can use Loyalty
         if (tenant.getPlan() != null && tenant.getPlan() != PlanType.PRO) {
-            throw new PlanFeatureUnavailableException(
-                    "Sadakat programı sadece PRO paketlerde mevcuttur.");
+            throw new PlanFeatureUnavailableException("Sadakat programı sadece PRO paketlerde mevcuttur.");
         }
 
         LoyaltyCampaignEntity campaign = campaignRepository.findByTenant(tenant)

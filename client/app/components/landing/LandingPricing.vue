@@ -112,6 +112,7 @@ async function loadPricing() {
             'landing.pricing.features.kitchenBarBoards',
             'landing.pricing.features.branding',
             'landing.pricing.features.reports',
+            'landing.pricing.features.geofencing',
             'landing.pricing.features.prioritySupport'
           ];
         } else if (name.includes('pro')) {
@@ -125,6 +126,7 @@ async function loadPricing() {
             'landing.pricing.features.kitchenBarCashierBoards',
             'landing.pricing.features.reports',
             'landing.pricing.features.stockControl',
+            'landing.pricing.features.loyaltySystem',
             'landing.pricing.features.prioritySupport'
           ];
         }
@@ -168,6 +170,7 @@ async function loadPricing() {
           'landing.pricing.features.kitchenBarBoards',
           'landing.pricing.features.branding',
           'landing.pricing.features.reports',
+          'landing.pricing.features.geofencing',
           'landing.pricing.features.prioritySupport'
         ],
       },
@@ -182,6 +185,7 @@ async function loadPricing() {
           'landing.pricing.features.kitchenBarCashierBoards',
           'landing.pricing.features.reports',
           'landing.pricing.features.stockControl',
+          'landing.pricing.features.loyaltySystem',
           'landing.pricing.features.prioritySupport'
         ],
       },

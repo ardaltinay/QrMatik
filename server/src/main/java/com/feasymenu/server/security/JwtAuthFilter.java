@@ -59,7 +59,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     if (tenantId != null) {
                         try {
                             TenantContext.setTenantId(java.util.UUID.fromString(tenantId));
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
                 var authToken = new UsernamePasswordAuthenticationToken(username, null,

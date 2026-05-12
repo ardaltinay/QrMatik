@@ -15,10 +15,8 @@ public class TenantConverter {
                 .name(e.getName()).ownerName(e.getOwnerName()).ownerEmail(e.getOwnerEmail()).logoUrl(e.getLogoUrl())
                 .primaryColor(e.getPrimaryColor()).accentColor(e.getAccentColor()).welcomeMessage(e.getWelcomeMessage())
                 .fontFamily(e.getFontFamily()).plan(e.getPlan() != null ? e.getPlan().name() : null)
-                .customDomain(e.getCustomDomain())
-                .active(e.isActive())
-                .createdAt(e.getCreatedTime() != null ? e.getCreatedTime().toString() : null)
-                .build();
+                .customDomain(e.getCustomDomain()).active(e.isActive())
+                .createdAt(e.getCreatedTime() != null ? e.getCreatedTime().toString() : null).build();
     }
 
     public UUID parseId(String id) {

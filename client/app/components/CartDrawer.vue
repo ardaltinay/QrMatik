@@ -286,13 +286,45 @@ async function submitOrder() {
 
   try {
     isSubmitting.value = true
-    const order = await orderStore.createOrder(props.tableCode)
+
+    let latitude: number | undefined = undefined
+    let longitude: number | undefined = undefined
+
+    // If geofencing is enabled, we must request location
+    if (tenantConfig.value?.locationThreshold) {
+      try {
+        const pos: any = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { 
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+        });
+        latitude = pos.coords.latitude
+        longitude = pos.coords.longitude
+      } catch (geoError: any) {
+        console.warn('Geo error:', geoError)
+        // If user denied, we can't proceed if it's mandatory
+        if (geoError.code === 1) {
+          throw new Error(t('menu.locationDenied') || 'Sipariş vermek için konum izni vermelisiniz.')
+        } else {
+          throw new Error(t('menu.locationError') || 'Konumunuz alınamadı, lütfen tekrar deneyin.')
+        }
+      }
+    }
+
+    const order = await orderStore.createOrder(props.tableCode, latitude, longitude)
     if (order) {
       emit('update:isOpen', false)
       emit('orderSuccess', order)
     }
-  } catch (error) {
-    const errorMessage = error?.message || error?.toString() || t('menu.orderError');
+  } catch (error: any) {
+    const rawMessage = error?.message || error?.toString() || 'menu.orderError';
+    // If the message is a translation key (starts with errors. or menu.), translate it
+    const errorMessage = (rawMessage.startsWith('errors.') || rawMessage.startsWith('menu.')) 
+      ? t(rawMessage) 
+      : rawMessage;
+    
     uiStore.error(errorMessage);
   } finally {
     isSubmitting.value = false

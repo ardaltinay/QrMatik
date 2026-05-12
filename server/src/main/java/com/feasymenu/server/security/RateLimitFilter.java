@@ -34,9 +34,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
             limitType = RateLimitService.LimitType.WAITER_CALL;
         } else if (path.equals("/api/orders") && "POST".equalsIgnoreCase(method)) {
             limitType = RateLimitService.LimitType.ORDER;
-        } 
+        }
         // 2. Auth İşlemleri (Giriş/Kayıt)
-        else if ((path.contains("/api/auth/login") || path.contains("/api/auth/signup")) && "POST".equalsIgnoreCase(method)) {
+        else if ((path.contains("/api/auth/login") || path.contains("/api/auth/signup"))
+                && "POST".equalsIgnoreCase(method)) {
             limitType = RateLimitService.LimitType.AUTH;
         }
         // 3. Şifre Sıfırlama
@@ -59,15 +60,17 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             if (!probe.isConsumed()) {
                 long waitForRefill = probe.getNanosToWaitForRefill() / 1_000_000_000;
-                if (waitForRefill == 0) waitForRefill = 1; // En az 1 saniye göster
-                
+                if (waitForRefill == 0)
+                    waitForRefill = 1; // En az 1 saniye göster
+
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.setContentType("application/json;charset=UTF-8");
-                String errorMsg = limitType == RateLimitService.LimitType.ORDER 
-                    ? "Sipariş limitine takıldınız. Lütfen " + waitForRefill + " saniye bekleyin."
-                    : "Çok fazla deneme yaptınız. Lütfen " + waitForRefill + " saniye sonra tekrar deneyin.";
-                    
-                response.getWriter().write("{ \"error\": \"too_many_requests\", \"message\": \"" + errorMsg + "\", \"retryAfter\": " + waitForRefill + " }");
+                String errorMsg = limitType == RateLimitService.LimitType.ORDER
+                        ? "Sipariş limitine takıldınız. Lütfen " + waitForRefill + " saniye bekleyin."
+                        : "Çok fazla deneme yaptınız. Lütfen " + waitForRefill + " saniye sonra tekrar deneyin.";
+
+                response.getWriter().write("{ \"error\": \"too_many_requests\", \"message\": \"" + errorMsg
+                        + "\", \"retryAfter\": " + waitForRefill + " }");
                 return;
             }
         }

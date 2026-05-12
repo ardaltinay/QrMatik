@@ -42,13 +42,15 @@ public class MenuController {
     @GetMapping
     public List<MenuItemDto> list() {
         String tenant = TenantContext.getTenant();
-        return menuService.listForTenant(tenant).stream().map(converter::toDto).toList();
+        return menuService.listForTenantDto(tenant);
     }
 
     @GetMapping("/stock")
     public List<MenuItemDto> stockList() {
         String tenant = TenantContext.getTenant();
-        return menuService.listForStock(tenant).stream().map(converter::toDto).toList();
+        // Still call this for plan enforcement
+        menuService.listForStock(tenant);
+        return menuService.listForTenantDto(tenant);
     }
 
     @GetMapping("/popular")

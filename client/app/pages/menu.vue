@@ -467,10 +467,7 @@ function getContrastColor(hexcolor: string) {
   return (yiq >= 128) ? '#0f172a' : 'white'
 }
 
-const effectiveColor = computed(() => {
-  if (tenantConfig.value?.plan === 'FREE') return '#94a684' // FeasyMenu Brand Color (Sage Green)
-  return tenantConfig.value?.primaryColor || '#94a684' // Default to Sage Green instead of dark navy
-})
+const effectiveColor = computed(() => tenantConfig.value?.primaryColor || '#94a684')
 
 const effectiveLogo = computed(() => {
   if (tenantConfig.value?.plan === 'FREE') return null

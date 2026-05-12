@@ -1,26 +1,38 @@
 package com.feasymenu.server.security;
 
-import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
+import io.github.bucket4j.distributed.proxy.ClientSideConfig;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
+import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RateLimitService {
 
-    // Her IP ve işlem türü (key) için ayrı bir kova tutan bellek içi cache
-    private final Map<String, Bucket> cache = new ConcurrentHashMap<>();
+    @Value("${spring.data.redis.host:localhost}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port:6379}")
+    private int redisPort;
+
+    @Value("${spring.data.redis.password:}")
+    private String redisPassword;
+
+    private ProxyManager<byte[]> proxyManager;
 
     public enum LimitType {
-        ORDER(1, Duration.ofMinutes(1)), // 1 dakikada 1 sipariş
-        AUTH(20, Duration.ofMinutes(5)), // 5 dakikada 20 giriş/kayıt denemesi
-        FORGOT_PASS(3, Duration.ofHours(1)), // Saatte 3 şifre sıfırlama talebi
-        BILLING_INIT(5, Duration.ofMinutes(1)), // Dakikada 5 ödeme başlatma
-        WAITER_CALL(1, Duration.ofMinutes(1)), // Dakikada 1 kez garson çağırma
-        LOYALTY_SPIN(1, Duration.ofMinutes(1)); // Dakikada 1 kez çark çevirme
+        ORDER(1, Duration.ofMinutes(1)), AUTH(20, Duration.ofMinutes(5)), FORGOT_PASS(3,
+                Duration.ofHours(1)), BILLING_INIT(5, Duration.ofMinutes(1)), WAITER_CALL(1,
+                        Duration.ofMinutes(1)), LOYALTY_SPIN(1, Duration.ofMinutes(1));
 
         final long capacity;
         final Duration duration;
@@ -31,20 +43,29 @@ public class RateLimitService {
         }
     }
 
-    /**
-     * İlgili IP ve işlem türü için kova (bucket) oluşturur veya mevcut olanı döner.
-     */
-    public Bucket resolveBucket(String ip, LimitType type) {
-        String key = ip + ":" + type.name();
-        return cache.computeIfAbsent(key, k -> newBucket(type));
+    @PostConstruct
+    public void init() {
+        RedisURI.Builder builder = RedisURI.builder().withHost(redisHost).withPort(redisPort);
+
+        if (redisPassword != null && !redisPassword.isBlank()) {
+            builder.withPassword(redisPassword.toCharArray());
+        }
+
+        RedisClient redisClient = RedisClient.create(builder.build());
+        this.proxyManager = LettuceBasedProxyManager.builderFor(redisClient)
+                .withClientSideConfig(ClientSideConfig.getDefault().withExpirationAfterWriteStrategy(
+                        ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofHours(1))))
+                .build();
     }
 
-    private Bucket newBucket(LimitType type) {
-        return Bucket.builder()
-                .addLimit(Bandwidth.builder()
-                        .capacity(type.capacity)
-                        .refillGreedy(type.capacity, type.duration)
-                        .build())
+    public Bucket resolveBucket(String ip, LimitType type) {
+        String key = "rate-limit:" + type.name() + ":" + ip;
+        byte[] keyBytes = key.getBytes();
+        BucketConfiguration config = BucketConfiguration.builder()
+                .addLimit(
+                        Bandwidth.builder().capacity(type.capacity).refillGreedy(type.capacity, type.duration).build())
                 .build();
+
+        return proxyManager.builder().build(keyBytes, () -> config);
     }
 }

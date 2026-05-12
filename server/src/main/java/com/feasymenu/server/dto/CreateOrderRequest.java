@@ -15,6 +15,10 @@ public class CreateOrderRequest {
     private String status; // optional, default NEW
     private List<CreateOrderLine> lines; // required at least 1
 
+    // Customer location for geofencing
+    private Double latitude;
+    private Double longitude;
+
     @Getter
     @Setter
     public static class CreateOrderLine {

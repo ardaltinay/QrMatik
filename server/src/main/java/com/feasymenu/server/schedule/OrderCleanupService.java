@@ -19,19 +19,15 @@ public class OrderCleanupService {
     private final OrderRepository orderRepository;
 
     /**
-     * Cleans up terminal state orders (PAYMENT_COMPLETED, CANCELED, EXPIRED)
-     * that are older than 24 hours.
-     * Runs every hour.
+     * Cleans up terminal state orders (PAYMENT_COMPLETED, CANCELED, EXPIRED) that
+     * are older than 24 hours. Runs every hour.
      */
     @Scheduled(cron = "0 0 * * * *") // Every hour on the hour
     public void cleanupOldOrders() {
         log.info("Starting scheduled order cleanup...");
 
-        List<OrderStatus> terminalStatuses = List.of(
-            OrderStatus.PAYMENT_COMPLETED,
-            OrderStatus.CANCELED,
-            OrderStatus.EXPIRED
-        );
+        List<OrderStatus> terminalStatuses = List.of(OrderStatus.PAYMENT_COMPLETED, OrderStatus.CANCELED,
+                OrderStatus.EXPIRED);
 
         // Delete orders older than 24 hours
         Instant threshold = Instant.now().minus(24, ChronoUnit.HOURS);

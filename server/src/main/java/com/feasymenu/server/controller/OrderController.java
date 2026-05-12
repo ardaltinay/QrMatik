@@ -1,8 +1,8 @@
 package com.feasymenu.server.controller;
 
 import com.feasymenu.server.converter.OrderConverter;
-import com.feasymenu.server.dto.CancelRequest;
 import com.feasymenu.server.dto.CallWaiterRequest;
+import com.feasymenu.server.dto.CancelRequest;
 import com.feasymenu.server.dto.CreateOrderRequest;
 import com.feasymenu.server.dto.OrderDto;
 import com.feasymenu.server.dto.RequestBillRequest;
@@ -54,8 +54,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrder(
-            @PathVariable String id,
+    public ResponseEntity<OrderDto> getOrder(@PathVariable String id,
             @RequestHeader(value = "X-Session-Id", required = false) String sessionId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticated = auth != null && auth.isAuthenticated()

@@ -54,8 +54,8 @@ public class SubscriptionCleanupService {
         // Find all non-free tenants whose paid_until is BEFORE now
         List<TenantEntity> expired = tenantRepository.findByPlanNotAndPlanPaidUntilLessThan(PlanType.FREE, now);
         for (TenantEntity t : expired) {
-            log.warn("EXPIRED: Tenant {} ({}) subscription expired on {}. Downgrading to FREE plan.",
-                    t.getName(), t.getCode(), t.getPlanPaidUntil());
+            log.warn("EXPIRED: Tenant {} ({}) subscription expired on {}. Downgrading to FREE plan.", t.getName(),
+                    t.getCode(), t.getPlanPaidUntil());
 
             t.setPlan(PlanType.FREE);
             t.setBillingPeriod(null);
