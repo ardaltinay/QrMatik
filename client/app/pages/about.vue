@@ -127,5 +127,9 @@ const support = [
 useSeoMeta({
   title: () => t('about.metaTitle'),
   description: () => t('about.metaDesc'),
+  ogTitle: () => t('about.metaTitle'),
+  ogDescription: () => t('about.metaDesc'),
+  ogImage: 'https://feasymenu.com/og-image.png',
+  twitterCard: 'summary_large_image',
 })
 </script>

@@ -685,7 +685,7 @@ const schemaData = computed(() => {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
     name: tenantConfig.value.name || t('common.menu'),
-    image: tenantConfig.value.logoUrl || 'https://feasymenu.com/og-image.jpg',
+    image: tenantConfig.value.logoUrl || 'https://feasymenu.com/og-image.png',
     url: url,
     hasMenu: {
       '@type': 'Menu',
@@ -700,7 +700,7 @@ useSeoMeta({
   description: () => `${tenantConfig.value?.name || 'Restoran'} için dijital QR menüyü inceleyin, fiyatları görün ve temassız sipariş verin.`,
   ogTitle: () => `${tenantConfig.value?.name || t('common.menu')} | Dijital Menü`,
   ogDescription: () => `${tenantConfig.value?.name || 'Restoran'} QR menüsü.`,
-  ogImage: () => tenantConfig.value?.logoUrl || 'https://feasymenu.com/og-image.jpg'
+  ogImage: () => tenantConfig.value?.logoUrl || 'https://feasymenu.com/og-image.png'
 })
 
 useHead({

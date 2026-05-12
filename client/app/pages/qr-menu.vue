@@ -88,6 +88,10 @@ const quickStart = ['qrMenuLanding.qs1', 'qrMenuLanding.qs2', 'qrMenuLanding.qs3
 useSeoMeta({
   title: () => t('qrMenuLanding.metaTitle'),
   description: () => t('qrMenuLanding.metaDesc'),
+  ogTitle: () => t('qrMenuLanding.metaTitle'),
+  ogDescription: () => t('qrMenuLanding.metaDesc'),
+  ogImage: 'https://feasymenu.com/og-qr-menu.png',
+  twitterCard: 'summary_large_image',
 })
 
 useHead({

@@ -46,7 +46,7 @@ export default {
       userCreationInfo: 'You can create new users (Admin, Bar, Kitchen, Hall, Cashier) from the admin panel. You can create a maximum of 3 users in the free plan.',
       manageLink: 'For management:',
     },
-    metaTitle: 'New Business Registration | Feasymenu',
+    metaTitle: 'New Business Registration',
   },
 
   // ── Blog ────────────────────────────────────────────────
@@ -106,8 +106,26 @@ export default {
         }
       }
     },
-    metaTitle: 'Blog | Feasymenu',
+    metaTitle: 'Blog',
     metaDesc: 'QR restaurant and digital menu guides: qr ordering system, smart qr menu, stock controlled mobile menu.',
+  },
+
+  // ── Restoran Bar Menu Landing ───────────────────────────
+  restoranBarMenuLanding: {
+    titleLine1: 'Restaurant & Bar',
+    titleLine2: 'Menu Management',
+    description: 'Digitize your restaurant and bar menu with feasymenu. Streamline your ordering flow with QR menus, instant price updates, stock control, and dedicated bar/kitchen boards.',
+    featuresTitle: 'What does it bring you?',
+    feat1: 'Separate screens for bar and kitchen; one-click status updates',
+    feat2: 'Detailed menu management by category and product',
+    feat3: 'Automatic hiding of products based on stock status',
+    feat4: 'Measure sales performance with detailed reports',
+    quickStartTitle: 'Getting started is easy',
+    qs1: 'Create your business and get your domain.',
+    qs2: 'Add your menu items and categories.',
+    qs3: 'Place QR codes on tables and start collecting orders.',
+    metaTitle: 'Restaurant & Bar Menu Management',
+    metaDesc: 'Advanced digital menu management for bars and restaurants. Gain operational speed with QR menus, stock control, and bar boards. Modern menu solutions.',
   },
 
   // ── QR Siparis Landing ──────────────────────────────────
@@ -133,7 +151,7 @@ export default {
     sup1: 'Weekdays 10:00–16:00 support',
     sup2: 'Average first response: under 30 minutes',
     sup3: 'Email: support{\'@\'}feasymenu.com',
-    metaTitle: 'About Us — Feasymenu',
+    metaTitle: 'About Us',
     metaDesc: 'Feasymenu: QR-based digital menu, mobile ordering, and business management platform.',
   },
 
@@ -848,9 +866,9 @@ export default {
 
   // ── SEO ─────────────────────────────────────────────────
   seo: {
-    homeTitle: 'QR Menu & Digital Ordering System | feasymenu',
-    homeDescription: 'Smart QR code menu, digital ordering and restaurant management system. Digitalize your restaurant or bar menu with feasymenu\'s contactless ordering software.',
-    ogDescription: 'Quickly access the menu via QR, place orders from your phone; kitchen and bar staff get instant notifications.',
+    homeTitle: 'QR Menu & Restaurant Management System | feasymenu',
+    homeDescription: 'Smart QR code menu and digital ordering system for restaurants and cafes. Digitize your menu and increase efficiency with our QR menu builder.',
+    ogDescription: 'Digitize your restaurant with smart QR menus. Table ordering, kitchen boards, and detailed sales analytics in one platform.',
   },
 
   landing: {
@@ -996,7 +1014,7 @@ export default {
     qs2: 'Add your menu categories and products.',
     qs3: 'Print QR codes for your tables.',
     qs4: 'Start taking orders instantly.',
-    metaTitle: 'QR Menu System & Create QR Code Menu | feasymenu',
+    metaTitle: 'QR Menu System & Create QR Code Menu',
     metaDesc: 'Professional QR menu solution for restaurants and cafes. Create a free QR menu, manage orders digitally and increase efficiency.',
     faq1Q: 'What is a digital QR menu? How does it work?',
     faq1A: 'A digital QR menu is an online menu accessed by scanning a QR code on the table with a phone. With feasymenu, customers select products and place QR orders, following their status in real-time.',
@@ -1021,7 +1039,7 @@ export default {
     term1: '100% compatible design with all devices.',
     term2: 'Ability to add unlimited products and categories.',
     term3: 'Appeal to foreign customers with multi-language support.',
-    metaTitle: 'Digital Menu Builder & Online Restaurant Menu | feasymenu',
+    metaTitle: 'Digital Menu Builder & Online Restaurant Menu',
     metaDesc: 'Stylish digital menu experience for cafes and restaurants. Increase customer satisfaction and reduce costs with our contactless menu system.',
     faq1Q: 'What is a digital menu?',
     faq1A: 'A digital menu is a modern menu system that replaces physical menus and can be accessed via smartphones.',
@@ -1040,7 +1058,7 @@ export default {
     qs1: 'Define your tables from the feasymenu panel.',
     qs2: 'Activate the ordering module.',
     qs3: 'Open the kitchen and bar screens.',
-    metaTitle: 'QR Code Ordering System & Contactless Table Ordering | feasymenu',
+    metaTitle: 'QR Code Ordering System & Contactless Table Ordering',
     metaDesc: 'Increase ordering speed in your restaurant by 40%. Receive contactless orders from the table with the feasymenu QR order system, speed up operation.',
     faq1Q: 'How to set up a QR ordering system?',
     faq1A: 'After registering with feasymenu, you can add your products and create QR codes for your tables. The system is ready to work instantly.',

@@ -29,18 +29,23 @@ useHead({
       type: 'application/ld+json',
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'WebApplication',
+        '@type': 'SoftwareApplication',
         name: 'feasymenu',
+        operatingSystem: 'Any',
         applicationCategory: 'BusinessApplication',
-        operatingSystem: 'Web',
-        url: 'https://feasymenu.com/',
-        description: t('seo.homeDescription'),
         offers: {
-          '@type': 'Offer',
-          priceCurrency: 'TRY',
-          price: '249',
-          category: 'STANDARD',
+          '@type': 'AggregateOffer',
+          offerCount: '3',
+          lowPrice: '0',
+          highPrice: '299',
+          priceCurrency: 'TRY'
         },
+        description: t('seo.homeDescription'),
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.9',
+          ratingCount: '124'
+        }
       }),
     },
   ],

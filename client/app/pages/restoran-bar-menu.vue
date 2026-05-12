@@ -72,6 +72,10 @@ const quickStart = ['restoranBarMenuLanding.qs1', 'restoranBarMenuLanding.qs2', 
 useSeoMeta({
   title: () => t('restoranBarMenuLanding.metaTitle'),
   description: () => t('restoranBarMenuLanding.metaDesc'),
+  ogTitle: () => t('restoranBarMenuLanding.metaTitle'),
+  ogDescription: () => t('restoranBarMenuLanding.metaDesc'),
+  ogImage: 'https://feasymenu.com/og-image.png',
+  twitterCard: 'summary_large_image',
 })
 
 const baseUrl = 'https://feasymenu.com'

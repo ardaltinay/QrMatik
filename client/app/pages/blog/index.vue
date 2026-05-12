@@ -72,6 +72,10 @@ function formatDate(dateStr: string) {
 useSeoMeta({
   title: () => t('blog.metaTitle'),
   description: () => t('blog.metaDesc'),
+  ogTitle: () => t('blog.metaTitle'),
+  ogDescription: () => t('blog.metaDesc'),
+  ogImage: 'https://feasymenu.com/og-image.png',
+  twitterCard: 'summary_large_image',
 })
 
 useHead({

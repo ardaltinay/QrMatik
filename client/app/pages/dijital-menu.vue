@@ -98,6 +98,10 @@ const terms = ['dijitalMenuLanding.term1', 'dijitalMenuLanding.term2', 'dijitalM
 useSeoMeta({
   title: () => t('dijitalMenuLanding.metaTitle'),
   description: () => t('dijitalMenuLanding.metaDesc'),
+  ogTitle: () => t('dijitalMenuLanding.metaTitle'),
+  ogDescription: () => t('dijitalMenuLanding.metaDesc'),
+  ogImage: 'https://feasymenu.com/og-digital-menu.png',
+  twitterCard: 'summary_large_image',
 })
 
 useHead({

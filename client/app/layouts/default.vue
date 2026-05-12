@@ -9,17 +9,8 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const config = useRuntimeConfig()
-const siteUrl = 'https://feasymenu.com'
 
 useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: () => `${siteUrl}${route.path}`
-    }
-  ],
   script: [
     {
       type: 'application/ld+json',
@@ -29,25 +20,16 @@ useHead({
         name: 'feasymenu',
         url: 'https://feasymenu.com',
         logo: 'https://feasymenu.com/favicon.svg',
+        contactPoint: {
+          '@type': 'ContactPoint',
+          email: 'support@feasymenu.com',
+          contactType: 'customer support',
+          availableLanguage: ['Turkish', 'English']
+        },
         sameAs: [
           'https://twitter.com/feasymenu',
           'https://linkedin.com/company/feasymenu'
         ]
-      })
-    },
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        name: 'feasymenu',
-        operatingSystem: 'Any',
-        applicationCategory: 'BusinessApplication',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'TRY'
-        }
       })
     }
   ]

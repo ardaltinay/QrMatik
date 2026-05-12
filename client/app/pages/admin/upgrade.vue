@@ -177,25 +177,30 @@ async function loadPricing() {
       if (name.includes('standart') || name.includes('standard')) {
         nameKey = 'admin.upgrade.plans.STANDARD'
         features = [
-          t('admin.upgrade.digitalMenu'),
-          t('admin.upgrade.user10'),
-          t('admin.upgrade.qrOrdering'),
-          t('admin.upgrade.analytics')
+          t('landing.pricing.features.tables50'),
+          t('landing.pricing.features.products500'),
+          t('landing.pricing.features.kitchenBarBoards'),
+          t('landing.pricing.features.branding'),
+          t('landing.pricing.features.reports'),
+          t('landing.pricing.features.prioritySupport')
         ]
       } else if (name.includes('pro')) {
         nameKey = 'admin.upgrade.plans.PRO'
         features = [
-          t('admin.upgrade.proEverything'),
-          t('admin.upgrade.stock'),
-          t('admin.upgrade.kds'),
-          t('admin.upgrade.loyalty'),
-          t('admin.upgrade.support')
+          t('landing.pricing.features.productsUnlimited'),
+          t('landing.pricing.features.tablesUnlimited'),
+          t('landing.pricing.features.reportsAdvanced'),
+          t('landing.pricing.features.unlimitedUsers'),
+          t('landing.pricing.features.kitchenBarCashierBoards'),
+          t('landing.pricing.features.stockControl'),
+          t('landing.pricing.features.prioritySupport')
         ]
       } else {
         features = [
-          t('admin.upgrade.user1'),
-          t('admin.upgrade.basicQr'),
-          t('admin.upgrade.limitedFeatures')
+          t('landing.pricing.features.tables20'),
+          t('landing.pricing.features.products100'),
+          t('landing.pricing.features.qrMenuBasic'),
+          t('landing.pricing.features.kitchenBarBoards')
         ]
       }
 
