@@ -17,7 +17,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(localePath('/admin'))
   }
 
-  const isProtected = path.startsWith('/admin') || path.startsWith('/super')
+  // Normalize path by removing locale prefix if it exists for simpler checking
+  const pathWithoutLocale = path.replace(/^\/(en|tr)(\/|$)/, '/')
+  const isProtected = pathWithoutLocale.startsWith('/admin') || pathWithoutLocale.startsWith('/super')
   if (!isProtected) return
 
   // Eğer henüz init edilmemişse veya kullanıcı yoksa sunucudan kontrol etmeyi BEKLE

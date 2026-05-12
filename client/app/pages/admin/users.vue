@@ -49,7 +49,7 @@
         </div>
         <div>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.users.stats.admins') || 'Yöneticiler' }}</p>
-          <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ users.filter(u => u.role === 'admin' || u.role === 'manager').length }}</h3>
+          <h3 class="text-4xl font-black text-slate-900 tracking-tighter">1</h3>
         </div>
       </div>
 
@@ -59,8 +59,8 @@
           <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
         </div>
         <div class="relative z-10">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Erişim Kontrolü</p>
-          <h3 class="text-xl font-bold text-white tracking-tight leading-tight">Rol tabanlı yetkilendirme aktiftir.</h3>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.users.stats.accessControl') }}</p>
+          <h3 class="text-xl font-bold text-white tracking-tight leading-tight">{{ $t('admin.users.stats.roleBasedActive') }}</h3>
         </div>
       </div>
     </div>

@@ -3,8 +3,11 @@ import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware((to) => {
   if (process.client) {
+    const localePath = useLocalePath()
+    const pathWithoutLocale = to.path.replace(/^\/(en|tr)(\/|$)/, '/')
+
     // Sadece ana sayfa (/) için çalışsın
-    if (to.path === '/') {
+    if (pathWithoutLocale === '/') {
       const { detectTenant } = useTenant()
       const tenantCode = detectTenant()
       
@@ -14,7 +17,7 @@ export default defineNuxtRouteMiddleware((to) => {
         
         // Tenant'ın ana sayfası admin sayfasıdır. 
         // /admin yönlendirmesi zaten login değilse login formunu, login ise siparişleri (veya yetkiye göre sayfayı) gösterir.
-        return navigateTo('/admin')
+        return navigateTo(localePath('/admin'))
       }
     }
   }

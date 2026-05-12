@@ -486,6 +486,8 @@ export default {
       confirm: 'Confirm',
       delete: 'Delete',
       deleted: 'Deleted.',
+      exampleAmount: 'Ex: 500',
+      upgradePremium: 'Upgrade to Premium',
       status: {
         liveSync: 'LIVE SYNC',
         barLive: 'BAR LIVE',
@@ -524,6 +526,8 @@ export default {
       stats: {
         total: 'Total Staff',
         admins: 'Admins',
+        accessControl: 'Access Control',
+        roleBasedActive: 'Role-based authorization is active.',
       },
       searchPlaceholder: 'Search name or email...',
       emptyState: 'No users found.',
@@ -661,6 +665,15 @@ export default {
       searchPlaceholder: 'Search table name or code...',
       emptyState: 'No tables found.',
       addTable: 'New Table',
+      stats: {
+        total: 'Total Tables',
+        subtitle: 'Manage your tables in real-time.',
+      },
+      status: {
+        label: 'Current Status',
+      },
+      personCount: 'Pax',
+      helperText: 'Create tables and download QR codes instantly.',
       columns: {
         code: 'Table Code',
         capacity: 'Capacity',
@@ -675,12 +688,14 @@ export default {
         editTitle: 'Edit Table',
         code: 'Table Code (e.g., A-1, B-2)',
         capacity: 'Capacity (Pax)',
+        totalCapacity: 'Total Capacity',
       },
       deleteConfirm: 'Are you sure you want to delete this table?',
     },
     reports: {
       title: 'Reports',
       subtitle: 'Financial and operational summary',
+      analyticsLabel: 'Analytics',
       premiumTitle: 'Advanced Reports',
       premiumDesc: 'Sales analysis and performance reports are available in STANDARD and PRO plans.',
       dateRange: {
@@ -736,6 +751,7 @@ export default {
       accentColor: 'Accent Color',
       fontFamily: 'Font Family',
       welcomeMessage: 'Welcome Message',
+      address: 'Business Address',
       phone: 'Contact Phone',
       locationTitle: 'Location & Geofencing',
       locationDesc: 'Enter location info to ensure orders can only be placed while near the restaurant.',
@@ -745,6 +761,8 @@ export default {
       thresholdHint: 'If left blank, location check is disabled.',
       useCurrentLocation: 'USE MY CURRENT LOCATION',
       preview: 'Live Preview',
+      previewRestricted: 'Preview Restricted',
+      upgradeNotice: 'Upgrade your plan for live studio preview and theme customizations.',
       saveSuccess: 'Theme settings saved successfully.',
       saveFailure: 'Failed to save theme settings. Please try again.',
       logoHint: 'Recommended size: 200x50px (Transparent PNG)',
@@ -753,6 +771,9 @@ export default {
       previewMain: 'Main Courses',
       previewDrinks: 'Beverages',
       previewCart: 'View Cart (3)',
+      liveStudioPreview: 'LIVE STUDIO PREVIEW',
+      responsive: 'Responsive',
+      brandActive: 'Brand Active',
       fonts: {
         modern: 'Modern',
         classic: 'Classic',

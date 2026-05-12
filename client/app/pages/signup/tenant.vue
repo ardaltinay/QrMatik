@@ -193,7 +193,7 @@
         </div>
 
         <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center">
-          <NuxtLink to="/" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
+          <NuxtLink :to="localePath('/')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
             {{ $t('signup.actions.cancel') }}
           </NuxtLink>
           <button
@@ -255,9 +255,10 @@
 <script setup lang="ts">
 import { Link, Building, User, Mail, Lock } from 'lucide-vue-next'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
+const localePath = useLocalePath()
 
 useSeoMeta({
   title: () => t('signup.metaTitle'),
@@ -347,7 +348,8 @@ const adminSubdomainUrl = computed(() => {
       const parts = hostname.split(".")
       if (parts.length >= 2) baseDomain = parts.slice(-2).join(".")
     }
-    return `${protocol}//${code}.${baseDomain}${port}/admin`
+    const localePrefix = locale.value === 'en' ? '/en' : ''
+    return `${protocol}//${code}.${baseDomain}${port}${localePrefix}/admin`
   } catch {
     return ""
   }

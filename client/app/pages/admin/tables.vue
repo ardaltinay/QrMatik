@@ -39,7 +39,7 @@
            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
         </div>
         <div class="relative z-10">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Masa</p>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.tables.stats.total') }}</p>
           <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ tables.length }}</h3>
         </div>
       </div>
@@ -50,8 +50,8 @@
            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
         </div>
         <div class="relative z-10">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Kapasite</p>
-          <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ tables.reduce((acc, t) => acc + (t.capacity || 4), 0) }} <span class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Kişi</span></h3>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.tables.modal.totalCapacity') }}</p>
+          <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ tables.reduce((acc, t) => acc + (t.capacity || 4), 0) }} <span class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">{{ $t('admin.tables.personCount') }}</span></h3>
         </div>
       </div>
 
@@ -61,8 +61,8 @@
            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 20a10.003 10.003 0 006.203-2.138l.054.09a10.3 10.3 0 011.723 5.523H4.02a10.3 10.3 0 011.723-5.523zM12 11a3.999 3.999 0 01-4-4 4 4 0 018 0 3.999 3.999 0 01-4 4z" /></svg>
         </div>
         <div class="relative z-10">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Anlık Durum</p>
-          <h3 class="text-xl font-bold text-white tracking-tight leading-tight">Masalarınızı anlık olarak yönetin.</h3>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $t('admin.tables.status.label') }}</p>
+          <h3 class="text-xl font-bold text-white tracking-tight leading-tight">{{ $t('admin.tables.stats.subtitle') }}</h3>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
           <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
        </div>
        <h3 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">{{ $t('admin.tables.emptyState') }}</h3>
-       <p class="text-slate-500 font-medium text-sm">Masaları oluşturup QR kodlarını hemen indirebilirsiniz.</p>
+       <p class="text-slate-500 font-medium text-sm">{{ $t('admin.tables.helperText') }}</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">

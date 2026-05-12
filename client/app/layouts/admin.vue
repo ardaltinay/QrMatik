@@ -121,7 +121,7 @@
           <template v-for="item in navItems" :key="item.path">
             <NuxtLink 
               v-if="authStore.hasRole(...item.roles)"
-              :to="item.path"
+              :to="localePath(item.path)"
               class="flex items-center gap-3 py-2.5 rounded-xl font-medium transition-all duration-200 group relative"
               :class="[
                 isActive(item.path) ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
@@ -139,7 +139,7 @@
           <div class="my-6 border-t border-slate-100"></div>
 
           <NuxtLink 
-            to="/admin/upgrade"
+            :to="localePath('/admin/upgrade')"
             class="flex items-center gap-3 py-2.5 rounded-xl font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-600 transition-all group"
             :class="isSidebarCollapsed ? 'px-0 justify-center' : 'px-3'"
             v-show="isAdmin"
@@ -191,7 +191,7 @@
         
         <!-- Mobile Header -->
         <header class="lg:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
-          <button @click="redirectByRole" class="text-left focus:outline-none">
+          <button @click="router.push(localePath('/admin'))" class="text-left focus:outline-none">
             <Logo size="sm" />
           </button>
           <button @click="isMobileMenuOpen = true" class="w-10 h-10 flex items-center justify-center text-slate-600 bg-slate-50 rounded-xl">
@@ -238,7 +238,7 @@
             <NuxtLink 
               v-for="item in navItems" 
               :key="item.path"
-              :to="item.path"
+              :to="localePath(item.path)"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium"
               :class="isActive(item.path) ? 'bg-brand-50 text-brand-600' : 'text-slate-600'"
@@ -277,6 +277,8 @@ const notifStore = useNotificationStore()
 const uiStore = useUiStore()
 const route = useRoute()
 const router = useRouter()
+const { t, locale, setLocale } = useI18n()
+const localePath = useLocalePath()
 
 const isMobileMenuOpen = ref(false)
 const isSidebarCollapsed = ref(false)
@@ -321,46 +323,51 @@ async function handleLogout() {
   orderStore.orders = []
   await authStore.logout()
   isMobileMenuOpen.value = false
-  router.push('/admin')
+  router.push(localePath('/admin'))
 }
 
 function redirectByRole() {
   if (!authStore.user) return
   const role = String(authStore.user.role || '').toLowerCase().trim().replace(/ı/g, 'i')
-  if (role === 'superadmin') {
-    window.location.href = '/super/tenants'
+  
+  // URL'deki dili baz alarak yönlendirme yap
+  const currentPath = route.path
+  const isEn = currentPath.startsWith('/en/') || currentPath === '/en' || currentPath.includes('/en/admin')
+  const targetLocale = isEn ? 'en' : 'tr'
+  
+  const targetPath = (path: string) => {
+    return localePath(path, targetLocale)
   }
-  else if (role === 'admin') router.push('/admin/orders')
-  else if (role === 'kitchen') router.push('/admin/kitchen')
-  else if (role === 'bar') router.push('/admin/bar')
-  else if (role === 'cashier') router.push('/admin/cashier')
-  else if (role === 'saloon') router.push('/admin/saloon')
-  else router.push('/admin/orders')
+
+  if (role === 'superadmin') {
+    const localePrefix = isEn ? '/en' : ''
+    window.location.href = `${localePrefix}/super/tenants`
+  }
+  else if (role === 'admin') router.push(targetPath('/admin/orders'))
+  else if (role === 'kitchen') router.push(targetPath('/admin/kitchen'))
+  else if (role === 'bar') router.push(targetPath('/admin/bar'))
+  else if (role === 'cashier') router.push(targetPath('/admin/cashier'))
+  else if (role === 'saloon') router.push(targetPath('/admin/saloon'))
+  else router.push(targetPath('/admin/orders'))
 }
 
-// Watch route changes to enforce role-based access (Fallback for middleware)
+// URL değiştiğinde dilin senkronize olduğundan emin ol
 watch(() => route.path, (newPath) => {
+  const isEnPath = newPath.startsWith('/en/') || newPath === '/en'
+  const expectedLocale = isEnPath ? 'en' : 'tr'
+  
+  if (locale.value !== expectedLocale) {
+    setLocale(expectedLocale)
+    const i18nCookie = useCookie('fm_i18n', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    i18nCookie.value = expectedLocale
+  }
+
   if (!authStore.user) return
   
-  const role = String(authStore.user.role || '').toLowerCase().trim().replace(/ı/g, 'i')
-
-  // Kitchen user should only see kitchen
-  if ((role === 'kitchen' || role.includes('kitchen')) && !newPath.includes('/admin/kitchen')) {
-    router.replace('/admin/kitchen')
-  }
+  const pathWithoutLocale = newPath.replace(/^\/(en|tr)(\/|$)/, '/')
   
-  // Bar user should only see bar
-  if (role.includes('bar') && !newPath.includes('/admin/bar')) {
-    router.replace('/admin/bar')
-  }
-
-  // Saloon user should only see saloon
-  if (role.includes('saloon') && !newPath.includes('/admin/saloon')) {
-    router.replace('/admin/saloon')
-  }
-
   // Redirect from root /admin to appropriate dashboard
-  if ((newPath === '/admin' || newPath === '/admin/') && authStore.user) {
+  if ((pathWithoutLocale === '/admin' || pathWithoutLocale === '/admin/') && authStore.user) {
     redirectByRole()
   }
 }, { immediate: true })
@@ -395,7 +402,6 @@ onBeforeUnmount(() => {
   if (unsubNotif) unsubNotif()
 })
 
-const { t, locale, setLocale } = useI18n()
 
 function toggleLanguage() {
   const newLocale = locale.value === 'tr' ? 'en' : 'tr'

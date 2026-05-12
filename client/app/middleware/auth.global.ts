@@ -1,12 +1,15 @@
 import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware((to) => {
-  // Sadece /admin/* ve /super/* sayfalarını koruma altına alıyoruz
-  // /admin sayfası (login) hariç tutulmalı
-  const isProtected = (to.path.startsWith('/admin/') && to.path !== '/admin') || to.path.startsWith('/super')
+  const localePath = useLocalePath()
+  
+  // Normalize path by removing locale prefix if it exists for simpler checking
+  const pathWithoutLocale = to.path.replace(/^\/(en|tr)(\/|$)/, '/')
+  
+  const isProtected = (pathWithoutLocale.startsWith('/admin/') && pathWithoutLocale !== '/admin') || pathWithoutLocale.startsWith('/super')
   const authStore = useAuthStore()
 
   if (isProtected && !authStore.user) {
-    return navigateTo('/admin')
+    return navigateTo(localePath('/admin'))
   }
 })

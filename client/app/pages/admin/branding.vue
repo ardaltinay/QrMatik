@@ -146,7 +146,7 @@
 
            <div>
              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">{{ $t('admin.branding.threshold') || 'Sipariş Mesafesi (Metre)' }}</label>
-             <input v-model.number="form.locationThreshold" type="number" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-slate-700 text-sm" placeholder="Örn: 500" />
+             <input v-model.number="form.locationThreshold" type="number" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-slate-700 text-sm" :placeholder="$t('admin.common.exampleAmount')" />
              <p class="text-[10px] text-slate-400 mt-2 font-bold">{{ $t('admin.branding.thresholdHint') || 'Boş bırakılırsa konum kontrolü devre dışı kalır.' }}</p>
            </div>
 
@@ -169,8 +169,8 @@
                 <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                 </div>
-                <h4 class="text-xl font-black text-slate-900 mb-3 tracking-tight">Önizleme Kısıtlı</h4>
-                <p class="text-sm text-slate-500 font-bold mb-8 leading-relaxed">Canlı stüdyo önizlemesi ve tema özelleştirmeleri için planınızı yükseltin.</p>
+                <h4 class="text-xl font-black text-slate-900 mb-3 tracking-tight">{{ $t('admin.branding.previewRestricted') }}</h4>
+                <p class="text-sm text-slate-500 font-bold mb-8 leading-relaxed">{{ $t('admin.branding.upgradeNotice') }}</p>
                 <NuxtLink :to="localePath('/admin/upgrade')" class="inline-flex px-8 py-3.5 bg-brand-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-brand-700 shadow-xl shadow-brand-500/20 transition-all">
                    {{ $t('admin.upgrade.button') }}
                 </NuxtLink>
@@ -182,7 +182,7 @@
         <div class="relative z-10 w-full flex flex-col items-center">
            <div class="mb-12 text-center">
               <span class="px-4 py-2 bg-white text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-indigo-50">
-                 LIVE STÜDYO ÖNİZLEME
+                 {{ $t('admin.branding.liveStudioPreview') }}
               </span>
            </div>
            
@@ -199,11 +199,11 @@
            <div class="mt-20 flex gap-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
               <div class="px-6 py-2 bg-white rounded-full border border-slate-100 shadow-sm flex items-center gap-3">
                  <div class="w-2 h-2 rounded-full bg-slate-300"></div>
-                 <span class="text-[9px] font-black text-slate-400 tracking-widest uppercase">Responsive</span>
+                 <span class="text-[9px] font-black text-slate-400 tracking-widest uppercase">{{ $t('admin.branding.responsive') }}</span>
               </div>
               <div class="px-6 py-2 bg-white rounded-full border border-slate-100 shadow-sm flex items-center gap-3">
                  <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                 <span class="text-[9px] font-black text-slate-400 tracking-widest uppercase">Brand Active</span>
+                 <span class="text-[9px] font-black text-slate-400 tracking-widest uppercase">{{ $t('admin.branding.brandActive') }}</span>
               </div>
            </div>
         </div>

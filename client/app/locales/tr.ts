@@ -492,6 +492,8 @@ export default {
       confirm: 'Onayla',
       delete: 'Sil',
       deleted: 'Silindi.',
+      exampleAmount: 'Örn: 500',
+      upgradePremium: 'Premium Üyeliğe Geç',
       status: {
         liveSync: 'CANLI SENKRONİZASYON',
         barLive: 'BAR CANLI',
@@ -531,6 +533,8 @@ export default {
       stats: {
         total: 'Toplam Personel',
         admins: 'Yöneticiler',
+        accessControl: 'Erişim Kontrolü',
+        roleBasedActive: 'Rol tabanlı yetkilendirme aktiftir.',
       },
       searchPlaceholder: 'İsim veya e-posta ara...',
       emptyState: 'Kullanıcı bulunamadı.',
@@ -668,6 +672,15 @@ export default {
       searchPlaceholder: 'Masa adı veya numara ile ara...',
       emptyState: 'Kayıtlı masa bulunamadı.',
       addTable: 'Yeni Masa',
+      stats: {
+        total: 'Toplam Masa',
+        subtitle: 'Masalarınızı anlık olarak yönetin.',
+      },
+      status: {
+        label: 'Anlık Durum',
+      },
+      personCount: 'Kişi',
+      helperText: 'Masaları oluşturup QR kodlarını hemen indirebilirsiniz.',
       columns: {
         code: 'Masa Kodu',
         capacity: 'Kapasite',
@@ -682,6 +695,7 @@ export default {
         editTitle: 'Masa Düzenle',
         code: 'Masa Kodu (örn. A-1, B-2)',
         capacity: 'Kapasite (Kişi)',
+        totalCapacity: 'Toplam Kapasite',
       },
       deleteConfirm: 'Bu masayı silmek istediğinize emin misiniz?',
     },
@@ -754,6 +768,8 @@ export default {
       thresholdHint: 'Boş bırakılırsa konum kontrolü devre dışı kalır.',
       useCurrentLocation: 'ŞUANKİ KONUMUMU KULLAN',
       preview: 'Canlı Önizleme',
+      previewRestricted: 'Önizleme Kısıtlı',
+      upgradeNotice: 'Canlı stüdyo önizlemesi ve tema özelleştirmeleri için planınızı yükseltin.',
       saveSuccess: 'Tema ayarları başarıyla kaydedildi.',
       saveFailure: 'Tema ayarları kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.',
       logoHint: 'Önerilen boyut: 200x50px (Saydam PNG)',
@@ -762,6 +778,9 @@ export default {
       previewMain: 'Ana Yemekler',
       previewDrinks: 'İçecekler',
       previewCart: 'Sepeti Gör (3)',
+      liveStudioPreview: 'CANLI STÜDYO ÖNİZLEME',
+      responsive: 'Duyarlı Tasarım',
+      brandActive: 'Marka Aktif',
       fonts: {
         modern: 'Modern',
         classic: 'Klasik',

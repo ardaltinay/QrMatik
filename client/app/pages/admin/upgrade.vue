@@ -4,7 +4,7 @@
     <div class="text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 text-brand-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border border-brand-100">
          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-         Premium Üyeliğe Geç
+         {{ $t('admin.common.upgradePremium') }}
       </div>
       <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none">{{ $t('admin.upgrade.title') }}</h1>
       <p class="text-slate-500 font-medium text-lg max-w-2xl mx-auto leading-relaxed">{{ $t('admin.upgrade.subtitle') }}</p>
