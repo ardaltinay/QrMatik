@@ -598,7 +598,17 @@ export default {
       proPlanRequiredStock: 'Upgrade to Pro plan for stock tracking',
       standartOrProPlanRequiredFeatured: 'Upgrade to Standard or Pro plan for stories feature',
       isFeaturedDesc: 'Product is displayed at the top in Instagram-style stories section on the restaurant page.',
-      stockEnabledDesc: 'Product quantity decreases automatically as orders are placed and alerts when low.'
+      stockEnabledDesc: 'Product quantity decreases automatically as orders are placed and alerts when low.',
+    },
+    products: {
+      orderNo: 'ORDER NO',
+      timeLabel: 'TIME',
+      tableLabel: 'TABLE',
+      barOrder: 'BAR ORDER',
+      kitchenOrder: 'KITCHEN ORDER',
+      preparingLabel: 'PREPARING',
+      readyLabel: 'READY',
+      newOrderLabel: 'NEW ORDER'
     },
     stock: {
       title: 'Stock Control',
@@ -755,8 +765,9 @@ export default {
     saloon: {
       title: 'Saloon Panel',
       subtitle: 'Ready orders to be served',
-      serveBtn: 'SERVE NOW',
-      serveSuccess: 'Order has been served.',
+      serveBtn: 'SERVE ORDER',
+      serveSuccess: 'Order served successfully.',
+      emptyState: 'No orders waiting for service.',
     },
     cashier: {
       title: 'Cashier & POS',

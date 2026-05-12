@@ -605,7 +605,17 @@ export default {
       proPlanRequiredStock: 'Stok takibi için Pro plana geçin',
       standartOrProPlanRequiredFeatured: 'Hikaye özelliği için Standard veya Pro plana geçin',
       isFeaturedDesc: 'Ürün restoran sayfasında Instagram stili hikaye (stories) bölümünde en üstte gösterilir.',
-      stockEnabledDesc: 'Ürün sipariş edildikçe stoktan otomatik düşer ve azaldığında uyarı verir.'
+      stockEnabledDesc: 'Ürün sipariş edildikçe stoktan otomatik düşer ve azaldığında uyarı verir.',
+    },
+    products: {
+      orderNo: 'SİPARİŞ NO',
+      timeLabel: 'ZAMAN',
+      tableLabel: 'MASA',
+      barOrder: 'BAR SİPARİŞİ',
+      kitchenOrder: 'MUTFAK SİPARİŞİ',
+      preparingLabel: 'HAZIRLANIYOR',
+      readyLabel: 'HAZIR',
+      newOrderLabel: 'YENİ SİPARİŞ'
     },
     stock: {
       title: 'Stok Kontrolü',
@@ -765,6 +775,7 @@ export default {
       subtitle: 'Servis edilecek hazır siparişler',
       serveBtn: 'SERVİS ET',
       serveSuccess: 'Sipariş servis edildi.',
+      emptyState: 'Servis bekleyen sipariş bulunmuyor.',
     },
     cashier: {
       title: 'Kasa & POS',
