@@ -81,7 +81,7 @@
         <div 
           v-for="table in filteredTables" 
           :key="table.id"
-          class="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] p-8 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden"
+          class="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] p-8 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden flex flex-col h-full"
         >
           <!-- Table Pattern -->
           <div class="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity pointer-events-none">
@@ -105,28 +105,25 @@
                </div>
             </div>
 
-            <!-- QR Preview Simulation -->
-            <div class="aspect-square w-full rounded-[2rem] bg-slate-50 border-2 border-dashed border-slate-200 mb-8 flex items-center justify-center group-hover:border-brand-200 group-hover:bg-brand-50/30 transition-all cursor-pointer relative overflow-hidden" @click="downloadQR(table.code)">
-               <svg class="w-20 h-20 text-slate-200 group-hover:text-brand-300 group-hover:scale-110 transition-all duration-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
-               <div class="absolute inset-0 bg-brand-600 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg class="w-10 h-10 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                  <span class="text-[10px] font-black uppercase tracking-widest">{{ $t('admin.tables.downloadQR') }}</span>
+            <!-- QR Redirect Card -->
+            <NuxtLink :to="localePath('/admin/qr')" class="aspect-square w-full rounded-[2rem] bg-slate-50 border-2 border-dashed border-slate-200 mb-8 flex flex-col items-center justify-center group-hover:border-indigo-200 group-hover:bg-indigo-50/30 transition-all cursor-pointer relative overflow-hidden">
+               <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                  <svg class="w-8 h-8 text-slate-300 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
                </div>
-            </div>
+               <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-indigo-600 transition-colors text-center px-4">{{ $t('admin.tables.manageQR') }}</span>
+               
+               <div class="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </NuxtLink>
 
             <!-- Actions Footer -->
             <div class="flex items-center gap-3 pt-6 border-t border-slate-100 mt-auto">
-               <button @click="printQR(table.code)" class="flex-1 py-3.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-black transition-all shadow-lg shadow-slate-900/20 active:scale-95">
-                  {{ $t('admin.tables.printQR') }}
-               </button>
-               <div class="flex items-center gap-2">
-                  <button @click="openModal(table)" class="p-3.5 bg-white text-slate-400 hover:text-brand-600 hover:bg-brand-50 border border-slate-100 hover:border-brand-200 rounded-2xl shadow-sm transition-all" title="Edit">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                  </button>
-                  <button @click="confirmDelete(table)" class="p-3.5 bg-white text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 hover:border-rose-200 rounded-2xl shadow-sm transition-all" title="Delete">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                  </button>
-               </div>
+                <button @click="openModal(table)" class="flex-1 py-3.5 bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all border border-slate-100 active:scale-95 flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  {{ $t('admin.common.edit') }}
+                </button>
+                <button @click="confirmDelete(table)" class="w-12 h-12 bg-white text-slate-300 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 hover:border-rose-200 rounded-2xl flex items-center justify-center transition-all shadow-sm" :title="$t('admin.common.delete')">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
             </div>
           </div>
         </div>
@@ -138,16 +135,13 @@
       <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300" @click="closeModal"></div>
       
       <div class="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-modal-in border border-white/20">
-        <div class="p-10">
-           <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-brand-100 shadow-inner">
-              <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
-           </div>
-           
-           <div class="text-center mb-10">
-             <h3 class="text-2xl font-black text-slate-900 tracking-tight">
-               {{ isEditing ? $t('admin.tables.modal.editTitle') : $t('admin.tables.modal.addTitle') }}
-             </h3>
-             <p class="text-slate-400 font-medium text-sm mt-1 italic">Masa bilgilerini giriniz.</p>
+        <div class="p-8">
+           <div class="text-center mb-8">
+              <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner border border-brand-100">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+              </div>
+              <h2 class="text-2xl font-black text-slate-900 tracking-tight">{{ isEditing ? $t('admin.tables.modal.editTitle') : $t('admin.tables.modal.addTitle') }}</h2>
+              <p class="text-slate-400 font-medium text-sm mt-1 italic">Masa bilgilerini giriniz.</p>
            </div>
            
            <div class="space-y-6 mb-10">
@@ -185,6 +179,7 @@ definePageMeta({ layout: 'admin' })
 const { t } = useI18n()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
+const localePath = useLocalePath()
 
 useHead({ title: () => `${t('admin.tables.title')} | Admin` })
 
@@ -203,14 +198,6 @@ async function loadTables() {
     tables.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Failed to load tables', e)
-    if (tables.value.length === 0) {
-      tables.value = [
-        { id: 1, code: 'A-1', capacity: 4 },
-        { id: 2, code: 'A-2', capacity: 2 },
-        { id: 3, code: 'B-1', capacity: 6 },
-        { id: 4, code: 'T-1', capacity: 4 }
-      ]
-    }
   } finally { loading.value = false }
 }
 
@@ -261,52 +248,6 @@ async function confirmDelete(table: any) {
       } catch (e: any) { uiStore.error('Hata oluştu') }
     }
   })
-}
-
-function getTableUrl(code: string) {
-  if (!import.meta.client) return ''
-  return `${window.location.origin}/menu?table=${encodeURIComponent(code)}`
-}
-
-function downloadQR(code: string) {
-  const url = getTableUrl(code)
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(url)}`
-  const a = document.createElement('a')
-  a.href = qrApiUrl
-  a.download = `QR-${code}.png`
-  a.target = '_blank'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  uiStore.success(`${code} masası QR kodu indiriliyor...`)
-}
-
-function printQR(code: string) {
-  const url = getTableUrl(code)
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(url)}`
-  const printWindow = window.open('', '_blank')
-  if (printWindow) {
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>${code}</title>
-          <style>
-            body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; margin: 0; }
-            img { width: 500px; height: 500px; margin-bottom: 20px; }
-            h1 { font-size: 80px; margin: 0; font-weight: 900; letter-spacing: -2px; }
-            p { font-size: 24px; color: #666; margin-top: 10px; }
-          </style>
-        </head>
-        <body>
-          <img src="${qrApiUrl}" />
-          <h1>${code}</h1>
-          <p>FeasyMenu ile kolayca sipariş verin</p>
-          <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 100); }<\/script>
-        </body>
-      </html>
-    `)
-    printWindow.document.close()
-  }
 }
 
 onMounted(loadTables)

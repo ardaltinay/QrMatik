@@ -662,6 +662,7 @@ export default {
       },
       downloadQR: 'İndir',
       printQR: 'Yazdır',
+      manageQR: 'QR Kodlarını Yönet',
       modal: {
         addTitle: 'Yeni Masa Ekle',
         editTitle: 'Masa Düzenle',

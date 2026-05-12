@@ -655,6 +655,7 @@ export default {
       },
       downloadQR: 'Download',
       printQR: 'Print',
+      manageQR: 'Manage QR Codes',
       modal: {
         addTitle: 'Add New Table',
         editTitle: 'Edit Table',
