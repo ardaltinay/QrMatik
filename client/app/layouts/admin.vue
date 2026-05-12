@@ -1,62 +1,67 @@
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <!-- Initializing State -->
-    <div v-if="authStore.initializing" class="flex min-h-screen items-center justify-center bg-white">
-       <div class="flex flex-col items-center gap-4">
-         <Logo size="lg" animate shadow />
-         <div class="w-32 h-1 bg-slate-100 rounded-full overflow-hidden">
-            <div class="h-full bg-brand-600 animate-progress"></div>
+    <template v-if="authStore.initializing">
+      <div class="flex min-h-screen items-center justify-center bg-white">
+         <div class="flex flex-col items-center gap-4">
+           <Logo size="lg" animate shadow />
+           <div class="w-32 h-1 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-brand-600 animate-progress"></div>
+           </div>
          </div>
-       </div>
-    </div>
+      </div>
+    </template>
 
     <!-- Unauthenticated State (Login Form) -->
-    <div v-else-if="!authStore.user" class="flex min-h-screen flex-col items-center justify-center p-4">
-      <div class="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100">
-        <div class="text-center mb-8">
-          <Logo size="lg" animate shadow />
-          <h2 class="text-2xl font-bold text-slate-900">{{ $t('admin.login.title') }}</h2>
-          <p class="text-sm text-slate-500 mt-2">{{ $t('admin.login.subtitle') }}</p>
-        </div>
+    <template v-else-if="!authStore.user">
+      <div class="flex min-h-screen flex-col items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100">
+          <div class="text-center mb-8">
+            <Logo size="lg" animate shadow />
+            <h2 class="text-2xl font-bold text-slate-900">{{ $t('admin.login.title') }}</h2>
+            <p class="text-sm text-slate-500 mt-2">{{ $t('admin.login.subtitle') }}</p>
+          </div>
 
-        <form @submit.prevent="handleLogin" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ $t('auth.username') }}</label>
-            <input 
-              v-model="loginForm.username" 
-              type="text" 
-              required
-              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
-              :placeholder="$t('auth.usernamePlaceholder')"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ $t('auth.password') }}</label>
-            <input 
-              v-model="loginForm.password" 
-              type="password" 
-              required
-              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
-              placeholder="••••••••"
-            />
-          </div>
-          <button 
-            type="submit" 
-            :disabled="authStore.loading"
-            class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            <svg v-if="authStore.loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span v-else>{{ $t('auth.loginButton') }}</span>
-          </button>
-        </form>
+          <form @submit.prevent="handleLogin" class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ $t('auth.username') }}</label>
+              <input 
+                v-model="loginForm.username" 
+                type="text" 
+                required
+                class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
+                :placeholder="$t('auth.usernamePlaceholder')"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ $t('auth.password') }}</label>
+              <input 
+                v-model="loginForm.password" 
+                type="password" 
+                required
+                class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
+                placeholder="••••••••"
+              />
+            </div>
+            <button 
+              type="submit" 
+              :disabled="authStore.loading"
+              class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <svg v-if="authStore.loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-else>{{ $t('auth.loginButton') }}</span>
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- Authenticated Layout -->
-    <div v-else class="flex h-screen overflow-hidden relative">
+    <ClientOnly v-else>
+      <div class="flex h-screen overflow-hidden relative">
       <!-- Persistent Notification Overlays -->
       <div v-if="notifStore.notifications.length > 0" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3 w-full max-w-xs sm:max-w-sm pointer-events-none">
         <TransitionGroup name="list">
@@ -271,7 +276,8 @@
         </aside>
       </Transition>
 
-    </div>
+      </div>
+    </ClientOnly>
   </div>
 </template>
 

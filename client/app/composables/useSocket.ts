@@ -40,7 +40,7 @@ export function useSocket() {
 
     const token = useCookie('fm_token').value
     const connectHeaders: Record<string, string> = {}
-    
+
     // Add X-Tenant header based on subdomain
     if (import.meta.client) {
       const host = window.location.hostname
@@ -110,7 +110,7 @@ export function useSocket() {
       if (client.value?.connected && !activeSubscriptions.has(topic)) {
         const token = useCookie('fm_token').value
         const headers: Record<string, string> = {}
-        
+
         if (import.meta.client) {
           const host = window.location.hostname
           const parts = host.split('.')
