@@ -70,9 +70,9 @@
               </td>
               <td class="p-4 px-6">
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold"
-                  :class="t.status === 'active' || t.status === undefined ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
-                  <span class="w-1.5 h-1.5 rounded-full" :class="t.status === 'active' || t.status === undefined ? 'bg-emerald-500' : 'bg-rose-500'"></span>
-                  {{ $t(`admin.super.tenants.status.${t.status || 'active'}`) }}
+                  :class="t.active || t.active === undefined ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
+                  <span class="w-1.5 h-1.5 rounded-full" :class="t.active || t.active === undefined ? 'bg-emerald-500' : 'bg-rose-500'"></span>
+                  {{ $t(`admin.super.tenants.status.${(t.active || t.active === undefined) ? 'active' : 'suspended'}`) }}
                 </span>
               </td>
               <td class="p-4 px-6 text-slate-500 text-sm">{{ t.createdAt ? new Date(t.createdAt).toLocaleDateString('tr-TR') : '-' }}</td>

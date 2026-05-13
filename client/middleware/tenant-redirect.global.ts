@@ -7,14 +7,15 @@ export default defineNuxtRouteMiddleware((to) => {
     if (to.path === '/') {
       const { detectTenant } = useTenant()
       const tenantCode = detectTenant()
-      
+      const localePath = useLocalePath()
+
       // Eğer bir tenant subdomain'indeysek
       if (tenantCode) {
         const authStore = useAuthStore()
-        
+
         // Tenant'ın ana sayfası admin sayfasıdır. 
         // /admin yönlendirmesi zaten login değilse login formunu, login ise siparişleri (veya yetkiye göre sayfayı) gösterir.
-        return navigateTo('/admin')
+        return navigateTo(localePath('/admin'))
       }
     }
   }

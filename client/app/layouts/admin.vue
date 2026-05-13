@@ -381,7 +381,7 @@ function redirectByRole() {
   }
 
   if (role === 'superadmin') {
-    const localePrefix = isEn ? '/en' : ''
+    const localePrefix = isEn ? '/en' : 'tr'
     window.location.href = `${localePrefix}/super/tenants`
   }
   else if (role === 'admin') router.push(targetPath('/admin/orders'))
@@ -412,7 +412,8 @@ watch(() => route.path, (newPath) => {
 }, { immediate: true })
 
 onMounted(async () => {
-  if (authStore.user && (route.path === '/admin' || route.path === '/admin/')) {
+  const pathWithoutLocale = route.path.replace(/^\/(en|tr)(\/|$)/, '/')
+  if (authStore.user && (pathWithoutLocale === '/admin' || pathWithoutLocale === '/admin/')) {
     redirectByRole()
   }
 

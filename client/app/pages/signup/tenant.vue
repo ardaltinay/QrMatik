@@ -348,7 +348,7 @@ const adminSubdomainUrl = computed(() => {
       const parts = hostname.split(".")
       if (parts.length >= 2) baseDomain = parts.slice(-2).join(".")
     }
-    const localePrefix = locale.value === 'en' ? '/en' : ''
+    const localePrefix = locale.value === 'en' ? '/en' : '/tr'
     return `${protocol}//${code}.${baseDomain}${port}${localePrefix}/admin`
   } catch {
     return ""

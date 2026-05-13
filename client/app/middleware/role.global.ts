@@ -74,7 +74,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     // Admin Kontrolü (Sadece kök sayfadaysa orders'a at)
-    if (role.includes('admin') && (path === '/admin' || path === '/admin/' || path === localePath('/admin'))) {
+    if (role.includes('admin') && (pathWithoutLocale === '/admin' || pathWithoutLocale === '/admin/')) {
       return navigateTo(localePath('/admin/orders'), { replace: true })
     }
   }

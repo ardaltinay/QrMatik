@@ -1,9 +1,10 @@
 import { useAuthStore } from '~/stores/auth'
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware((to, from) => {
   if (process.client) {
     const authStore = useAuthStore()
-    
+    const localePath = useLocalePath()
+
     if (!authStore.user) return
 
     // Örnek: authStore.user.plan 'free', 'pro', veya 'enterprise' olabilir.
@@ -15,7 +16,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
     if (plan === 'free' && restrictedForFree.includes(to.path)) {
       // Plan yetersizse Yükseltme (Upgrade) sayfasına yönlendir
-      return navigateTo('/admin/upgrade')
+      return navigateTo(localePath('/admin/upgrade'))
     }
   }
 })

@@ -22,21 +22,21 @@ function redirectByRole() {
   if (!authStore.user) return
 
   const role = String(authStore.user.role || '').toLowerCase().trim().replace(/ı/g, 'i')
-  
+  const localePath = useLocalePath()
   if (role === 'superadmin') {
-    window.location.href = '/super/tenants'
+    router.push(localePath('/super/tenants'))
   } else if (role === 'admin') {
-    router.push('/admin/orders')
+    router.push(localePath('/admin/orders'))
   } else if (role.includes('kitchen')) {
-    router.push('/admin/kitchen')
+    router.push(localePath('/admin/kitchen'))
   } else if (role.includes('bar')) {
-    router.push('/admin/bar')
+    router.push(localePath('/admin/bar'))
   } else if (role.includes('cashier')) {
-    router.push('/admin/cashier')
+    router.push(localePath('/admin/cashier'))
   } else if (role.includes('saloon')) {
-    router.push('/admin/saloon')
+    router.push(localePath('/admin/saloon'))
   } else {
-    router.push('/admin/orders')
+    router.push(localePath('/admin/orders'))
   }
 }
 
