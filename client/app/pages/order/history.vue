@@ -31,7 +31,7 @@
         </div>
         <h2 class="text-2xl font-black text-slate-900 mb-3 uppercase tracking-tight">{{ $t('order.noOrders') || 'Henüz Siparişiniz Yok' }}</h2>
         <p class="text-slate-400 font-medium mb-10 max-w-xs mx-auto">{{ $t('order.noOrdersDesc') || 'Menüye göz atıp ilk siparişinizi verebilirsiniz.' }}</p>
-        <NuxtLink to="/menu" class="inline-flex bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] px-10 py-4 rounded-2xl hover:bg-brand-500 transition-all shadow-xl shadow-brand-600/20 active:scale-95">
+        <NuxtLink :to="localePath('/menu')" class="inline-flex bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] px-10 py-4 rounded-2xl hover:bg-brand-500 transition-all shadow-xl shadow-brand-600/20 active:scale-95">
           {{ $t('common.menu') }}
         </NuxtLink>
       </div>
@@ -87,6 +87,7 @@ const router = useRouter()
 const orderStore = useOrderStore()
 const { formatMoney, formatDateTz, orderCodeFromId, statusLabel } = useFormat()
 const { connect, subscribe, disconnect } = useSocket()
+const localePath = useLocalePath()
 
 const orders = ref<any[]>([])
 const loading = ref(true)

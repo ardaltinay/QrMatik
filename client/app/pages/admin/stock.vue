@@ -72,7 +72,7 @@
           </div>
           <h3 class="text-2xl font-black text-slate-900 mb-4 tracking-tighter uppercase">{{ $t('admin.upgrade.plans.PRO') }} {{ $t('admin.stock.premium.required') }}</h3>
           <p class="text-slate-500 font-medium mb-10 leading-relaxed">{{ $t('admin.stock.premium.subtitle') }}</p>
-          <NuxtLink to="/admin/upgrade" class="inline-flex items-center gap-3 px-10 py-5 bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-700 shadow-xl shadow-brand-500/40 transition-all hover:-translate-y-1">
+          <NuxtLink :to="localePath('/admin/upgrade')" class="inline-flex items-center gap-3 px-10 py-5 bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-700 shadow-xl shadow-brand-500/40 transition-all hover:-translate-y-1">
             {{ $t('admin.upgrade.upgradeBtn') }}
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </NuxtLink>
@@ -220,6 +220,7 @@ const { t } = useI18n()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
 const { isProPlan } = useTenant()
+const localePath = useLocalePath()
 
 const stockItems = ref<any[]>([])
 const loading = ref(true)

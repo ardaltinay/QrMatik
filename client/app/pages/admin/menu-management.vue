@@ -68,7 +68,7 @@
       <div class="group bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col justify-between hover:border-rose-200 transition-all duration-500 overflow-hidden relative">
         <div v-if="!isProPlan" class="absolute inset-0 bg-white/80 backdrop-blur-[4px] z-20 flex flex-col items-center justify-center p-6 text-center">
           <div class="bg-slate-900 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-xl uppercase tracking-widest mb-3 animate-bounce">PRO ONLY</div>
-          <NuxtLink to="/admin/upgrade" class="text-xs font-bold text-slate-600 underline decoration-slate-300 hover:text-brand-600 transition-colors">{{ $t('admin.menu.proPlanRequiredStock') }}</NuxtLink>
+          <NuxtLink :to="localePath('/admin/upgrade')" class="text-xs font-bold text-slate-600 underline decoration-slate-300 hover:text-brand-600 transition-colors">{{ $t('admin.menu.proPlanRequiredStock') }}</NuxtLink>
         </div>
         <div class="absolute -right-8 -top-8 w-32 h-32 bg-rose-50 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out z-0 opacity-50"></div>
         <div class="relative z-10">
@@ -310,7 +310,7 @@
                 <div class="relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm group/feat">
                    <div v-if="!isProPlan" class="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-3xl">
                       <span class="text-[10px] font-black bg-slate-900 text-white px-3 py-1 rounded-full mb-2">PRO</span>
-                      <NuxtLink to="/admin/upgrade" class="text-xs font-bold text-slate-600 underline decoration-slate-200">Kilitli</NuxtLink>
+                      <NuxtLink :to="localePath('/admin/upgrade')" class="text-xs font-bold text-slate-600 underline decoration-slate-200">Kilitli</NuxtLink>
                    </div>
                    <div class="flex items-center justify-between mb-4">
                       <div class="flex items-center gap-3">
@@ -332,7 +332,7 @@
                 <div class="relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm group/feat">
                    <div v-if="!isPaidPlan" class="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-3xl">
                       <span class="text-[10px] font-black bg-amber-500 text-white px-3 py-1 rounded-full mb-2">PAID</span>
-                      <NuxtLink to="/admin/upgrade" class="text-xs font-bold text-slate-600 underline decoration-slate-200">Kilitli</NuxtLink>
+                      <NuxtLink :to="localePath('/admin/upgrade')" class="text-xs font-bold text-slate-600 underline decoration-slate-200">Kilitli</NuxtLink>
                    </div>
                    <div class="flex items-center justify-between">
                       <div class="flex items-center gap-3">
@@ -415,6 +415,7 @@ definePageMeta({
 })
 
 const { t, te } = useI18n()
+const localePath = useLocalePath()
 const { fetchJson } = useApi()
 const orderStore = useOrderStore()
 const uiStore = useUiStore()

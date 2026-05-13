@@ -54,7 +54,7 @@
 
       <!-- CTA -->
       <div class="text-center">
-        <NuxtLink to="/signup/tenant"
+        <NuxtLink :to="localePath('/signup/tenant')"
           class="inline-flex items-center justify-center px-10 py-5 rounded-[1.5rem] bg-amber-600 text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-amber-600/30 hover:bg-amber-500 hover:-translate-y-1 transition-all duration-300 active:scale-95">
           {{ $t('landing.cta.primary') }}
         </NuxtLink>
@@ -65,6 +65,7 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const features = ['qrSiparisLanding.feat1', 'qrSiparisLanding.feat3', 'qrSiparisLanding.feat4']
 const quickStart = ['qrSiparisLanding.qs1', 'qrSiparisLanding.qs2', 'qrSiparisLanding.qs3']

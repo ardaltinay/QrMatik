@@ -252,7 +252,7 @@
         </div>
         <h2 class="text-2xl font-black text-slate-900 mb-3 uppercase tracking-tight">{{ $t('order.notFound.title') }}</h2>
         <p class="text-slate-400 font-medium mb-10 max-w-xs mx-auto">{{ $t('order.notFound.desc') }}</p>
-        <NuxtLink to="/menu" class="inline-flex bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] px-10 py-4 rounded-2xl hover:bg-brand-500 transition-all shadow-xl shadow-brand-600/20 active:scale-95">
+        <NuxtLink :to="localePath('/menu')" class="inline-flex bg-brand-600 text-white font-black text-xs uppercase tracking-[0.2em] px-10 py-4 rounded-2xl hover:bg-brand-500 transition-all shadow-xl shadow-brand-600/20 active:scale-95">
           {{ $t('order.notFound.back') }}
         </NuxtLink>
       </div>
@@ -286,6 +286,7 @@ const { formatMoney, formatDateTz, orderCodeFromId, statusLabel } = useFormat()
 const { fetchJson } = useApi()
 const { connect, subscribe, disconnect } = useSocket()
 const uiStore = useUiStore()
+const localePath = useLocalePath()
 
 const id = String(route.params.id)
 const loadedOrder = ref<any>(null)

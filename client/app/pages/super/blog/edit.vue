@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-5xl mx-auto space-y-8">
     <div class="flex items-center gap-4">
-      <NuxtLink to="/super/blog" class="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors">
+      <NuxtLink :to="localePath('/super/blog')" class="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
       </NuxtLink>
       <div>
@@ -84,7 +84,7 @@
       </div>
 
       <div class="pt-10 border-t border-slate-50 flex justify-end gap-4">
-        <NuxtLink to="/super/blog" class="px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all">
+        <NuxtLink :to="localePath('/super/blog')" class="px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all">
           {{ $t('common.cancel') }}
         </NuxtLink>
         <button 
@@ -109,6 +109,7 @@ const route = useRoute()
 const router = useRouter()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
+const localePath = useLocalePath()
 
 const isEdit = computed(() => !!route.query.id)
 const saving = ref(false)

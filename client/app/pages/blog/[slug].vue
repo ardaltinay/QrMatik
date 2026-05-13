@@ -12,7 +12,7 @@
       </div>
       <h2 class="text-xl font-bold text-slate-900 mb-2 uppercase tracking-tight">{{ $t('errors.serverError') }}</h2>
       <p class="text-slate-500 mb-8 font-medium max-w-xs mx-auto">Sunucuya ulaşılamıyor veya yazı bulunamadı.</p>
-      <NuxtLink to="/blog" class="inline-flex items-center text-sm font-black text-brand-600 uppercase tracking-widest hover:gap-4 transition-all">
+      <NuxtLink :to="localePath('/blog')" class="inline-flex items-center text-sm font-black text-brand-600 uppercase tracking-widest hover:gap-4 transition-all">
         {{ $t('blog.backToBlog') }}
       </NuxtLink>
     </div>
@@ -37,7 +37,7 @@
       </div>
 
       <div class="mt-20 text-center">
-        <NuxtLink to="/blog" class="inline-flex items-center text-sm font-black text-brand-600 uppercase tracking-widest hover:gap-4 transition-all group">
+        <NuxtLink :to="localePath('/blog')" class="inline-flex items-center text-sm font-black text-brand-600 uppercase tracking-widest hover:gap-4 transition-all group">
           <svg class="w-6 h-6 mr-3 group-hover:-translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -48,7 +48,7 @@
 
     <div v-else class="text-center py-20">
       <h2 class="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Post not found</h2>
-      <NuxtLink to="/blog" class="text-brand-600 font-bold uppercase tracking-widest text-xs">Return to Blog</NuxtLink>
+      <NuxtLink :to="localePath('/blog')" class="text-brand-600 font-bold uppercase tracking-widest text-xs">Return to Blog</NuxtLink>
     </div>
   </div>
 </template>
@@ -56,6 +56,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const { locale } = useI18n()
+const localePath = useLocalePath()
 const { fetchJson } = useApi()
 
 const { data: post, pending, error, refresh } = useAsyncData(`blog-${route.params.slug}`, () => 
