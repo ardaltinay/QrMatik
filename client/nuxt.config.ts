@@ -43,7 +43,8 @@ export default defineNuxtConfig({
     defaultLocale: 'tr',
     strategy: 'prefix',
     lazy: true,
-    langDir: '../app/locales',
+    langDir: 'locales', // Using simple path as we are back to root locales
+    // If it still fails, we will try another approach.
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'fm_i18n',
@@ -68,14 +69,19 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Plus Jakarta Sans',
+        name: 'Unbounded',
         provider: 'google',
-        weights: [300, 400, 500, 600, 700, 800],
+        weights: [400, 500, 600, 700, 800, 900],
       },
       {
-        name: 'Instrument Serif',
+        name: 'Hanken Grotesk',
         provider: 'google',
-        weights: [400],
+        weights: [300, 400, 500, 600, 700, 800, 900],
+      },
+      {
+        name: 'Syne',
+        provider: 'google',
+        weights: [400, 500, 600, 700, 800],
       },
     ],
   },

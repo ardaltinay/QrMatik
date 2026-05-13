@@ -333,7 +333,9 @@ function menuItemName(id: number) {
 }
 
 function formatPrice(p: number) {
-  return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(p)
+  return new Intl.NumberFormat(locale.value === 'en' ? 'en-US' : 'tr-TR', { 
+    style: 'currency', currency: locale.value === 'en' ? 'USD' : 'TRY' 
+  }).format(p)
 }
 
 function timeAgo(dateString: string) {

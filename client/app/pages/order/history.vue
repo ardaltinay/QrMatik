@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-10">
         <button 
-          @click="router.push('/menu')" 
+          @click="router.push(localePath('/menu'))" 
           class="flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-all bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm font-bold text-xs uppercase tracking-widest"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -40,7 +40,7 @@
         <div 
           v-for="order in visibleOrders" 
           :key="order.id" 
-          @click="router.push(`/order/${order.id}`)"
+          @click="router.push(localePath(`/order/${order.id}`))"
           class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative overflow-hidden"
         >
           <div class="absolute top-0 left-0 w-1.5 h-full transition-colors" :class="getStatusColor(order.status)"></div>

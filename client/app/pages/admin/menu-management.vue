@@ -414,7 +414,7 @@ definePageMeta({
   layout: 'admin',
 })
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 const localePath = useLocalePath()
 const { fetchJson } = useApi()
 const orderStore = useOrderStore()
@@ -501,7 +501,9 @@ async function loadMenu() {
 }
 
 function formatPrice(p: number) {
-  return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(p)
+  return new Intl.NumberFormat(locale.value === 'en' ? 'en-US' : 'tr-TR', { 
+    style: 'currency', currency: locale.value === 'en' ? 'USD' : 'TRY' 
+  }).format(p)
 }
 
 function openModal(item?: any) {

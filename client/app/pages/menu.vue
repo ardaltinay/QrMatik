@@ -53,7 +53,7 @@
             <!-- Orders Button -->
             <NuxtLink 
               v-if="hasSession"
-              to="/order/history"
+              :to="localePath('/order/history')"
               class="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all duration-300 relative group overflow-hidden hover:bg-white/20 active:scale-90"
               :title="$t('order.myOrders')"
             >
@@ -390,6 +390,7 @@ const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const orderStore = useOrderStore()
+const localePath = useLocalePath()
 const uiStore = useUiStore()
 const { tenantConfig, detectTenant, loadTenantConfig } = useTenant()
 
@@ -480,14 +481,6 @@ async function loadData() {
   const code = detectTenant()
   if (code) {
     await loadTenantConfig(code)
-    
-    // Set i18n locale based on tenant preference if available
-    if (tenantConfig.value?.locale) {
-      const preferredLocale = tenantConfig.value.locale.split('-')[0] // 'tr-TR' -> 'tr'
-      if (['tr', 'en'].includes(preferredLocale)) {
-        locale.value = preferredLocale
-      }
-    }
   }
   if (orderStore.menu.length === 0) await orderStore.loadMenu()
 }
@@ -672,7 +665,7 @@ function formatPrice(p: number) {
 }
 function onOrderSuccess(order: any) {
   hasSession.value = true
-  if (order?.id) router.push(`/order/${order.id}`)
+  if (order?.id) router.push(localePath(`/order/${order.id}`))
 }
 
 const schemaData = computed(() => {

@@ -6,7 +6,7 @@
         <p class="text-slate-500 mt-1 font-medium">{{ $t('admin.super.blog.subtitle') }}</p>
       </div>
       <NuxtLink 
-        to="/super/blog/edit" 
+        :to="localePath('/super/blog/edit')" 
         class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 uppercase tracking-widest text-xs"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
@@ -43,7 +43,7 @@
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <NuxtLink 
-                  :to="`/super/blog/edit?id=${post.id}`" 
+                  :to="localePath(`/super/blog/edit?id=${post.id}`)" 
                   class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
                   title="Edit"
                 >

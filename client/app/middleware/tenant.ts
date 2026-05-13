@@ -3,16 +3,12 @@ export default defineNuxtRouteMiddleware((to) => {
   // Gerçek senaryoda API'ye istek atılıp (ya da store'dan) tenant ID/Slug geçerliliği kontrol edilir.
   
   const tenantId = to.query.t || to.params.id
-
+  const localePath = useLocalePath()
+  
   if (to.path === '/menu' || to.path.startsWith('/order')) {
     // Mock doğrulama: Eğer 'invalid' parametresi geldiyse bulunamadı sayfasına at
     if (tenantId === 'invalid') {
-      return navigateTo('/tenant-not-found')
+      return navigateTo(localePath('/tenant-not-found'))
     }
-
-    // Parametre yoksa da yönlendirilebilir (Şu anda UI testi olduğu için esnek bırakıyoruz)
-    // if (!tenantId) {
-    //   return navigateTo('/tenant-not-found')
-    // }
   }
 })

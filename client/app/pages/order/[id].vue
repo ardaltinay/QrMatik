@@ -5,7 +5,7 @@
       <!-- Top header with back button -->
       <div class="flex items-center justify-between mb-10">
         <button 
-          @click="router.push('/menu')" 
+          @click="router.push(localePath('/menu'))" 
           class="flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-all bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm font-bold text-xs uppercase tracking-widest"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -15,7 +15,7 @@
         </button>
         
         <NuxtLink 
-          to="/order/history" 
+          :to="localePath('/order/history')" 
           class="flex items-center gap-2 text-brand-600 hover:bg-brand-50 transition-all px-5 py-2.5 rounded-2xl border border-brand-100 bg-brand-50/30 font-bold text-xs uppercase tracking-widest"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -456,7 +456,7 @@ async function loadOrderData() {
       // If the customer scanned A2 but is trying to view A1's order, block it.
       if (currentTable && data.tableCode && data.tableCode !== currentTable) {
         console.error('Security Breach: Table mismatch detected!')
-        router.push('/menu')
+        router.push(localePath('/menu'))
         return
       }
 
@@ -465,10 +465,9 @@ async function loadOrderData() {
         items: Array.isArray(data.lines) ? data.lines : [],
       }
     }
-  } catch (e: any) {
-    if (e?.status === 403 || e?.status === 404) {
-      router.push('/menu')
-    }
+  } catch (err: any) {
+    uiStore.error(t('order.notFound.desc'))
+    router.push(localePath('/menu'))
   } finally {
     isLoading.value = false
   }

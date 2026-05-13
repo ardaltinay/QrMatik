@@ -476,6 +476,12 @@ export default {
       redirecting: 'Redirecting...',
       loading: 'Loading...',
       cancel: 'Cancel',
+      menu: 'Menu',
+      contactInfo: 'Contact Information',
+      close: 'Close',
+      email: 'Email',
+      location: 'Location',
+
       save: 'Save',
       edit: 'Edit',
       saving: 'Saving...',

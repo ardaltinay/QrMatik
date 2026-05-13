@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Hanken Grotesk', sans-serif;
+  --font-brand: 'Unbounded', sans-serif;
+  --font-serif: 'Syne', sans-serif;
   
   --color-brand-50: #f4f6f2;
   --color-brand-100: #e9ede5;
@@ -26,6 +28,9 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
   }
+
+  .font-brand { font-family: var(--font-brand); }
+  .font-serif { font-family: var(--font-serif); }
 }
 
 @layer components {

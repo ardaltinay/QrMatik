@@ -144,7 +144,8 @@ async function save() {
       method: 'POST',
       body: JSON.stringify(form.value)
     })
-    router.push('/super/blog')
+    uiStore.success('Blog post updated.')
+    router.push(localePath('/super/blog'))
   } catch (e) {
     const errorMessage = e?.message || e?.toString() || 'Error saving post';
     uiStore.error(errorMessage);
