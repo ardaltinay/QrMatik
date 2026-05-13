@@ -16,7 +16,7 @@
       </p>
 
       <NuxtLink 
-        to="/" 
+        :to="localePath('/')" 
         class="inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-lg "
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -34,6 +34,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 useHead({
   title: () => `${t('admin.actions.tenantNotFound.title')}`

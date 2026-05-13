@@ -20,7 +20,7 @@
         <NuxtLink
           v-for="link in navLinks"
           :key="link.to"
-          :to="link.to"
+          :to="localePath(link.to)"
           class="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"
         >
           {{ link.label }}
@@ -69,7 +69,7 @@
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
-            :to="link.to"
+            :to="localePath(link.to)"
             @click="isMenuOpen = false"
             class="text-2xl font-bold text-slate-900"
           >

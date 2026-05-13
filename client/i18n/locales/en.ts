@@ -32,12 +32,6 @@ export default {
       create: 'Create',
       saveFailed: 'An error occurred while saving.',
       notFound: 'Record not found.',
-      tenantNotFound: {
-        title: 'Restaurant Not Found',
-        subtitle: 'The digital menu you are looking for is unavailable.',
-        desc: 'The restaurant may have left the system or their subscription is paused. Please contact the restaurant staff.',
-        cta: 'Back to Home'
-      }
     },
     success: {
       title: 'Business created.',
@@ -494,6 +488,14 @@ export default {
         liveSync: 'LIVE SYNC',
         barLive: 'BAR LIVE',
         systemActive: 'SYSTEM ACTIVE'
+      }
+    },
+    actions: {
+      tenantNotFound: {
+        title: 'Restaurant Not Found',
+        subtitle: 'The digital menu you are looking for is unavailable.',
+        desc: 'The restaurant may have left the system or their subscription is paused. Please contact the restaurant staff.',
+        cta: 'Back to Home'
       }
     },
     orders: {

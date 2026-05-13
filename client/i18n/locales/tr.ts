@@ -32,12 +32,6 @@ export default {
       create: 'Oluştur',
       saveFailed: 'Kaydedilirken bir hata oluştu.',
       notFound: 'Kayıt bulunamadı.',
-      tenantNotFound: {
-        title: 'Restoran Bulunamadı',
-        subtitle: 'Aradığınız dijital menüye ulaşılamıyor.',
-        desc: 'Restoran sistemden ayrılmış veya üyeliği duraklatılmış olabilir. Lütfen restoran yetkilisiyle iletişime geçin.',
-        cta: 'Ana Sayfaya Dön'
-      }
     },
     success: {
       title: 'İşletme oluşturuldu.',
@@ -499,6 +493,14 @@ export default {
         liveSync: 'CANLI SENKRONİZASYON',
         barLive: 'BAR CANLI',
         systemActive: 'SİSTEM AKTİF'
+      }
+    },
+    actions: {
+      tenantNotFound: {
+        title: 'Restoran Bulunamadı',
+        subtitle: 'Aradığınız dijital menüye ulaşılamıyor.',
+        desc: 'Restoran sistemden ayrılmış veya üyeliği duraklatılmış olabilir. Lütfen restoran yetkilisiyle iletişime geçin.',
+        cta: 'Ana Sayfaya Dön'
       }
     },
     orders: {

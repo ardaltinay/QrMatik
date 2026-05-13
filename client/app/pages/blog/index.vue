@@ -28,7 +28,7 @@
       <div v-else class="grid gap-10">
         <div v-for="post in posts" :key="post.slug" 
           class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-2xl shadow-slate-200/50 hover:-translate-y-1 transition-all duration-500 group">
-          <NuxtLink :to="`/blog/${post.slug}`" class="block">
+          <NuxtLink :to="localePath(`/blog/${post.slug}`)" class="block">
             <h2 class="text-2xl md:text-3xl font-black text-slate-900 mb-4 group-hover:text-brand-600 transition-colors duration-300 tracking-tight">
               {{ locale === 'tr' ? post.titleTr : post.titleEn }}
             </h2>
@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 const { locale, t } = useI18n()
+const localePath = useLocalePath()
 const { fetchJson } = useApi()
 
 const { data: posts, pending, error, refresh } = useAsyncData('blog-posts', () => 
