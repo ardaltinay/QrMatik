@@ -99,8 +99,15 @@
 
         <!-- Store Info & Messages -->
         <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-6 relative overflow-hidden">
-           <!-- Section Restriction Overlay (Store info is free, but welcome message maybe premium? No, let's keep it free for now or restrict only specific fields if needed) -->
-           <!-- For now, we'll keep Store Info accessible to FREE users since it contains address/phone which are useful -->
+           <!-- Section Restriction Overlay -->
+           <div v-if="!isPaidPlan" class="absolute inset-0 z-20 backdrop-blur-[2px] bg-white/40 flex flex-col items-center justify-center p-6 text-center border-2 border-white/50">
+             <svg class="w-8 h-8 text-indigo-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+             <h4 class="text-sm font-black text-slate-900 mb-1 uppercase tracking-widest">{{ $t('admin.branding.premiumTitle') }}</h4>
+             <p class="text-[10px] text-slate-500 font-bold mb-4 leading-tight">{{ $t('admin.branding.premiumDesc') }}</p>
+             <NuxtLink :to="localePath('/admin/upgrade')" class="px-6 py-2 bg-brand-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-500/20 transition-all">
+                {{ $t('admin.upgrade.button') }}
+             </NuxtLink>
+           </div>
            
            <h3 class="text-lg font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -126,7 +133,16 @@
         </div>
 
         <!-- Location & Geofencing -->
-        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-6">
+        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-6 relative overflow-hidden">
+           <!-- Section Restriction Overlay -->
+           <div v-if="!isPaidPlan" class="absolute inset-0 z-20 backdrop-blur-[2px] bg-white/40 flex flex-col items-center justify-center p-6 text-center border-2 border-white/50">
+             <svg class="w-8 h-8 text-indigo-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+             <h4 class="text-sm font-black text-slate-900 mb-1 uppercase tracking-widest">{{ $t('admin.branding.premiumTitle') }}</h4>
+             <p class="text-[10px] text-slate-500 font-bold mb-4 leading-tight">{{ $t('admin.branding.premiumDesc') }}</p>
+             <NuxtLink :to="localePath('/admin/upgrade')" class="px-6 py-2 bg-brand-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-500/20 transition-all">
+                {{ $t('admin.upgrade.button') }}
+             </NuxtLink>
+           </div>
            <h3 class="text-lg font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
               <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
               {{ $t('admin.branding.locationTitle') || 'Konum & Coğrafi Sınır' }}

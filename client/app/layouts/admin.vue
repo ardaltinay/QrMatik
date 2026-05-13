@@ -15,7 +15,7 @@
     <!-- Unauthenticated State (Login Form) -->
     <template v-else-if="!authStore.user">
       <div class="flex min-h-screen flex-col items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100">
+        <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-slate-100">
           <div class="text-center mb-8">
             <Logo size="lg" animate shadow />
             <h2 class="text-2xl font-bold text-slate-900">{{ $t('admin.login.title') }}</h2>
@@ -341,8 +341,17 @@ async function handleLogin() {
   }
 
   try {
+    // Determine current locale from URL before login
+    const isEn = route.path.startsWith('/en/') || route.path === '/en' || route.path.startsWith('/en')
+    const currentLocale = isEn ? 'en' : 'tr'
+    
     await authStore.login(loginForm.value.username, loginForm.value.password)
-    // Role based redirect logic happens in watch or directly here
+    
+    // Ensure i18n is in sync before redirecting
+    if (locale.value !== currentLocale) {
+      await setLocale(currentLocale)
+    }
+    
     redirectByRole()
   } catch (e: any) {
     const errorMessage = e?.message || e?.toString() || t('auth.loginFailed');
@@ -390,8 +399,6 @@ watch(() => route.path, (newPath) => {
   
   if (locale.value !== expectedLocale) {
     setLocale(expectedLocale)
-    const i18nCookie = useCookie('fm_i18n', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-    i18nCookie.value = expectedLocale
   }
 
   if (!authStore.user) return
@@ -435,11 +442,9 @@ onBeforeUnmount(() => {
 })
 
 
-function toggleLanguage() {
+async function toggleLanguage() {
   const newLocale = locale.value === 'tr' ? 'en' : 'tr'
-  setLocale(newLocale)
-  const i18nCookie = useCookie('fm_i18n', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-  i18nCookie.value = newLocale
+  await setLocale(newLocale)
 }
 
 function roleLabel(role: string) {

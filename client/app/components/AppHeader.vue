@@ -1,5 +1,14 @@
 <template>
-  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out" :class="scrolled ? 'bg-white/70 backdrop-blur-2xl border-b border-slate-200/50 py-3' : 'bg-transparent py-8'">
+  <header 
+    class="fixed top-0 left-0 right-0 z-50 transition-all ease-out" 
+    :class="[
+      isMenuOpen ? 'duration-0 bg-white py-4 border-b border-slate-100' : 'duration-300',
+      {
+        'bg-white/70 backdrop-blur-2xl border-b border-slate-200/50 py-3': !isMenuOpen && scrolled,
+        'bg-transparent py-8': !isMenuOpen && !scrolled
+      }
+    ]"
+  >
     <div class="container-custom flex items-center justify-between">
       <!-- Logo -->
       <NuxtLink :to="localePath('/')" class="group relative z-[60]">
@@ -104,12 +113,20 @@ const navLinks = computed(() => [
 ])
 
 onMounted(() => {
+  scrolled.value = window.scrollY > 20
   window.addEventListener('scroll', () => {
     scrolled.value = window.scrollY > 20
   })
 })
 
-const toggleLocale = () => {
-  setLocale(locale.value === 'tr' ? 'en' : 'tr')
+const toggleLocale = async () => {
+  await setLocale(locale.value === 'tr' ? 'en' : 'tr')
 }
+
+// Lock body scroll when menu is open
+watch(isMenuOpen, (val) => {
+  if (process.client) {
+    document.body.style.overflow = val ? 'hidden' : ''
+  }
+})
 </script>

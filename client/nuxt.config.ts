@@ -47,10 +47,11 @@ export default defineNuxtConfig({
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'fm_i18n',
-      alwaysRedirect: false,
+      alwaysRedirect: true,
       fallbackLocale: 'tr',
       redirectOn: 'root',
       cookieDomain: process.env.NODE_ENV === 'production' ? '.feasymenu.com' : undefined,
+      cookieSecure: process.env.NODE_ENV === 'production',
     },
   },
 
