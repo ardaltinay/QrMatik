@@ -1,5 +1,6 @@
 package com.feasymenu.server.service;
 
+import com.feasymenu.server.exception.AccountSuspendedException;
 import com.feasymenu.server.model.RefreshTokenEntity;
 import com.feasymenu.server.model.UserEntity;
 import com.feasymenu.server.repository.RefreshTokenRepository;
@@ -57,7 +58,7 @@ public class AuthService {
         String tenantCode = (u.getTenant() != null ? u.getTenant().getCode() : null);
         String tenantId = (u.getTenant() != null ? u.getTenant().getId().toString() : null);
         if (u.getTenant() != null && !u.getTenant().isActive()) {
-            return Optional.empty(); // Block login for suspended tenants
+            throw new AccountSuspendedException("error.auth.accountSuspended");
         }
         String accessToken = jwtUtil.generateToken(u.getUsername(), u.getRole() != null ? u.getRole().name() : null,
                 tenantCode, tenantId);

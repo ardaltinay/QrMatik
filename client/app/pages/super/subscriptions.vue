@@ -13,23 +13,23 @@
         <div class="text-sm font-semibold text-slate-500 mb-2">{{ $t('admin.super.subscriptions.metrics.mrr') }}</div>
         <div class="text-3xl font-bold text-slate-900">₺{{ stats?.mrr?.toLocaleString('tr-TR') || 0 }}</div>
         <div class="text-xs text-slate-400 font-medium mt-2 flex items-center gap-1">
-          Tahmini aylık gelir
+          {{ $t('admin.super.subscriptions.metrics.mrrDesc') }}
         </div>
       </div>
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div class="text-sm font-semibold text-slate-500 mb-2">{{ $t('admin.super.subscriptions.metrics.active') }}</div>
         <div class="text-3xl font-bold text-slate-900">{{ stats?.activeTenants || 0 }}</div>
-        <div class="text-xs text-slate-400 font-medium mt-2">Aktif işletme</div>
+        <div class="text-xs text-slate-400 font-medium mt-2">{{ $t('admin.super.subscriptions.metrics.activeDesc') }}</div>
       </div>
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div class="text-sm font-semibold text-slate-500 mb-2">{{ $t('admin.super.subscriptions.metrics.trial') }}</div>
         <div class="text-3xl font-bold text-slate-900">{{ stats?.trialCount || 0 }}</div>
-        <div class="text-xs text-slate-400 font-medium mt-2">Deneme süresinde</div>
+        <div class="text-xs text-slate-400 font-medium mt-2">{{ $t('admin.super.subscriptions.metrics.trialDesc') }}</div>
       </div>
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="text-sm font-semibold text-slate-500 mb-2">Toplam İşletme</div>
+        <div class="text-sm font-semibold text-slate-500 mb-2">{{ $t('admin.super.subscriptions.metrics.total') }}</div>
         <div class="text-3xl font-bold text-slate-900">{{ stats?.totalTenants || 0 }}</div>
-        <div class="text-xs text-slate-400 font-medium mt-2">Kayıtlı restoran sayısı</div>
+        <div class="text-xs text-slate-400 font-medium mt-2">{{ $t('admin.super.subscriptions.metrics.totalDesc') }}</div>
       </div>
     </div>
 
@@ -41,8 +41,8 @@
             <tr class="bg-slate-50 border-b border-slate-200 text-sm font-semibold text-slate-600">
               <th class="p-4 px-6">{{ $t('admin.super.subscriptions.table.restaurant') }}</th>
               <th class="p-4 px-6">{{ $t('admin.super.subscriptions.table.plan') }}</th>
-              <th class="p-4 px-6">Durum</th>
-              <th class="p-4 px-6 text-right">Kayıt Tarihi</th>
+              <th class="p-4 px-6">{{ $t('admin.super.subscriptions.table.status') }}</th>
+              <th class="p-4 px-6 text-right">{{ $t('admin.super.subscriptions.table.date') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
@@ -52,7 +52,7 @@
               </td>
             </tr>
             <tr v-else-if="tenants.length === 0">
-              <td colspan="4" class="p-12 text-center text-slate-500">Henüz abonelik bulunmuyor.</td>
+              <td colspan="4" class="p-12 text-center text-slate-500">{{ $t('admin.super.subscriptions.table.empty') }}</td>
             </tr>
             <tr v-for="t in tenants" :key="t.id" v-else class="hover:bg-slate-50 transition-colors">
               <td class="p-4 px-6 font-bold text-slate-800">{{ t.name }}</td>
@@ -70,7 +70,7 @@
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   :class="t.active ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
                   <span class="w-1.5 h-1.5 rounded-full" :class="t.active ? 'bg-emerald-500' : 'bg-rose-500'"></span>
-                  {{ t.active ? 'Aktif' : 'Askıda' }}
+                  {{ t.active ? $t('admin.super.subscriptions.table.active') : $t('admin.super.subscriptions.table.suspended') }}
                 </span>
               </td>
               <td class="p-4 px-6 text-slate-500 text-sm text-right">{{ t.createdAt ? new Date(t.createdAt).toLocaleDateString('tr-TR') : '-' }}</td>

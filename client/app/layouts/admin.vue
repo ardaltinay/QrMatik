@@ -354,9 +354,13 @@ async function handleLogin() {
     
     redirectByRole()
   } catch (e: any) {
-    const errorMessage = e?.message || e?.toString() || t('auth.loginFailed');
-    const translated = t(errorMessage);
-    useUiStore().error(translated.includes('error.') ? errorMessage : translated);
+    if (e?.status === 403 && e?.data?.code === 'account_suspended') {
+      uiStore.error(t('auth.accountSuspended'));
+    } else {
+      const errorMessage = e?.message || e?.toString() || t('auth.loginFailed');
+      const translated = t(errorMessage);
+      uiStore.error(translated.includes('error.') ? errorMessage : translated);
+    }
   }
 }
 
@@ -380,10 +384,7 @@ function redirectByRole() {
     return localePath(path, targetLocale)
   }
 
-  if (role === 'superadmin') {
-    const localePrefix = isEn ? '/en' : 'tr'
-    window.location.href = `${localePrefix}/super/tenants`
-  }
+  if (role === 'superadmin') router.push(targetPath('/super/tenants'))
   else if (role === 'admin') router.push(targetPath('/admin/orders'))
   else if (role === 'kitchen') router.push(targetPath('/admin/kitchen'))
   else if (role === 'bar') router.push(targetPath('/admin/bar'))

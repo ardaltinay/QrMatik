@@ -79,6 +79,15 @@ export function useApi() {
         errorData = JSON.parse(text)
       } catch (e) { }
 
+      // Handle account suspended (403)
+      if (res.status === 403 && errorData?.code === 'account_suspended') {
+        if (!import.meta.server) {
+          // Force redirect to login on client side
+          const localePath = useLocalePath();
+          window.location.href = localePath('/admin');
+        }
+      }
+
       const errorMessage = errorData?.message || text || `Request failed with status ${res.status}`
       const err = new Error(errorMessage)
         ; (err as any).data = errorData

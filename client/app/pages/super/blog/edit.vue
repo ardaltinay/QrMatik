@@ -109,6 +109,7 @@ const route = useRoute()
 const router = useRouter()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
+const { t } = useI18n()
 const localePath = useLocalePath()
 
 const isEdit = computed(() => !!route.query.id)
@@ -144,10 +145,10 @@ async function save() {
       method: 'POST',
       body: JSON.stringify(form.value)
     })
-    uiStore.success('Blog post updated.')
+    uiStore.success(t('admin.super.blog.edit.saveSuccess'))
     router.push(localePath('/super/blog'))
-  } catch (e) {
-    const errorMessage = e?.message || e?.toString() || 'Error saving post';
+  } catch (e: any) {
+    const errorMessage = e?.message || e?.toString() || t('admin.super.blog.edit.saveError');
     uiStore.error(errorMessage);
   } finally {
     saving.value = false

@@ -70,7 +70,7 @@
       <h2 class="text-xl font-bold text-slate-900 mb-2 tracking-tight">{{ $t('admin.super.blog.empty.title') }}</h2>
       <p class="text-slate-500 mb-8 max-w-xs mx-auto">{{ $t('admin.super.blog.empty.description') }}</p>
       <NuxtLink 
-        to="/super/blog/edit" 
+        :to="localePath('/super/blog/edit')" 
         class="inline-flex items-center justify-center gap-2 px-8 py-3 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 uppercase tracking-widest text-xs"
       >
         {{ $t('admin.super.blog.empty.button') }}
@@ -87,6 +87,7 @@ definePageMeta({
 const { t } = useI18n()
 const { fetchJson } = useApi()
 const uiStore = useUiStore()
+const localePath = useLocalePath()
 
 const { data: posts, pending, refresh } = useAsyncData('admin-blog-posts', () => 
   fetchJson('/api/public/blog')

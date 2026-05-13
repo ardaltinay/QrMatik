@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         this.env = env;
     }
 
+    @ExceptionHandler(AccountSuspendedException.class)
+    public ResponseEntity<ApiError> handleAccountSuspended(AccountSuspendedException ex, WebRequest req) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage(), "account_suspended", req, null);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, WebRequest req) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), "not_found", req, null);

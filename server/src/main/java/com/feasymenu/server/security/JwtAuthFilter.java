@@ -1,5 +1,6 @@
 package com.feasymenu.server.security;
 
+import com.feasymenu.server.repository.TenantRepository;
 import com.feasymenu.server.service.TenantContext;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -16,15 +17,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.UUID;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TenantRepository tenantRepository;
     private static final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    public JwtAuthFilter(JwtUtil jwtUtil) {
+    public JwtAuthFilter(JwtUtil jwtUtil, TenantRepository tenantRepository) {
         this.jwtUtil = jwtUtil;
+        this.tenantRepository = tenantRepository;
     }
 
     @Override
@@ -58,7 +62,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     TenantContext.setTenant(tenant.trim());
                     if (tenantId != null) {
                         try {
-                            TenantContext.setTenantId(java.util.UUID.fromString(tenantId));
+                            UUID tid = UUID.fromString(tenantId);
+                            TenantContext.setTenantId(tid);
+
+                            // Force logout check: if not superadmin, check if tenant is active
+                            if (!"SUPERADMIN".equalsIgnoreCase(role)) {
+                                var tenantEntity = tenantRepository.findById(tid);
+                                if (tenantEntity.isEmpty() || !tenantEntity.get().isActive()) {
+                                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "error.auth.accountSuspended");
+                                    return;
+                                }
+                            }
                         } catch (Exception ignored) {
                         }
                     }

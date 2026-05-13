@@ -128,8 +128,6 @@ export default {
     metaDesc: 'Advanced digital menu management for bars and restaurants. Gain operational speed with QR menus, stock control, and bar boards. Modern menu solutions.',
   },
 
-  // ── QR Siparis Landing ──────────────────────────────────
-
   // ── About ───────────────────────────────────────────────
   about: {
     title: 'About Us',
@@ -239,7 +237,7 @@ export default {
       'non-alcoholic': 'Non-Alcoholic',
       alcoholic: 'Alcoholic',
       pizza: 'Pizza',
-      salad: 'Salad',
+      salad: 'Salata',
       soda: 'Soft Drink',
       wine: 'Wine',
     },
@@ -332,6 +330,7 @@ export default {
     sessionExpired: 'Your session has expired. Please log in again.',
     usernameInvalid: 'Please enter a valid username or email.',
     emailInvalid: 'Please enter a valid email address.',
+    accountSuspended: 'Your business has been suspended. Please contact support.',
   },
 
   // ── Errors ──────────────────────────────────────────────
@@ -382,6 +381,9 @@ export default {
 
   // Backend compatibility keys
   error: {
+    auth: {
+      passwordTooShort: 'Password must be at least 8 characters long.',
+    },
     plan: {
       staffUsersProOrStandard: 'Staff users are only available in Standard or Pro plans.',
       staffLimitFree: 'You can create a maximum of 3 users in the FREE plan.',
@@ -445,11 +447,11 @@ export default {
       discount: 'Discount Rate (%)',
       color: 'Color',
       save: 'Save Settings',
+      totalPrizes: 'Total Prizes',
       success: 'Settings saved successfully.',
       error: 'Error saving settings.',
       preview: 'Preview',
       summary: 'Summary',
-      totalPrizes: 'Total Prizes',
       maxDiscount: 'Max Discount',
       unit: 'Units',
       premiumTitle: 'Loyalty Program (PRO)',
@@ -476,12 +478,6 @@ export default {
       redirecting: 'Redirecting...',
       loading: 'Loading...',
       cancel: 'Cancel',
-      menu: 'Menu',
-      contactInfo: 'Contact Information',
-      close: 'Close',
-      email: 'Email',
-      location: 'Location',
-
       save: 'Save',
       edit: 'Edit',
       saving: 'Saving...',
@@ -525,6 +521,7 @@ export default {
       details: 'View Details',
       timeAgo: '{time} ago',
       otherStatus: 'Other',
+      updateError: 'An error occurred while updating the status.',
     },
     users: {
       title: 'User Management',
@@ -873,56 +870,64 @@ export default {
         }
       },
       subscriptions: {
-        title: 'Subscriptions & Revenue',
-        subtitle: 'Track platform financials and plan usage.',
+        title: 'Subscription Management',
+        subtitle: 'Track subscription statuses and revenue summaries for all businesses in the system.',
         metrics: {
           mrr: 'Monthly Recurring Revenue (MRR)',
-          active: 'Active Subscriptions',
-          trial: 'On Trial',
-          churn: 'Churn Rate'
+          active: 'Active Subscribers',
+          trial: 'Trial Period',
+          total: 'Total Businesses',
+          totalDesc: 'Number of registered restaurants',
+          mrrDesc: 'Estimated monthly revenue',
+          activeDesc: 'Active businesses',
+          trialDesc: 'In trial period',
         },
         table: {
           restaurant: 'Restaurant',
-          plan: 'Current Plan',
-          amount: 'Amount',
-          renewal: 'Renewal Date',
-          status: 'Status'
+          plan: 'Plan',
+          status: 'Status',
+          date: 'Registration Date',
+          empty: 'No subscriptions found yet.',
+          active: 'Active',
+          suspended: 'Suspended',
         }
       },
       blog: {
         title: 'Blog Management',
-        subtitle: 'Create and manage blog posts for all languages.',
-        newPost: 'New Post',
+        subtitle: 'Create and edit blog posts across the platform.',
+        newPost: 'ADD NEW POST',
         table: {
-          title: 'Title (TR / EN)',
-          slug: 'Slug / URL',
+          title: 'Title',
+          slug: 'URL (Slug)',
           date: 'Date',
-          actions: 'Actions'
+          actions: 'Actions',
         },
         empty: {
-          title: 'No blog posts yet',
-          description: 'Start by creating your first post to share with your customers.',
-          button: 'Create First Post'
+          title: 'No posts yet',
+          description: 'Get started by creating your first blog post.',
+          button: 'CREATE FIRST POST',
         },
         deleteConfirm: 'Are you sure you want to delete this post?',
         edit: {
           title: 'Edit Post',
           newTitle: 'New Blog Post',
-          subtitle: 'Draft your content in both Turkish and English.',
-          slug: 'Slug (URL)',
-          coverImage: 'Cover Image URL',
-          coverImagePlaceholder: 'Image URL (https://...)',
+          subtitle: 'Update blog content and images.',
+          slug: 'Post URL (Slug)',
+          coverImage: 'Cover Image (URL)',
+          coverImagePlaceholder: 'Paste image link',
           turkishContent: 'Turkish Content',
           englishContent: 'English Content',
           fields: {
             title: 'Title',
-            excerpt: 'Excerpt (Short Description)',
-            content: 'Content (HTML)'
+            excerpt: 'Excerpt',
+            content: 'Content (Markdown)',
           },
           actions: {
-            update: 'Update Post',
-            publish: 'Publish Post'
-          }
+            update: 'UPDATE POST',
+            publish: 'PUBLISH',
+          },
+          saveSuccess: 'Post saved successfully.',
+          saveError: 'An error occurred while saving.',
         }
       }
     }
@@ -1091,6 +1096,7 @@ export default {
     faq2Q: 'Which businesses are QR restaurant solutions suitable for?',
     faq2A: 'It is suitable for restaurants, cafes, and bars. Ordering speeds up with QR menus; kitchen/bar screens organize the preparation and service flow.'
   },
+
   dijitalMenuLanding: {
     titleLine1: 'Modern Digital Menu',
     titleLine2: 'Move Your Business to the Future',
@@ -1116,6 +1122,7 @@ export default {
     faq2Q: 'How does a smart QR menu work?',
     faq2A: 'Customers scan the QR code with their cameras, access the menu without installing an app, and send their orders in seconds.'
   },
+
   qrSiparisLanding: {
     titleLine1: 'Contactless QR Order',
     titleLine2: 'Fast Service, Happy Customers',

@@ -333,6 +333,7 @@ export default {
     sessionExpired: 'Oturumunuz sona erdi. Lütfen tekrar giriş yapın.',
     usernameInvalid: 'Lütfen geçerli bir kullanıcı adı veya e-posta girin.',
     emailInvalid: 'Lütfen geçerli bir e-posta adresi girin.',
+    accountSuspended: 'İşletmeniz askıya alınmıştır. Lütfen destek ile iletişime geçin.',
   },
 
 
@@ -874,53 +875,64 @@ export default {
         }
       },
       subscriptions: {
-        title: 'Abonelikler & Gelirler',
-        subtitle: 'Platformun finansal durumunu ve paket kullanımlarını takip edin.',
+        title: 'Abonelik Yönetimi',
+        subtitle: 'Sistemdeki tüm işletmelerin abonelik durumlarını ve gelir özetini takip edin.',
         metrics: {
-          mrr: 'Aylık Tekrarlayan Gelir (MRR)',
-          active: 'Aktif Abonelik',
-          trial: 'Deneme Sürümü',
-          churn: 'İptal Oranı'
+          mrr: 'Aylık Tahmini Gelir (MRR)',
+          active: 'Aktif Aboneler',
+          trial: 'Deneme Süresi',
+          total: 'Toplam İşletme',
+          totalDesc: 'Kayıtlı restoran sayısı',
+          mrrDesc: 'Tahmini aylık gelir',
+          activeDesc: 'Aktif işletme',
+          trialDesc: 'Deneme süresinde',
         },
         table: {
           restaurant: 'Restoran',
-          status: 'Durum'
+          plan: 'Plan',
+          status: 'Durum',
+          date: 'Kayıt Tarihi',
+          empty: 'Henüz abonelik bulunmuyor.',
+          active: 'Aktif',
+          suspended: 'Askıda',
         }
       },
       blog: {
         title: 'Blog Yönetimi',
-        subtitle: 'Tüm diller için blog yazılarını oluşturun ve yönetin.',
-        newPost: 'Yeni Yazı',
+        subtitle: 'Platform genelindeki blog yazılarını oluşturun ve düzenleyin.',
+        newPost: 'YENİ YAZI EKLE',
         table: {
-          title: 'Başlık (TR / EN)',
-          slug: 'Slug / URL',
+          title: 'Başlık',
+          slug: 'URL (Slug)',
           date: 'Tarih',
           actions: 'İşlemler'
         },
         empty: {
-          title: 'Henüz blog yazısı yok',
-          description: 'Müşterilerinizle paylaşmak için ilk yazınızı oluşturarak başlayın.',
-          button: 'İlk Yazıyı Oluştur'
+          title: 'Henüz yazı yok',
+          description: 'Hemen ilk blog yazınızı oluşturarak başlayın.',
+          button: 'İLK YAZIYI OLUŞTUR'
         },
         deleteConfirm: 'Bu yazıyı silmek istediğinize emin misiniz?',
         edit: {
           title: 'Yazıyı Düzenle',
           newTitle: 'Yeni Blog Yazısı',
-          subtitle: 'İçeriğinizi hem Türkçe hem de İngilizce olarak hazırlayın.',
-          slug: 'Slug (URL)',
-          coverImage: 'Kapak Görseli URL',
-          coverImagePlaceholder: 'Görsel adresi (https://...)',
+          subtitle: 'Blog içeriğini ve görsellerini güncelleyin.',
+          slug: 'Yazı URL\'si (Slug)',
+          coverImage: 'Kapak Görseli (URL)',
+          coverImagePlaceholder: 'Görsel linkini yapıştırın',
           turkishContent: 'Türkçe İçerik',
           englishContent: 'İngilizce İçerik',
           fields: {
             title: 'Başlık',
-            excerpt: 'Özet (Kısa Açıklama)',
-            content: 'İçerik (HTML)'
+            excerpt: 'Özet',
+            content: 'İçerik (Markdown)'
           },
           actions: {
-            update: 'Yazıyı Güncelle',
-            publish: 'Yazıyı Yayınla'
-          }
+            update: 'YAZIYI GÜNCELLE',
+            publish: 'YAYINLA'
+          },
+          saveSuccess: 'Yazı başarıyla kaydedildi.',
+          saveError: 'Kaydedilirken bir hata oluştu.'
         }
       }
     }
