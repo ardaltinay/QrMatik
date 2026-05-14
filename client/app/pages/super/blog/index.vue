@@ -35,7 +35,10 @@
               <div class="text-xs text-slate-400 font-medium mt-0.5">{{ post.titleEn }}</div>
             </td>
             <td class="px-6 py-4">
-              <code class="text-xs bg-slate-100 px-2 py-1 rounded-lg text-slate-600">{{ post.slug }}</code>
+              <div class="flex flex-col gap-1">
+                <code class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md text-slate-600 w-fit">tr: {{ post.slugTr }}</code>
+                <code class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md text-slate-600 w-fit">en: {{ post.slugEn }}</code>
+              </div>
             </td>
             <td class="px-6 py-4 text-sm text-slate-500 font-medium">
               {{ formatDate(post.createdTime) }}

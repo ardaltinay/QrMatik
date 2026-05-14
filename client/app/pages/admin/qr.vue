@@ -202,7 +202,7 @@ const tables = ref<any[]>([])
 const loadingTables = ref(false)
 
 onMounted(async () => {
-  if (import.meta.client) url.value = window.location.origin + '/menu'
+  if (import.meta.client) url.value = window.location.origin + localePath('/menu')
   loadTables()
 })
 
@@ -223,7 +223,8 @@ const qrApiUrl = computed(() => {
 })
 
 function getTableQRUrl(code: string) {
-  const tableUrl = `${window.location.origin}/menu?table=${encodeURIComponent(code)}`
+  const localizedMenuPath = localePath('/menu')
+  const tableUrl = `${window.location.origin}${localizedMenuPath}?table=${encodeURIComponent(code)}`
   const safeColor = color.value.replace('#', '') || '000000'
   return `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(tableUrl)}&color=${safeColor}&bgcolor=ffffff`
 }

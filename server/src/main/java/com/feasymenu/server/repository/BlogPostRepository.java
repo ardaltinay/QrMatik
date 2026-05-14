@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BlogPostRepository extends JpaRepository<BlogPost, UUID> {
-    Optional<BlogPost> findBySlug(String slug);
+    Optional<BlogPost> findBySlugTr(String slugTr);
+    Optional<BlogPost> findBySlugEn(String slugEn);
 
     List<BlogPost> findAllByOrderByCreatedTimeDesc();
 }

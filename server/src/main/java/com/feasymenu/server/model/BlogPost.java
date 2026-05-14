@@ -18,7 +18,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BlogPost extends AbstractEntity {
     @Column(unique = true, nullable = false)
-    private String slug;
+    private String slugTr;
+
+    @Column(unique = true, nullable = false)
+    private String slugEn;
 
     @Column(nullable = false)
     private String titleTr;

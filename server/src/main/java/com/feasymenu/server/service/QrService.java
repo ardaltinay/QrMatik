@@ -40,7 +40,7 @@ public class QrService {
         this.tableRepository = tableRepository;
     }
 
-    public byte[] generateQrPdfForTenant(String tenantCode) throws IOException {
+    public byte[] generateQrPdfForTenant(String tenantCode, String locale) throws IOException {
         List<TableEntity> tables = tableRepository.findAll();
         // filter by tenantCode if provided
         if (tenantCode != null && !tenantCode.isBlank()) {
@@ -53,7 +53,7 @@ public class QrService {
                 PDPage page = new PDPage(PDRectangle.LETTER);
                 doc.addPage(page);
 
-                String url = buildTableUrl(tenantCode, table.getCode());
+                String url = buildTableUrl(tenantCode, table.getCode(), locale);
                 BufferedImage qr = generateQrImage(url, 300, 300);
 
                 PDImageXObject pdImage = LosslessFactory.createFromImage(doc, qr);
@@ -84,7 +84,7 @@ public class QrService {
         }
     }
 
-    private String buildTableUrl(String tenantCode, String tableCode) {
+    private String buildTableUrl(String tenantCode, String tableCode, String locale) {
         // Build subdomain-based URL: https://{tenant}.{domain}/menu?table={code}
         // Dev: baseUrl like http://localhost:5173 => use {tenant}.localhost:5173
         // Prod: baseUrl like https://app.example.com => use {tenant}.example.com (strip
@@ -113,11 +113,13 @@ public class QrService {
             }
 
             String origin = protocol + "://" + effectiveHost + (port > -1 ? ":" + port : "");
-            return origin + "/menu?table=" + tableCode;
+            String path = (locale != null && !locale.isBlank()) ? "/" + locale.toLowerCase() + "/menu" : "/menu";
+            return origin + path + "?table=" + tableCode;
         } catch (Exception e) {
             // fallback to previous behavior
+            String localePath = (locale != null && !locale.isBlank()) ? "/" + locale.toLowerCase() : "";
             String tenantSegment = tenantCode == null || tenantCode.isBlank() ? "" : "/r/" + tenantCode;
-            return baseUrl + tenantSegment + "/menu?table=" + tableCode;
+            return baseUrl + tenantSegment + localePath + "/menu?table=" + tableCode;
         }
     }
 

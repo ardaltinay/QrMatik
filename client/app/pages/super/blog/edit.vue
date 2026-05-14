@@ -16,15 +16,6 @@
       <!-- General Info -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{{ $t('admin.super.blog.edit.slug') }}</label>
-          <input 
-            v-model="form.slug" 
-            type="text" 
-            placeholder="e.g. digital-menu-advantages"
-            class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium"
-          />
-        </div>
-        <div>
           <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{{ $t('admin.super.blog.edit.coverImage') }}</label>
           <input 
             v-model="form.imageUrl" 
@@ -32,6 +23,9 @@
             :placeholder="$t('admin.super.blog.edit.coverImagePlaceholder')"
             class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium"
           />
+        </div>
+        <div>
+          <!-- Placeholder for alignment if needed, or leave empty -->
         </div>
       </div>
 
@@ -46,6 +40,11 @@
           <div>
             <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{{ $t('admin.super.blog.edit.fields.title') }} (TR)</label>
             <input v-model="form.titleTr" type="text" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-bold text-lg" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Slug (TR)</label>
+            <input v-model="form.slugTr" type="text" placeholder="e.g. dijital-menu-avantajlari" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium" />
           </div>
 
           <div>
@@ -69,6 +68,11 @@
           <div>
             <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{{ $t('admin.super.blog.edit.fields.title') }} (EN)</label>
             <input v-model="form.titleEn" type="text" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-bold text-lg" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Slug (EN)</label>
+            <input v-model="form.slugEn" type="text" placeholder="e.g. digital-menu-advantages" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all outline-none font-medium" />
           </div>
 
           <div>
@@ -117,7 +121,8 @@ const saving = ref(false)
 
 const form = ref({
   id: null as string | null,
-  slug: '',
+  slugTr: '',
+  slugEn: '',
   titleTr: '',
   titleEn: '',
   excerptTr: '',

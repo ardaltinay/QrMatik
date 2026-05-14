@@ -34,7 +34,8 @@ public class BlogPostController {
 
     @GetMapping("/public/blog/{slug}")
     public ResponseEntity<BlogPost> getPostBySlug(@PathVariable String slug) {
-        return blogPostRepository.findBySlug(slug).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return blogPostRepository.findBySlugTr(slug).or(() -> blogPostRepository.findBySlugEn(slug))
+                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/public/blog/id/{id}")

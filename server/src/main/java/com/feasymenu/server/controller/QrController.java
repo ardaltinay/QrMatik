@@ -23,7 +23,8 @@ public class QrController {
     }
 
     @GetMapping(value = "/bulk", produces = "application/pdf")
-    public ResponseEntity<byte[]> getBulkQrPdf(@RequestParam(value = "tenant", required = false) String tenant) {
+    public ResponseEntity<byte[]> getBulkQrPdf(@RequestParam(value = "tenant", required = false) String tenant,
+            @RequestParam(value = "locale", required = false) String locale) {
         try {
             String ctxTenant = TenantContext.getTenant();
             if (ctxTenant == null || ctxTenant.isBlank()) {
@@ -33,7 +34,7 @@ public class QrController {
                 // Do not allow generating for another tenant
                 return ResponseEntity.status(403).build();
             }
-            byte[] pdf = qrService.generateQrPdfForTenant(ctxTenant);
+            byte[] pdf = qrService.generateQrPdfForTenant(ctxTenant, locale);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "qr-codes.pdf");
