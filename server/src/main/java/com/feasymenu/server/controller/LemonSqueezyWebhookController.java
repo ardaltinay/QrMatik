@@ -115,6 +115,7 @@ public class LemonSqueezyWebhookController {
 
     @SuppressWarnings("unchecked")
     private void processSubscription(Map<String, Object> payload, Map<String, Object> attributes) {
+        Map<String, Object> data = (Map<String, Object>) payload.get("data");
         Map<String, Object> meta = (Map<String, Object>) payload.get("meta");
         Map<String, Object> custom = null;
 
@@ -189,8 +190,17 @@ public class LemonSqueezyWebhookController {
                 t.setPlan(targetPlan);
                 t.setPlanPaidUntil(newExpiration);
                 t.setBillingPeriod(isYearly ? "YEARLY" : "MONTHLY");
+                
+                // Track payment details for audit trail
+                String paymentId = null;
+                if (data != null && data.containsKey("id")) {
+                    paymentId = String.valueOf(data.get("id"));
+                }
+                t.setLastPaymentId(paymentId);
+                t.setLastPaymentAt(Instant.now());
+
                 tenantRepository.save(t);
-                log.info("Tenant {} upgraded to {} until {}", tenantCode, targetPlan, newExpiration);
+                log.info("Tenant {} upgraded to {} until {}. Payment ID: {}", tenantCode, targetPlan, newExpiration, paymentId);
             }
         }
     }
