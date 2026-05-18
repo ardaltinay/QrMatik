@@ -5,6 +5,7 @@ import com.feasymenu.server.model.PlanType;
 import com.feasymenu.server.model.TenantEntity;
 import com.feasymenu.server.repository.TenantRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.ObjectMapper;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -25,29 +31,53 @@ public class LemonSqueezyWebhookController {
 
     private final TenantRepository tenantRepository;
     private final LemonSqueezyProperties lsProperties;
+    private final ObjectMapper objectMapper;
 
-    public LemonSqueezyWebhookController(TenantRepository tenantRepository, LemonSqueezyProperties lsProperties) {
+    public LemonSqueezyWebhookController(TenantRepository tenantRepository, LemonSqueezyProperties lsProperties,
+            ObjectMapper objectMapper) {
         this.tenantRepository = tenantRepository;
         this.lsProperties = lsProperties;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping
     public ResponseEntity<String> handleWebhook(
-            @RequestHeader(value = "X-Signature", required = false) String signature,
-            @RequestBody Map<String, Object> payload) {
+            @RequestHeader(value = "X-Signature", required = false) String signature, @RequestBody String rawPayload) {
 
-        String eventName = (String) ((Map) payload.get("meta")).get("event_name");
-        Map<String, Object> data = (Map<String, Object>) payload.get("data");
-        Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
+        log.info("Received LemonSqueezy webhook request");
 
-        log.info("Received LemonSqueezy webhook: {}", eventName);
-
-        if ("subscription_created".equals(eventName) || "subscription_updated".equals(eventName)
-                || "order_created".equals(eventName)) {
-            processSubscription(payload, attributes);
+        // Verify Webhook Signature if secret is configured
+        String secret = lsProperties.getWebhookSecret();
+        if (secret != null && !secret.isBlank()) {
+            if (!verifySignature(signature, rawPayload, secret)) {
+                log.warn("Invalid LemonSqueezy signature. Signature: {}", signature);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid signature");
+            }
+        } else {
+            log.warn("LemonSqueezy Webhook Secret is not set! Skipping signature verification.");
         }
 
-        return ResponseEntity.ok("Received");
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = objectMapper.readValue(rawPayload, Map.class);
+            String eventName = (String) ((Map<?, ?>) payload.get("meta")).get("event_name");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> data = (Map<String, Object>) payload.get("data");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
+
+            log.info("Processing LemonSqueezy webhook event: {}", eventName);
+
+            if ("subscription_created".equals(eventName) || "subscription_updated".equals(eventName)
+                    || "order_created".equals(eventName)) {
+                processSubscription(payload, attributes);
+            }
+
+            return ResponseEntity.ok("Received");
+        } catch (Exception e) {
+            log.error("Failed to parse LemonSqueezy webhook payload", e);
+            return ResponseEntity.badRequest().body("Failed to parse payload");
+        }
     }
 
     @GetMapping
@@ -56,6 +86,34 @@ public class LemonSqueezyWebhookController {
         return ResponseEntity.ok("LemonSqueezy Webhook Endpoint is Reachable. Please use POST for actual webhooks.");
     }
 
+    private boolean verifySignature(String signatureHeader, String rawPayload, String secret) {
+        if (signatureHeader == null || signatureHeader.isBlank()) {
+            return false;
+        }
+        try {
+            Mac sha256Hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256Hmac.init(secretKey);
+            byte[] hash = sha256Hmac.doFinal(rawPayload.getBytes(StandardCharsets.UTF_8));
+
+            // Hex encode hash
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
+            String calculatedSignature = hexString.toString();
+            return MessageDigest.isEqual(calculatedSignature.getBytes(StandardCharsets.UTF_8),
+                    signatureHeader.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Error verifying signature", e);
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     private void processSubscription(Map<String, Object> payload, Map<String, Object> attributes) {
         Map<String, Object> meta = (Map<String, Object>) payload.get("meta");
         Map<String, Object> custom = null;
