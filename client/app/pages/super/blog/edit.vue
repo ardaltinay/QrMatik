@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 md:p-12 space-y-10">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-6 sm:p-8 md:p-12 space-y-10">
       <!-- General Info -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
@@ -59,7 +59,7 @@
         </div>
 
         <!-- English Content -->
-        <div class="space-y-6 border-l border-slate-50 pl-0 md:pl-12">
+        <div class="space-y-6 border-l-0 md:border-l border-slate-50 pl-0 md:pl-12">
           <div class="flex items-center gap-3 mb-2">
             <span class="text-xl">🇬🇧</span>
             <h2 class="text-lg font-black text-slate-900 uppercase tracking-tight">{{ $t('admin.super.blog.edit.englishContent') }}</h2>
