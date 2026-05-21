@@ -109,7 +109,8 @@ const navLinks = computed(() => [
   { label: locale.value === 'tr' ? 'QR Menü' : 'QR Menu', to: localePath('/qr-menu') },
   { label: locale.value === 'tr' ? 'Özellikler' : 'Features', to: localePath('/') + '#features' },
   { label: locale.value === 'tr' ? 'Fiyatlandırma' : 'Pricing', to: localePath('/') + '#pricing' },
-  { label: locale.value === 'tr' ? 'SSS' : 'FAQ', to: localePath('/') + '#faq' }
+  { label: locale.value === 'tr' ? 'SSS' : 'FAQ', to: localePath('/') + '#faq' },
+  { label: locale.value === 'tr' ? 'Blog' : 'Blog', to: localePath('/blog') }
 ])
 
 onMounted(() => {
