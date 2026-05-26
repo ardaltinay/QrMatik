@@ -26,11 +26,32 @@ export default defineNuxtConfig({
       changefreq: 'daily',
       priority: 0.7,
       lastmod: new Date().toISOString(),
-    }
+    },
+    urls: async () => [
+      {
+        loc: '/qr-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/dijital-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/restoran-bar-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+    ]
   },
 
   robots: {
     allow: '/',
+    disallow: ['/admin', '/super', '/order'],
     sitemap: 'https://feasymenu.com/sitemap.xml'
   },
 
@@ -41,7 +62,7 @@ export default defineNuxtConfig({
       { code: 'en', iso: 'en-US', name: 'English', file: 'en.ts' },
     ],
     defaultLocale: 'tr',
-    strategy: 'prefix',
+    strategy: 'prefix_except_default',
     lazy: true,
     langDir: 'locales', // Using simple path as we are back to root locales
     // If it still fails, we will try another approach.
@@ -119,10 +140,10 @@ export default defineNuxtConfig({
     '/qr-siparis': { ssr: true },
     '/restoran-bar-menu': { ssr: true },
     '/blog/**': { ssr: true },
-    '/admin/**': { ssr: true },
-    '/super/**': { ssr: true },
+    '/admin/**': { ssr: true, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/super/**': { ssr: true, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/menu': { ssr: true },
-    '/order/**': { ssr: true },
+    '/order/**': { ssr: true, headers: { 'X-Robots-Tag': 'noindex' } },
   },
 
   nitro: {

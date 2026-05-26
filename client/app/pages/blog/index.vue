@@ -83,7 +83,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
+      innerHTML: () => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'ItemList',
         itemListElement: posts.value?.map((post: any, index: number) => ({

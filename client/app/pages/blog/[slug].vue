@@ -84,7 +84,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
+      innerHTML: () => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: post.value ? (locale.value === 'tr' ? post.value.titleTr : post.value.titleEn) : '',

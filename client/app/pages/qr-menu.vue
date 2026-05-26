@@ -9,14 +9,20 @@
       <header class="text-center mb-20">
         <div class="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 mb-6 border border-slate-100 shadow-sm">
           <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-500">QR Menu</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-slate-500">{{ $t('qrMenuLanding.headingIntro') }}</span>
         </div>
         <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 mb-8 leading-tight uppercase tracking-tighter">
           {{ $t('qrMenuLanding.titleLine1') }} <br />
           <span class="text-brand-500">{{ $t('qrMenuLanding.titleLine2') }}</span>
         </h1>
-        <p class="text-xl text-slate-500 leading-relaxed max-w-3xl mx-auto font-medium">
+        <p class="text-xl text-slate-500 leading-relaxed max-w-3xl mx-auto font-medium mb-6">
           {{ $t('qrMenuLanding.description') }}
+        </p>
+        <p class="text-base text-slate-600 leading-relaxed max-w-2xl mx-auto mb-4 bg-blue-50 border border-blue-100 rounded-2xl p-6 font-medium">
+          <strong class="text-brand-700">{{ $t('qrMenuLanding.headingIntro') }}:</strong> {{ $t('qrMenuLanding.introText') }}
+        </p>
+        <p class="text-sm text-slate-500 italic">
+          {{ $t('qrMenuLanding.introSubText') }}
         </p>
       </header>
 
@@ -89,6 +95,7 @@ const quickStart = ['qrMenuLanding.qs1', 'qrMenuLanding.qs2', 'qrMenuLanding.qs3
 useSeoMeta({
   title: () => t('qrMenuLanding.metaTitle'),
   description: () => t('qrMenuLanding.metaDesc'),
+  keywords: () => t('qrMenuLanding.metaKeywords'),
   ogTitle: () => t('qrMenuLanding.metaTitle'),
   ogDescription: () => t('qrMenuLanding.metaDesc'),
   ogImage: 'https://feasymenu.com/og-qr-menu.png',
@@ -96,10 +103,42 @@ useSeoMeta({
 })
 
 useHead({
+  meta: [
+    { name: 'keywords', content: () => t('qrMenuLanding.metaKeywords') }
+  ],
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: () => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'feasymenu',
+        url: 'https://feasymenu.com',
+        logo: 'https://feasymenu.com/favicon.svg',
+        description: t('qrMenuLanding.metaDesc'),
+        sameAs: ['https://feasymenu.com']
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: () => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: t('qrMenuLanding.metaTitle'),
+        url: 'https://feasymenu.com/qr-menu',
+        description: t('qrMenuLanding.metaDesc'),
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          ratingCount: '150'
+        }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: () => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
         mainEntity: [

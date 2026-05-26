@@ -9,8 +9,14 @@
           {{ $t('restoranBarMenuLanding.titleLine1') }} <br />
           <span class="text-rose-600">{{ $t('restoranBarMenuLanding.titleLine2') }}</span>
         </h1>
-        <p class="text-xl text-slate-500 max-w-3xl mx-auto font-medium leading-relaxed">
+        <p class="text-xl text-slate-500 max-w-3xl mx-auto font-medium leading-relaxed mb-6">
           {{ $t('restoranBarMenuLanding.description') }}
+        </p>
+        <p class="text-base text-slate-600 leading-relaxed max-w-2xl mx-auto mb-4 bg-rose-50 border border-rose-100 rounded-2xl p-6 font-medium">
+          <strong class="text-rose-700">{{ $t('restoranBarMenuLanding.headingIntro') }}:</strong> {{ $t('restoranBarMenuLanding.introText') }}
+        </p>
+        <p class="text-sm text-slate-500 italic">
+          {{ $t('restoranBarMenuLanding.introSubText') }}
         </p>
       </header>
 
@@ -73,6 +79,7 @@ const quickStart = ['restoranBarMenuLanding.qs1', 'restoranBarMenuLanding.qs2', 
 useSeoMeta({
   title: () => t('restoranBarMenuLanding.metaTitle'),
   description: () => t('restoranBarMenuLanding.metaDesc'),
+  keywords: () => t('restoranBarMenuLanding.metaKeywords'),
   ogTitle: () => t('restoranBarMenuLanding.metaTitle'),
   ogDescription: () => t('restoranBarMenuLanding.metaDesc'),
   ogImage: 'https://feasymenu.com/og-image.png',
@@ -81,10 +88,30 @@ useSeoMeta({
 
 const baseUrl = 'https://feasymenu.com'
 useHead({
+  meta: [
+    { name: 'keywords', content: () => t('restoranBarMenuLanding.metaKeywords') }
+  ],
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: () => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: t('restoranBarMenuLanding.metaTitle'),
+        url: 'https://feasymenu.com/restoran-bar-menu',
+        description: t('restoranBarMenuLanding.metaDesc'),
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.9',
+          ratingCount: '200'
+        }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: () => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [

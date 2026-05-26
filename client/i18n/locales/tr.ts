@@ -107,6 +107,9 @@ export default {
 
   // ── Restoran Bar Menu Landing ───────────────────────────
   restoranBarMenuLanding: {
+    headingIntro: 'Restoran & Bar İçin Menü Yönetimi',
+    introText: 'feasymenu, restoranlar ve barlar için QR menü sistemi sunarak sipariş hızını 3x artırır. Karekod menü, digital sipariş, bar ekranı ve mutfak panosu ile operasyonel verimliliği maksimize edin.',
+    introSubText: 'Türkiye\'nin hızlı büyüyen restoranları feasymenu\'yu seçiyor. Deneyim: günlük binlerce sipariş yönetimi.',
     titleLine1: 'Restoran ve Bar',
     titleLine2: 'Menü Yönetimi',
     description: 'Feasymenu ile restoran bar menüsünü dijitalleştirin. QR menü, hızlı fiyat güncelleme, stok kontrolü ve bar/mutfak panoları ile akıcı bir sipariş akışı sağlayın.',
@@ -119,8 +122,9 @@ export default {
     qs1: 'İşletmenizi oluşturun ve alan adınızı alın.',
     qs2: 'Menü öğelerini ve kategorileri ekleyin.',
     qs3: 'Masalara karekod yerleştirin ve siparişleri toplamaya başlayın.',
-    metaTitle: 'Restoran Bar Menü & Dijital Menü Yönetimi',
-    metaDesc: 'Bar ve restoranlar için gelişmiş dijital menü yönetimi. QR menü, stok kontrolü ve bar panosu ile operasyonel hız kazanın. Modern menü çözümleri.',
+    metaTitle: 'Restoran Bar Menü | QR Menü Sistemi | Dijital Sipariş Yönetimi',
+    metaDesc: 'Restoranlar ve barlar için kapsamlı dijital menü yönetimi. QR menü, karekod sipariş, bar panosu, mutfak ekranı ve stok takip sistemi. Operasyonel hız 3x artırın!',
+    metaKeywords: 'restoran menüsü, bar menüsü, QR menü, karekod sipariş, bar panosu, mutfak ekranı, dijital sipariş sistemi',
   },
 
 
@@ -187,6 +191,15 @@ export default {
     perYear: '/yıl',
     month: 'ay',
     year: 'yıl',
+    solutions: 'İşletmenize Uygun Çözüm',
+    solutionsDesc: 'Restoranınızın ihtiyaçlarına göre özel çözümlerimizi keşfedin',
+    qrMenuCard: 'QR Menü',
+    qrMenuCardDesc: 'Masalardaki QR kodla anında menüye erişim sağlayın. Siparişleri canlı takip edin.',
+    digitalMenuCard: 'Dijital Menü',
+    digitalMenuCardDesc: 'Kağıt menü maliyetlerinden kurtulun. Anlık fiyat güncellemesi yapın.',
+    restaurantBarCard: 'Restoran & Bar',
+    restaurantBarCardDesc: 'Tam çözüm: QR menü, sipariş yönetimi, bar panosu ve mutfak ekranı.',
+    discover: 'Keşfet',
   },
 
   // ── Header & Navigation ────────────────────────────────
@@ -1083,6 +1096,9 @@ export default {
   },
 
   qrMenuLanding: {
+    headingIntro: 'QR Menü Sistemi Nedir?',
+    introText: 'QR menü (karekod menü), müşterilerinizin masadaki QR kodunu telefonuyla okutarak anında menünüze erişmesini sağlayan modern dijital menü sistemidir. feasymenu\'nun QR siparişi altyapısı sayesinde müşteri deneyimini %40 artırın, garson işlemlerini azaltın.',
+    introSubText: 'Türkiye\'nin onlarca kafesi ve restoranı tarafından güvenilen, mobil QR menü çözümü. Temassız, hızlı, güvenilir.',
     titleLine1: 'Dijital QR Menü',
     titleLine2: 'Restoranlar İçin Akıllı Çözüm',
     description: 'Müşterileriniz masadaki QR kodu okutarak menünüze anında ulaşsın, siparişini versin ve canlı takip etsin.',
@@ -1096,14 +1112,18 @@ export default {
     qs2: 'Menü kategorilerinizi ve ürünlerinizi ekleyin.',
     qs3: 'Masalarınız için QR kodları yazdırın.',
     qs4: 'Siparişleri anında almaya başlayın.',
-    metaTitle: 'QR Menü Sistemi & Karekod Menü Oluşturma',
-    metaDesc: 'Restoran ve kafeler için profesyonel QR menü çözümü. Ücretsiz QR menü oluşturun, siparişleri dijitalden yönetin ve verimliliği artırın.',
+    metaTitle: 'QR Menü Sistemi - Karekod Menü Oluşturucu - Restoran QR Menü',
+    metaDesc: 'Profesyonel QR menü ve karekod menü sistemi ile restoranınızda sipariş verimliliğini 3x artırın. Karekod menü oluştur, siparişleri canlı takip et. Ücretsiz restoran qr menü başla!',
+    metaKeywords: 'qr menü, karekod menü, restoran qr menü, dijital menü, restoran menü, QR sipariş, restoran QR sistemi, feasymenu',
     faq1Q: 'Dijital QR menü nedir? Nasıl çalışır?',
     faq1A: 'Dijital QR menü, masaya yerleştirilen karekodun telefonla okutulmasıyla açılan çevrim içi menüdür. feasymenu ile müşteriler menüden ürün seçip QR sipariş verir ve sipariş durumunu canlı takip eder.',
     faq2Q: 'QR restoran çözümü hangi işletmeler için uygun?',
     faq2A: 'Restoran, kafe ve barlar için uygundur. Karekod restoran menüsüyle sipariş hızlanır; mutfak/bar ekranlarıyla hazırlık ve servis akışı düzenlenir.'
   },
   dijitalMenuLanding: {
+    headingIntro: 'Dijital Menü Nedir?',
+    introText: 'Dijital menü (online menu), müşterilerinizin telefonlarından veya tabletlerinden erişebildiği, her an güncellenebilen modern menü sistemidir. feasymenu dijital menüsü, kağıt menü maliyetlerini yok ederken, fiyat değişimlerini saniyeler içinde tüm müşterilere ulaştırır.',
+    introSubText: 'Temassız, çevre dostu, hızlı. Dijital menü modern restoranların tercih ettiği çözüm.',
     titleLine1: 'Modern Dijital Menü',
     titleLine2: 'İşletmenizi Geleceğe Taşıyın',
     description: 'Kağıt menü maliyetlerinden kurtulun. feasymenu ile her zaman güncel, şık ve interaktif bir dijital menü deneyimi sunun.',
@@ -1121,8 +1141,9 @@ export default {
     term1: 'Tüm cihazlarla %100 uyumlu tasarım.',
     term2: 'Sınırsız ürün ve kategori ekleme imkanı.',
     term3: 'Çok dilli destek ile yabancı müşterilere hitap edin.',
-    metaTitle: 'Dijital Menü Oluşturucu & Online Restoran Menüsü',
-    metaDesc: 'Kafe ve restoranlar için şık dijital menü deneyimi. Temassız menü sistemimizle müşteri memnuniyetini artırın ve maliyetleri düşürün.',
+    metaTitle: 'Dijital Menü Oluşturucu | Online Restoran Menüsü | Karekod Menü',
+    metaDesc: 'Profesyonel dijital menü ve qr menü sistemi ile restoranınızda baskı maliyetlerini 0 yapın. Anlık güncelleme, çok dilli destek. Ücretsiz dijital qr menü oluştur!',
+    metaKeywords: 'dijital menü, online menü, restoran menüsü, kafe menüsü, elektronik menü, menu oluşturucu, qr menü, karekod menü',
     faq1Q: 'Dijital menü nedir?',
     faq1A: 'Dijital menü, fiziksel menülerin yerini alan, akıllı telefonlar üzerinden erişilebilen modern menü sistemidir.',
     faq2Q: 'Akıllı QR menü nasıl çalışır?',

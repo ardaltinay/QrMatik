@@ -106,6 +106,9 @@ export default {
 
   // ── Restoran Bar Menu Landing ───────────────────────────
   restoranBarMenuLanding: {
+    headingIntro: 'Restaurant & Bar Menu Management',
+    introText: 'feasymenu provides QR menu and digital ordering solutions for restaurants and bars, increasing order speed and operational efficiency. Use QR codes, kitchen displays and bar panels to streamline service.',
+    introSubText: 'Trusted by growing restaurants in the region. Handle thousands of daily orders with ease.',
     titleLine1: 'Restaurant & Bar',
     titleLine2: 'Menu Management',
     description: 'Digitize your restaurant and bar menu with feasymenu. Streamline your ordering flow with QR menus, instant price updates, stock control, and dedicated bar/kitchen boards.',
@@ -184,6 +187,15 @@ export default {
     contactInfo: 'Contact Information',
     location: 'Location',
     email: 'Email',
+    solutions: 'Solution for Your Business',
+    solutionsDesc: 'Discover our custom solutions based on your restaurant\'s needs',
+    qrMenuCard: 'QR Menu',
+    qrMenuCardDesc: 'Provide instant menu access with QR codes on tables. Track orders in real-time.',
+    digitalMenuCard: 'Digital Menu',
+    digitalMenuCardDesc: 'Eliminate paper menu costs. Update prices instantly.',
+    restaurantBarCard: 'Restaurant & Bar',
+    restaurantBarCardDesc: 'Complete solution: QR menu, order management, bar panel, and kitchen display.',
+    discover: 'Discover',
   },
 
   // ── Header & Navigation ────────────────────────────────
@@ -1078,6 +1090,9 @@ export default {
   },
 
   qrMenuLanding: {
+    headingIntro: 'What is a QR Menu?',
+    introText: 'A QR menu allows customers to open your menu instantly by scanning a QR code on the table. With feasymenu\'s QR ordering infrastructure you can increase customer experience and reduce waiter workload.',
+    introSubText: 'Used by cafes and restaurants to offer a contactless, fast and reliable menu experience.',
     titleLine1: 'Digital QR Menu',
     titleLine2: 'Smart Solution for Restaurants',
     description: 'Your customers can scan the QR code on the table to access your menu instantly, place an order, and track it live.',
@@ -1091,8 +1106,9 @@ export default {
     qs2: 'Add your menu categories and products.',
     qs3: 'Print QR codes for your tables.',
     qs4: 'Start taking orders instantly.',
-    metaTitle: 'QR Menu System & Create QR Code Menu',
-    metaDesc: 'Professional QR menu solution for restaurants and cafes. Create a free QR menu, manage orders digitally and increase efficiency.',
+    metaTitle: 'Restaurant QR Menu System & Digital Contactless Menu',
+    metaDesc: 'Professional restaurant QR menu and contactless menu solution for cafes. Create a free digital menu, manage QR ordering digitally and increase efficiency.',
+    metaKeywords: 'restaurant qr menu, contactless menu, digital menu, qr ordering, qr code menu, feasymenu',
     faq1Q: 'What is a digital QR menu? How does it work?',
     faq1A: 'A digital QR menu is an online menu accessed by scanning a QR code on the table with a phone. With feasymenu, customers select products and place QR orders, following their status in real-time.',
     faq2Q: 'Which businesses are QR restaurant solutions suitable for?',
@@ -1100,6 +1116,9 @@ export default {
   },
 
   dijitalMenuLanding: {
+    headingIntro: 'What is a Digital Menu?',
+    introText: 'A digital menu is an online menu accessible from phones and tablets that can be updated in real-time. feasymenu\'s digital menu eliminates printing costs and propagates changes instantly to all customers.',
+    introSubText: 'Contactless, eco-friendly and fast — the preferred choice of modern restaurants.',
     titleLine1: 'Modern Digital Menu',
     titleLine2: 'Move Your Business to the Future',
     description: 'Get rid of paper menu costs. Offer a modern, stylish, and interactive digital menu experience with feasymenu.',
@@ -1117,8 +1136,9 @@ export default {
     term1: '100% compatible design with all devices.',
     term2: 'Ability to add unlimited products and categories.',
     term3: 'Appeal to foreign customers with multi-language support.',
-    metaTitle: 'Digital Menu Builder & Online Restaurant Menu',
-    metaDesc: 'Stylish digital menu experience for cafes and restaurants. Increase customer satisfaction and reduce costs with our contactless menu system.',
+    metaTitle: 'Digital Menu Builder & Online Restaurant Menu | QR Ordering',
+    metaDesc: 'Stylish digital menu experience for cafes and restaurants. Increase customer satisfaction and reduce costs with our contactless menu system and qr ordering.',
+    metaKeywords: 'digital menu, digital menu builder, restaurant menu, contactless menu, qr ordering',
     faq1Q: 'What is a digital menu?',
     faq1A: 'A digital menu is a modern menu system that replaces physical menus and can be accessed via smartphones.',
     faq2Q: 'How does a smart QR menu work?',

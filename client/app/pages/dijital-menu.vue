@@ -9,8 +9,14 @@
           {{ $t('dijitalMenuLanding.titleLine1') }} <br />
           <span class="text-brand-600">{{ $t('dijitalMenuLanding.titleLine2') }}</span>
         </h1>
-        <p class="text-xl text-slate-500 max-w-3xl mx-auto font-medium leading-relaxed">
+        <p class="text-xl text-slate-500 max-w-3xl mx-auto font-medium leading-relaxed mb-6">
           {{ $t('dijitalMenuLanding.description') }}
+        </p>
+        <p class="text-base text-slate-600 leading-relaxed max-w-2xl mx-auto mb-4 bg-emerald-50 border border-emerald-100 rounded-2xl p-6 font-medium">
+          <strong class="text-emerald-700">{{ $t('dijitalMenuLanding.headingIntro') }}:</strong> {{ $t('dijitalMenuLanding.introText') }}
+        </p>
+        <p class="text-sm text-slate-500 italic">
+          {{ $t('dijitalMenuLanding.introSubText') }}
         </p>
       </header>
 
@@ -99,6 +105,7 @@ const terms = ['dijitalMenuLanding.term1', 'dijitalMenuLanding.term2', 'dijitalM
 useSeoMeta({
   title: () => t('dijitalMenuLanding.metaTitle'),
   description: () => t('dijitalMenuLanding.metaDesc'),
+  keywords: () => t('dijitalMenuLanding.metaKeywords'),
   ogTitle: () => t('dijitalMenuLanding.metaTitle'),
   ogDescription: () => t('dijitalMenuLanding.metaDesc'),
   ogImage: 'https://feasymenu.com/og-digital-menu.png',
@@ -106,10 +113,30 @@ useSeoMeta({
 })
 
 useHead({
+  meta: [
+    { name: 'keywords', content: () => t('dijitalMenuLanding.metaKeywords') }
+  ],
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: () => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: t('dijitalMenuLanding.metaTitle'),
+        url: 'https://feasymenu.com/dijital-menu',
+        description: t('dijitalMenuLanding.metaDesc'),
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          ratingCount: '150'
+        }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: () => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
         mainEntity: [

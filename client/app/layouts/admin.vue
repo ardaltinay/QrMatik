@@ -287,6 +287,13 @@ import { useOrderStore } from '~/stores/order'
 import { useNotificationStore } from '~/stores/notification'
 import { useSocket } from '~/composables/useSocket'
 
+// Prevent admin panel from being indexed by search engines
+useHead({
+  meta: [
+    { name: 'robots', content: 'noindex, nofollow' }
+  ]
+})
+
 const authStore = useAuthStore()
 const initializing = ref(true)
 
@@ -341,17 +348,7 @@ async function handleLogin() {
   }
 
   try {
-    // Determine current locale from URL before login
-    const isEn = route.path.startsWith('/en/') || route.path === '/en' || route.path.startsWith('/en')
-    const currentLocale = isEn ? 'en' : 'tr'
-    
     await authStore.login(loginForm.value.username, loginForm.value.password)
-    
-    // Ensure i18n is in sync before redirecting
-    if (locale.value !== currentLocale) {
-      await setLocale(currentLocale)
-    }
-    
     redirectByRole()
   } catch (e: any) {
     if (e?.status === 403 && e?.data?.code === 'account_suspended') {
@@ -374,14 +371,8 @@ async function handleLogout() {
 function redirectByRole() {
   if (!authStore.user) return
   const role = String(authStore.user.role || '').toLowerCase().trim().replace(/ı/g, 'i')
-  
-  // URL'deki dili baz alarak yönlendirme yap
-  const currentPath = route.path
-  const isEn = currentPath.startsWith('/en/') || currentPath === '/en' || currentPath.includes('/en/admin')
-  const targetLocale = isEn ? 'en' : 'tr'
-  
   const targetPath = (path: string) => {
-    return localePath(path, targetLocale)
+    return localePath(path)
   }
 
   if (role === 'superadmin') router.push(targetPath('/super/tenants'))
@@ -393,18 +384,11 @@ function redirectByRole() {
   else router.push(targetPath('/admin/orders'))
 }
 
-// URL değiştiğinde dilin senkronize olduğundan emin ol
-watch(() => route.path, (newPath) => {
-  const isEnPath = newPath.startsWith('/en/') || newPath === '/en'
-  const expectedLocale = isEnPath ? 'en' : 'tr'
-  
-  if (locale.value !== expectedLocale) {
-    setLocale(expectedLocale)
-  }
-
+// Nuxt i18n handles language synchronization natively
+watch(() => route.path, () => {
   if (!authStore.user) return
   
-  const pathWithoutLocale = newPath.replace(/^\/(en|tr)(\/|$)/, '/')
+  const pathWithoutLocale = route.path.replace(/^\/(en|tr)(\/|$)/, '/')
   
   // Redirect from root /admin to appropriate dashboard
   if ((pathWithoutLocale === '/admin' || pathWithoutLocale === '/admin/') && authStore.user) {
