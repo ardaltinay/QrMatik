@@ -46,6 +46,36 @@ export default defineNuxtConfig({
         priority: 0.9,
         lastmod: new Date().toISOString(),
       },
+      {
+        loc: '/qr-siparis',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/en/qr-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/en/dijital-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/en/restoran-bar-menu',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
+      {
+        loc: '/en/qr-siparis',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString(),
+      },
     ]
   },
 

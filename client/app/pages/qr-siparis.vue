@@ -73,6 +73,7 @@ const quickStart = ['qrSiparisLanding.qs1', 'qrSiparisLanding.qs2', 'qrSiparisLa
 useSeoMeta({
   title: () => t('qrSiparisLanding.metaTitle'),
   description: () => t('qrSiparisLanding.metaDesc'),
+  keywords: () => t('qrSiparisLanding.metaKeywords'),
   ogTitle: () => t('qrSiparisLanding.metaTitle'),
   ogDescription: () => t('qrSiparisLanding.metaDesc'),
   ogImage: 'https://feasymenu.com/og-ordering.png',
