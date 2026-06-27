@@ -1,11 +1,15 @@
 <template>
-  <section id="pricing" class="py-24 relative overflow-hidden bg-[#FAF9F6]">
+  <section id="pricing" class="py-24 relative overflow-hidden bg-[#f3f5f0]">
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute left-[-12%] top-12 h-72 w-72 rounded-full bg-brand-300/25 blur-3xl"></div>
+      <div class="absolute right-[-8%] bottom-0 h-80 w-80 rounded-full bg-slate-900/10 blur-3xl"></div>
+    </div>
     <div class="container-custom">
       <div class="text-center mb-24">
-        <h2 class="text-4xl sm:text-5xl font-bold text-slate-900 mb-6">
+        <h2 class="text-4xl sm:text-5xl font-black text-slate-900 mb-6 tracking-tight">
           {{ $t('landing.pricing.title') }}
         </h2>
-        <p class="text-lg text-slate-400 max-w-xl mx-auto font-medium mb-12">
+        <p class="text-lg text-slate-600 max-w-xl mx-auto font-medium mb-12">
           {{ $t('landing.pricing.description') }}
         </p>
 
@@ -14,7 +18,7 @@
           <span class="text-sm font-bold transition-colors" :class="billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-400'">{{ $t('landing.pricing.monthly') }}</span>
           <button 
             @click="billingCycle = billingCycle === 'monthly' ? 'yearly' : 'monthly'"
-            class="relative w-16 h-8 rounded-full bg-slate-200 transition-colors p-1"
+            class="relative w-16 h-8 rounded-full bg-slate-200/90 border border-slate-300/60 transition-colors p-1 shadow-inner"
           >
             <div 
               class="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-400 transition-transform duration-300 shadow-sm"
@@ -27,14 +31,19 @@
 
       <div class="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto items-stretch">
         <div v-for="plan in plans" :key="plan.nameKey"
-          class="bg-white rounded-[2.5rem] md:rounded-[3rem] p-6 sm:p-8 md:p-10 border border-slate-100 shadow-sm flex flex-col transition-all duration-500 hover:shadow-2xl hover:shadow-brand-400/10"
-          :class="{'ring-2 ring-brand-400 ring-offset-4': plan.popular}"
+          class="panel-glass rounded-[2.5rem] md:rounded-[3rem] p-6 sm:p-8 md:p-10 border flex flex-col transition-all duration-500 hover:shadow-2xl"
+          :class="plan.popular
+            ? 'md:-translate-y-3 md:scale-[1.02] border-brand-300/80 ring-2 ring-brand-400/90 ring-offset-4 shadow-2xl shadow-brand-400/20 bg-white'
+            : 'border-slate-100/80 hover:shadow-brand-400/10'"
         >
           <div class="mb-6 md:mb-8 relative">
-            <div v-if="plan.popular" class="absolute -top-10 -right-2 sm:-right-4 bg-brand-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-brand-500/30 animate-pulse">
-              {{ $i18n.locale === 'tr' ? 'En Popüler' : 'Most Popular' }}
+            <div v-if="plan.popular" class="absolute -top-10 -right-2 sm:-right-4 bg-brand-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-brand-500/30">
+              {{ $t('landing.pricing.mostPopular') }}
             </div>
             <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-1">{{ plan.isDynamic ? plan.nameKey : $t(plan.nameKey) }}</h3>
+            <p v-if="plan.popular" class="text-xs font-bold uppercase tracking-[0.16em] text-brand-700 mb-3">
+              {{ $t('landing.pricing.bestValue') }}
+            </p>
             <div class="flex items-baseline gap-1 mb-3 md:mb-4">
               <span class="text-3xl md:text-4xl font-bold text-slate-900">
                 {{ billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly }}

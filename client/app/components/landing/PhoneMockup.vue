@@ -22,7 +22,7 @@
               </div>
               <div class="flex flex-col">
                 <span class="text-[6px] uppercase tracking-widest font-black opacity-70 mb-0.5">{{ $t('common.menu') }}</span>
-                <span class="text-xs font-black tracking-tight leading-none truncate max-w-[80px]">{{ tenantName || 'The Bistro' }}</span>
+                <span class="text-xs font-black tracking-tight leading-none truncate max-w-[80px]">{{ tenantName || $t('landing.quick.mockup.defaultTenantName') }}</span>
               </div>
             </div>
             <!-- Action Pill -->
@@ -50,9 +50,9 @@
 
         <!-- Mock Categories -->
         <div class="px-2 pb-2 flex gap-1.5 overflow-hidden">
-          <div class="px-3 py-1.5 text-white text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm" :style="{ backgroundColor: primaryColor }">{{ locale === 'en' ? 'Popular' : 'Popüler' }}</div>
-          <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Burgers' : 'Burgerler' }}</div>
-          <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ locale === 'en' ? 'Drinks' : 'İçecekler' }}</div>
+          <div class="px-3 py-1.5 text-white text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm" :style="{ backgroundColor: primaryColor }">{{ $t('landing.quick.mockup.popular') }}</div>
+          <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ $t('landing.quick.mockup.burgers') }}</div>
+          <div class="px-3 py-1.5 bg-white text-slate-400 border border-slate-100 text-[8px] font-black uppercase tracking-widest rounded-xl shadow-sm">{{ $t('landing.quick.mockup.drinks') }}</div>
         </div>
 
         <!-- Mock Menu Items -->
@@ -64,10 +64,10 @@
               {{ item.icon }}
             </div>
             <div class="flex flex-col justify-center flex-1 min-w-0 pr-1">
-              <h4 class="text-[11px] font-bold text-slate-900 truncate">{{ item.name }}</h4>
-              <p class="text-[8px] text-slate-400 line-clamp-1 mb-1 font-medium">{{ item.desc }}</p>
+              <h4 class="text-[11px] font-bold text-slate-900 truncate">{{ $t(item.nameKey) }}</h4>
+              <p class="text-[8px] text-slate-400 line-clamp-1 mb-1 font-medium">{{ $t(item.descKey) }}</p>
               <div class="flex items-center justify-between mt-auto">
-                <span class="text-[10px] font-black text-slate-900">{{ item.price }}</span>
+                <span class="text-[10px] font-black text-slate-900">{{ $t(item.priceKey) }}</span>
                 <div class="w-5 h-5 rounded-[6px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 shadow-sm">
                   <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
                 </div>
@@ -87,7 +87,7 @@
           <svg class="w-4 h-4" :style="{ color: primaryColor }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span class="text-[5px] font-black uppercase" :style="{ color: primaryColor }">{{ locale === 'en' ? 'CALL' : 'GARSON' }}</span>
+          <span class="text-[5px] font-black uppercase" :style="{ color: primaryColor }">{{ $t('landing.quick.mockup.call') }}</span>
         </div>
       </div>
     </div>
@@ -100,7 +100,7 @@
         </div>
         <div>
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ $t('landing.quick.mockup.newOrder') }}</p>
-          <p class="text-xs font-black text-slate-900">{{ $t('landing.quick.mockup.table') }} 12 - ₺240.00</p>
+          <p class="text-xs font-black text-slate-900">{{ $t('landing.quick.mockup.orderLine') }}</p>
         </div>
       </div>
     </div>
@@ -118,8 +118,6 @@
 </template>
 
 <script setup lang="ts">
-const { locale } = useI18n()
-
 interface Props {
   primaryColor?: string
   accentColor?: string
@@ -132,33 +130,30 @@ const props = withDefaults(defineProps<Props>(), {
   primaryColor: '#94a684', // FeasyMenu Sage Green
   accentColor: '#5e6d51',  // Darker Sage
   logoUrl: '',
-  tenantName: 'The Bistro',
+  tenantName: '',
   fontFamily: 'Plus Jakarta Sans, sans-serif'
 })
 
-const mockMenu = computed(() => {
-  const isEn = locale.value === 'en'
-  return [
-    { 
-      name: isEn ? 'Truffle Burger' : 'Trüf Burger', 
-      price: isEn ? '$14.00' : '₺240.00', 
-      desc: isEn ? '100% beef patty, truffle mayo' : '100% dana köfte, trüf mayonez', 
-      icon: '🍔', color: 'bg-amber-100' 
-    },
-    { 
-      name: 'Margherita Pizza', 
-      price: isEn ? '$11.00' : '₺180.00', 
-      desc: isEn ? 'Fresh basil, mozzarella' : 'Taze fesleğen, mozzarella', 
-      icon: '🍕', color: 'bg-rose-100' 
-    },
-    { 
-      name: 'Iced Latte', 
-      price: isEn ? '$4.50' : '₺85.00', 
-      desc: isEn ? 'Double espresso, oat milk' : 'Çift shot espresso, yulaf sütü', 
-      icon: '☕️', color: 'bg-stone-100' 
-    },
-  ]
-})
+const mockMenu = [
+  {
+    nameKey: 'landing.quick.mockup.item1Name',
+    priceKey: 'landing.quick.mockup.item1Price',
+    descKey: 'landing.quick.mockup.item1Desc',
+    icon: '🍔', color: 'bg-amber-100'
+  },
+  {
+    nameKey: 'landing.quick.mockup.item2Name',
+    priceKey: 'landing.quick.mockup.item2Price',
+    descKey: 'landing.quick.mockup.item2Desc',
+    icon: '🍕', color: 'bg-rose-100'
+  },
+  {
+    nameKey: 'landing.quick.mockup.item3Name',
+    priceKey: 'landing.quick.mockup.item3Price',
+    descKey: 'landing.quick.mockup.item3Desc',
+    icon: '☕️', color: 'bg-stone-100'
+  },
+]
 </script>
 
 <style scoped>

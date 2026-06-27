@@ -12,7 +12,7 @@
           <div class="sticky top-32">
             <div class="inline-flex items-center gap-2 bg-brand-50 rounded-full px-4 py-1.5 mb-6 border border-brand-100">
               <span class="w-2 h-2 rounded-full bg-brand-500"></span>
-              <span class="text-xs font-bold uppercase tracking-widest text-brand-700">FAQ</span>
+              <span class="text-xs font-bold uppercase tracking-widest text-brand-700">{{ $t('nav.faq') }}</span>
             </div>
             
             <h2 class="text-4xl sm:text-5xl font-black text-slate-900 mb-6 leading-tight tracking-tight">
@@ -28,11 +28,11 @@
               <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-slate-100 mb-5">
                 <MessageCircle class="w-6 h-6 text-brand-500" />
               </div>
-              <h4 class="text-xl font-bold text-slate-900 mb-2">{{ locale === 'en' ? 'Still have questions?' : 'Hala sorularınız mı var?' }}</h4>
-              <p class="text-sm text-slate-500 mb-6 font-medium leading-relaxed">{{ locale === 'en' ? 'Can\'t find the answer you\'re looking for? Please chat to our friendly team.' : 'Aradığınız cevabı bulamadınız mı? Destek ekibimize ulaşın.' }}</p>
+              <h4 class="text-xl font-bold text-slate-900 mb-2">{{ $t('landing.faq.supportTitle') }}</h4>
+              <p class="text-sm text-slate-500 mb-6 font-medium leading-relaxed">{{ $t('landing.faq.supportDesc') }}</p>
               <a href="mailto:support@feasymenu.com" class="inline-flex items-center justify-center px-6 py-3.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition-all w-full gap-2 group">
                 <Mail class="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
-                {{ locale === 'en' ? 'Contact Support' : 'Destek İste' }}
+                {{ $t('landing.faq.supportCta') }}
               </a>
             </div>
           </div>
@@ -88,8 +88,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { MessageCircle, Mail } from 'lucide-vue-next'
-
-const { locale } = useI18n()
 
 const openIndex = ref<number | null>(0) // Open the first one by default!
 function toggle(i: number) { openIndex.value = openIndex.value === i ? null : i }
