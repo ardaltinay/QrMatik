@@ -259,6 +259,17 @@ export default {
     restaurantBarCard: 'Restoran & Bar',
     restaurantBarCardDesc: 'Tam çözüm: QR menü, sipariş yönetimi, bar panosu ve mutfak ekranı.',
     restaurantBarOutcome: 'Masa siparişinden mutfak ekranına uçtan uca akış',
+    liveFlow: {
+      badge: 'Canlı Operasyon Sahnesi',
+      title: 'Masadaki QR Taramasından Servise Tek Akış',
+      subtitle: 'Müşteri, mutfak ve servis ekibinin aynı anda senkron çalıştığı tek bir dijital operasyon.',
+      step1Title: 'Müşteri QR ile sipariş verir',
+      step1Desc: 'Menü anında açılır, ekip beklenmeden sipariş oluşturulur.',
+      step2Title: 'Mutfak ve bar anında bilgilendirilir',
+      step2Desc: 'Sipariş fişi doğrudan operasyon panolarına düşer, iletişim hatası azalır.',
+      step3Title: 'Servis hızlanır',
+      step3Desc: 'Canlı sipariş durumu ile ekip koordinasyonu artar, masa deviri hızlanır.',
+    },
     discover: 'Keşfet',
   },
 

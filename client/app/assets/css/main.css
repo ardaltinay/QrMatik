@@ -21,8 +21,22 @@
 }
 
 @layer base {
+  html,
+  body,
+  #__nuxt {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-[#F2F2F2] text-slate-900 antialiased;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -60,6 +74,13 @@
 
   .container-custom {
     @apply max-w-7xl mx-auto px-6;
+  }
+
+  @media (max-width: 375px) {
+    .container-custom {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
   }
 
   .btn-primary {

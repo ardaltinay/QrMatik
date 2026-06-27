@@ -1,9 +1,9 @@
 <template>
-  <div class="relative min-h-screen pt-24 md:pt-32 pb-24 overflow-hidden bg-[#FAF9F6]">
+  <div class="relative min-h-screen pt-24 md:pt-32 pb-24 overflow-x-clip overflow-y-hidden bg-[#FAF9F6]">
     <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-100/50 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3 -z-10"></div>
     <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-slate-100 rounded-full blur-3xl translate-y-1/3 translate-x-1/3 -z-10"></div>
 
-    <div class="relative mx-auto max-w-4xl px-6">
+    <div class="relative mx-auto max-w-4xl px-4 sm:px-6">
       <header class="text-center mb-8">
         <p class="inline-flex items-center gap-2 rounded-full border border-brand-200/70 bg-brand-50 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-700 mb-4">
           <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
@@ -64,7 +64,7 @@
             </div>
             <p class="mt-2.5 text-xs text-slate-400 font-medium">
               {{ $t('signup.fields.codeHint') }}
-              <code class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-mono ml-1 border border-slate-200/50">{{ exampleSubdomain }}</code>
+              <code class="mt-1 sm:mt-0 sm:ml-1 inline-block max-w-full break-all px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-mono border border-slate-200/50">{{ exampleSubdomain }}</code>
             </p>
             <p v-if="showCodeError" class="mt-2 text-xs text-red-500 font-bold">
               {{ $t('signup.fields.codeError') }}
@@ -182,10 +182,10 @@
 
             <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3" v-if="showMissingSummary && missingFieldLabels.length">
               <p class="text-xs font-black uppercase tracking-[0.14em] text-rose-600">{{ $t('signup.panel.missingTitle') }}</p>
-              <p class="text-xs font-semibold text-slate-600 mt-1">{{ missingFieldLabels.join(' • ') }}</p>
+              <p class="text-xs font-semibold text-slate-600 mt-1 break-words">{{ missingFieldLabels.join(' • ') }}</p>
             </div>
 
-            <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center">
+            <div class="mt-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center">
               <NuxtLink :to="localePath('/')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
                 {{ $t('signup.actions.cancel') }}
               </NuxtLink>
@@ -247,7 +247,7 @@
       <!-- Success Modal Overlay -->
       <Transition name="fade">
         <div v-if="done" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-          <div class="relative w-full max-w-xl bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-300">
+          <div class="relative w-full max-w-xl bg-white rounded-[2.1rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-300">
             <!-- Close button -->
             <button @click="done = null" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors p-2">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>

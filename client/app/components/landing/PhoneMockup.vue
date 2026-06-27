@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full max-w-[320px] mx-auto perspective-1000">
+  <div class="relative w-full max-w-[320px] mx-auto perspective-1000 overflow-visible">
     <!-- Main Phone Frame -->
     <div class="relative z-20 w-full aspect-[9/19] bg-slate-900 rounded-[3rem] p-3 shadow-2xl border-[6px] border-slate-800 animate-float">
       <!-- Notch / Dynamic Island -->
@@ -93,19 +93,19 @@
     </div>
 
     <!-- Decorative Floating Elements -->
-    <div class="absolute -top-10 -right-10 z-30 animate-bounce-slow">
-      <div class="bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3">
-        <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+    <div class="absolute top-2 right-2 sm:-top-10 sm:-right-10 z-30 animate-bounce-slow max-w-[150px] sm:max-w-none">
+      <div class="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 sm:gap-3">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
         </div>
-        <div>
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ $t('landing.quick.mockup.newOrder') }}</p>
-          <p class="text-xs font-black text-slate-900">{{ $t('landing.quick.mockup.orderLine') }}</p>
+        <div class="min-w-0">
+          <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-tighter truncate">{{ $t('landing.quick.mockup.newOrder') }}</p>
+          <p class="text-[11px] sm:text-xs font-black text-slate-900 truncate">{{ $t('landing.quick.mockup.orderLine') }}</p>
         </div>
       </div>
     </div>
 
-    <div class="absolute top-1/2 -left-16 z-10 animate-float" style="animation-delay: -2s">
+    <div class="absolute top-[42%] left-2 sm:-left-16 z-10 animate-float" style="animation-delay: -2s">
       <div class="bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex flex-col gap-1">
         <div class="w-12 h-2 bg-brand-100 rounded-full"></div>
         <div class="w-8 h-2 bg-slate-100 rounded-full"></div>

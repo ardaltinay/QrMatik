@@ -7,6 +7,60 @@
       <div class="absolute left-1/3 top-2 h-24 w-24 rounded-full bg-brand-300/20 blur-2xl"></div>
       <div class="absolute right-1/4 bottom-0 h-20 w-20 rounded-full bg-slate-900/10 blur-2xl"></div>
     </div>
+
+    <section class="relative py-16 md:py-20 overflow-hidden">
+      <div class="absolute inset-0 bg-slate-950"></div>
+      <div class="absolute -left-16 top-8 h-48 w-48 rounded-full bg-brand-400/20 blur-3xl"></div>
+      <div class="absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-emerald-300/10 blur-3xl"></div>
+
+      <div class="container-custom relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-10 md:mb-12">
+          <p class="text-[11px] font-black uppercase tracking-[0.2em] text-brand-300 mb-4">{{ $t('common.liveFlow.badge') }}</p>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-[1.02] tracking-tight mb-4">
+            {{ $t('common.liveFlow.title') }}
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base font-medium leading-relaxed">
+            {{ $t('common.liveFlow.subtitle') }}
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4 md:gap-6">
+          <article class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 md:p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-xs font-black uppercase tracking-[0.14em] text-brand-300">01</span>
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18M3 12h18M3 19h18" /></svg>
+              </span>
+            </div>
+            <h3 class="text-lg font-black text-white mb-2">{{ $t('common.liveFlow.step1Title') }}</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">{{ $t('common.liveFlow.step1Desc') }}</p>
+          </article>
+
+          <article class="rounded-3xl border border-emerald-300/25 bg-emerald-400/10 backdrop-blur-sm p-5 md:p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-xs font-black uppercase tracking-[0.14em] text-emerald-200">02</span>
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-200/20 text-emerald-100">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </span>
+            </div>
+            <h3 class="text-lg font-black text-white mb-2">{{ $t('common.liveFlow.step2Title') }}</h3>
+            <p class="text-sm text-emerald-50/90 leading-relaxed">{{ $t('common.liveFlow.step2Desc') }}</p>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 md:p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-xs font-black uppercase tracking-[0.14em] text-brand-300">03</span>
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </span>
+            </div>
+            <h3 class="text-lg font-black text-white mb-2">{{ $t('common.liveFlow.step3Title') }}</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">{{ $t('common.liveFlow.step3Desc') }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <LandingHowItWorks />
     <LandingFeaturesBento />
     <LandingPricing />

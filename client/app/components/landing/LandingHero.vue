@@ -56,7 +56,7 @@
             <LandingPhoneMockup />
 
             <div
-              class="absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 w-[190px] sm:w-[220px] rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl"
+              class="hidden min-[420px]:block absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 w-[190px] sm:w-[220px] rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl"
               @mouseenter="isDemoPaused = true"
               @mouseleave="isDemoPaused = false"
             >

@@ -255,6 +255,17 @@ export default {
     restaurantBarCard: 'Restaurant & Bar',
     restaurantBarCardDesc: 'Complete solution: QR menu, order management, bar panel, and kitchen display.',
     restaurantBarOutcome: 'End-to-end flow from table order to kitchen display',
+    liveFlow: {
+      badge: 'Live Operation Scene',
+      title: 'From Table Scan To Served Order In One Flow',
+      subtitle: 'A single digital operation where customer, kitchen, and service team stay in sync in real-time.',
+      step1Title: 'Guest scans QR and orders',
+      step1Desc: 'The menu opens instantly and the order is placed without waiting for staff.',
+      step2Title: 'Kitchen and bar are notified',
+      step2Desc: 'Tickets drop directly to operation boards, reducing miscommunication.',
+      step3Title: 'Service moves faster',
+      step3Desc: 'Teams coordinate around live order state and table turnover improves.',
+    },
     discover: 'Discover',
   },
 
