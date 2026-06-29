@@ -3,7 +3,7 @@
     <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-100/50 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3 -z-10"></div>
     <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-slate-100 rounded-full blur-3xl translate-y-1/3 translate-x-1/3 -z-10"></div>
 
-    <div class="relative mx-auto max-w-4xl px-4 sm:px-6">
+    <div class="relative mx-auto max-w-2xl px-4 sm:px-6">
       <header class="text-center mb-8">
         <p class="inline-flex items-center gap-2 rounded-full border border-brand-200/70 bg-brand-50 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-700 mb-4">
           <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
@@ -24,21 +24,12 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-[2.2rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-100">
-        <div class="grid lg:grid-cols-[1.04fr_0.96fr] gap-8 lg:gap-10 items-start">
-          <div>
-            <div class="mb-8">
-              <div class="rounded-xl border border-brand-200 bg-brand-50/70 px-4 py-3">
-                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-700">1</p>
-                <p class="text-xs font-bold mt-1 text-slate-900">{{ $t('signup.panel.stepAccount') }}</p>
-              </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-600" :style="{ width: `${formCompletion}%` }"></div>
-              </div>
-              <p class="mt-2 text-xs font-bold text-slate-500">{{ $t('signup.panel.progressLabel', { percent: formCompletion }) }}</p>
-            </div>
+      <div class="rounded-[2rem] md:rounded-[2.3rem] border border-slate-100 bg-white p-5 sm:p-8 md:p-10 shadow-[0_24px_70px_-35px_rgba(15,23,42,0.25)]">
+        <div class="mb-7 rounded-xl border border-brand-200 bg-gradient-to-r from-brand-50 to-white px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-700">{{ $t('signup.panel.stepAccount') }}</p>
+        </div>
 
-            <div class="space-y-8">
+        <div class="space-y-8">
           <!-- Code -->
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
@@ -84,7 +75,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <!-- Owner Name -->
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-2.5 uppercase tracking-wide">
@@ -172,75 +163,29 @@
             </p>
           </div>
 
-              <div class="rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-500 mb-2">{{ $t('signup.panel.brandingLaterTitle') }}</p>
-                <p class="text-sm text-slate-600 font-medium leading-relaxed">
-                  {{ $t('signup.panel.brandingLaterDesc') }}
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3" v-if="showMissingSummary && missingFieldLabels.length">
-              <p class="text-xs font-black uppercase tracking-[0.14em] text-rose-600">{{ $t('signup.panel.missingTitle') }}</p>
-              <p class="text-xs font-semibold text-slate-600 mt-1 break-words">{{ missingFieldLabels.join(' • ') }}</p>
-            </div>
-
-            <div class="mt-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center">
-              <NuxtLink :to="localePath('/')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
-                {{ $t('signup.actions.cancel') }}
-              </NuxtLink>
-              <button
-                class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-brand-600 text-white font-bold text-xs uppercase tracking-widest shadow-xl shadow-brand-600/20 hover:bg-brand-500 disabled:opacity-50 cursor-pointer transition-all"
-                :disabled="saving || !isValid"
-                @click="submit"
-              >
-                <span v-if="saving">{{ $t('signup.actions.saving') }}</span>
-                <span v-else>{{ $t('signup.actions.create') }}</span>
-              </button>
-            </div>
-            <p class="mt-4 text-center text-xs text-slate-500 font-medium">{{ $t('signup.panel.ctaHint') }}</p>
+          <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
+            <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-500 mb-2">{{ $t('signup.panel.brandingLaterTitle') }}</p>
+            <p class="text-sm text-slate-600 font-medium leading-relaxed">
+              {{ $t('signup.panel.brandingLaterDesc') }}
+            </p>
           </div>
 
-          <aside class="hidden lg:block space-y-4 lg:sticky lg:top-28">
-            <div class="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-              <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400 mb-3">{{ $t('signup.panel.previewTitle') }}</p>
-              <div class="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white p-4">
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <p class="text-sm font-black">{{ form.name?.trim() || $t('signup.panel.previewFallback') }}</p>
-                    <p class="text-[11px] text-white/75 mt-1">{{ form.code?.trim() || 'my-bistro' }}.feasymenu.com</p>
-                  </div>
-                  <span class="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold">{{ $t('signup.panel.liveBadge') }}</span>
-                </div>
-                <div class="mt-4 grid grid-cols-2 gap-2 text-[11px]">
-                  <div class="rounded-lg bg-white/15 px-2.5 py-2 font-semibold">{{ $t('signup.panel.previewTile1') }}</div>
-                  <div class="rounded-lg bg-white/15 px-2.5 py-2 font-semibold">{{ $t('signup.panel.previewTile2') }}</div>
-                  <div class="rounded-lg bg-white/15 px-2.5 py-2 font-semibold">{{ $t('signup.panel.previewTile3') }}</div>
-                  <div class="rounded-lg bg-white/15 px-2.5 py-2 font-semibold">{{ $t('signup.panel.previewTile4') }}</div>
-                </div>
-              </div>
-            </div>
+          <div class="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
 
-            <div class="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-              <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400 mb-3">{{ $t('signup.panel.checklistTitle') }}</p>
-              <ul class="space-y-2.5">
-                <li
-                  v-for="item in checklistItems"
-                  :key="item.labelKey"
-                  class="flex items-center justify-between rounded-xl border px-3 py-2"
-                  :class="item.done ? 'border-emerald-200 bg-emerald-50/70' : 'border-slate-200 bg-slate-50/70'"
-                >
-                  <span class="text-xs font-bold" :class="item.done ? 'text-emerald-700' : 'text-slate-600'">{{ $t(item.labelKey) }}</span>
-                  <span class="text-[11px] font-black uppercase" :class="item.done ? 'text-emerald-700' : 'text-slate-400'">{{ $t(item.done ? 'signup.panel.ready' : 'signup.panel.pending') }}</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="rounded-[1.7rem] border border-brand-200 bg-brand-50/70 p-5 shadow-sm">
-              <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-700 mb-2">{{ $t('signup.panel.quoteTitle') }}</p>
-              <p class="text-sm font-bold text-slate-700 leading-relaxed">“{{ $t('signup.panel.quote') }}”</p>
-            </div>
-          </aside>
+          <div class="pt-1 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center">
+            <NuxtLink :to="localePath('/')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all text-center">
+              {{ $t('signup.actions.cancel') }}
+            </NuxtLink>
+            <button
+              class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-brand-600 text-white font-bold text-xs uppercase tracking-widest shadow-xl shadow-brand-600/20 hover:bg-brand-500 hover:-translate-y-0.5 disabled:opacity-50 cursor-pointer transition-all"
+              :disabled="saving || !isValid"
+              @click="submit"
+            >
+              <span v-if="saving">{{ $t('signup.actions.saving') }}</span>
+              <span v-else>{{ $t('signup.actions.create') }}</span>
+            </button>
+          </div>
+          <p class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-2.5 text-center text-xs text-slate-500 font-medium">{{ $t('signup.panel.ctaHint') }}</p>
         </div>
       </div>
 
@@ -396,32 +341,6 @@ const showCodeError = computed(() => (touched.value.code || submitAttempted.valu
 const showOwnerNameError = computed(() => (touched.value.ownerName || submitAttempted.value) && !form.value.ownerName?.trim())
 const showOwnerEmailError = computed(() => (touched.value.ownerEmail || submitAttempted.value) && !emailOk.value)
 const showOwnerPasswordError = computed(() => (touched.value.ownerPassword || submitAttempted.value) && (form.value.ownerPassword?.trim().length || 0) < 8)
-
-const formCompletion = computed(() => {
-  let score = 0
-  if (codeValid.value) score += 1
-  if (form.value.ownerName?.trim()) score += 1
-  if (emailOk.value) score += 1
-  if ((form.value.ownerPassword?.trim().length || 0) >= 8) score += 1
-  return Math.round((score / 4) * 100)
-})
-
-const checklistItems = computed(() => [
-  { labelKey: 'signup.fields.code', done: codeValid.value },
-  { labelKey: 'signup.fields.ownerName', done: Boolean(form.value.ownerName?.trim()) },
-  { labelKey: 'signup.fields.ownerEmail', done: emailOk.value },
-  { labelKey: 'signup.fields.ownerPassword', done: (form.value.ownerPassword?.trim().length || 0) >= 8 },
-])
-
-const missingFieldLabels = computed(() => {
-  return checklistItems.value
-    .filter((item) => !item.done)
-    .map((item) => t(item.labelKey))
-})
-
-const showMissingSummary = computed(() => {
-  return submitAttempted.value || Object.values(touched.value).some(Boolean)
-})
 
 function touchField(field: 'code' | 'ownerName' | 'ownerEmail' | 'ownerPassword') {
   touched.value[field] = true
